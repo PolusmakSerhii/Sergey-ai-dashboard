@@ -351,6 +351,20 @@ document.querySelector(
   bestOpportunity
     ? `Opportunity Score: ${bestOpportunity.opportunityScore ?? 0} | Grade: ${bestOpportunity.opportunityGrade || "D"} | Direction: ${bestOpportunity.direction || "Neutral"}`
     : "No opportunity found";
+const bestSetup =
+  data.bestSetup || null;
+
+document.querySelector(
+  "#best-setup-symbol"
+).textContent =
+  bestSetup?.symbol || "No Setup";
+
+document.querySelector(
+  "#best-setup-details"
+).textContent =
+  bestSetup
+    ? `Confidence: ${bestSetup.confidence ?? 0}% | ${bestSetup.direction || "Neutral"}`
+    : "No setup found";
         
         if (!response.ok) {
           throw new Error(
