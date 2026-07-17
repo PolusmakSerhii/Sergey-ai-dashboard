@@ -425,7 +425,9 @@ placeholder="Search symbol..."
   <script>
     const API_URL =
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=scanner&page=1&limit=10";
-
+    
+    let scannerResults = [];
+    
     async function loadScanner() {
       const statusElement =
         document.querySelector(".status");
@@ -450,8 +452,11 @@ placeholder="Search symbol..."
  const summary =
    data.marketSummary || {};
         
-const scannerResults =
+scannerResults =
   data.results || [];
+        
+        const searchInput =
+          document.querySelector("#search-input");
         
 document.querySelector(
   "#market-bias"
@@ -505,6 +510,13 @@ document.querySelector(
         }
         const scannerElement =
           document.querySelector("#scanner-table");
+const searchValue =
+  searchInput.value.trim().toUpperCase();
+
+const filteredResults =
+  scannerResults.filter((coin) =>
+    coin.symbol.includes(searchValue)
+  );
         
         scannerElement.innerHTML = `
         <table class="scanner-table">
@@ -522,9 +534,9 @@ document.querySelector(
 
   <tbody>
     ${
-      scannerResults
-        .map(
-          (coin) => `
+     filteredResults
+       .map(
+    (coin) => `
 <tr>
   <td>${coin.rank}</td>
   <td>${coin.symbol}</td>
