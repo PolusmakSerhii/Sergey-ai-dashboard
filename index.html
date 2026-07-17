@@ -430,10 +430,13 @@ document.querySelector(
         <table class="scanner-table">
          <thead>
           <tr>
-      <th>#</th>
-      <th>Symbol</th>
-      <th>Score</th>
-      <th>Direction</th>
+     <th>#</th>
+<th>Symbol</th>
+<th>Score</th>
+<th>Grade</th>
+<th>Confidence</th>
+<th>Direction</th>
+
     </tr>
   </thead>
 
@@ -446,7 +449,9 @@ document.querySelector(
   <td>${coin.rank}</td>
   <td>${coin.symbol}</td>
   <td>${coin.opportunityScore ?? 0}</td>
- <td>
+  <td>${coin.opportunityGrade || "D"}</td>
+  <td>${coin.confidence ?? 0}%</td>  
+  <td>
   <span class="${
     coin.direction === "Long"
       ? "long"
