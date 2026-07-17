@@ -245,6 +245,23 @@
       </article>
     </section>
   </main>  
+      <section class="card" style="margin-top: 18px;">
+      <p class="card-label">
+        Market Summary
+      </p>
+
+      <div class="card-value" id="market-bias">
+        Loading...
+      </div>
+
+      <p class="card-text" id="market-condition">
+        Загружаем рыночные данные
+      </p>
+
+      <p class="card-text" id="market-details">
+        Confidence: — | Ready Trades: —
+      </p>
+    </section>  
   
   <script>
     const API_URL =
@@ -270,6 +287,24 @@
           "Scanner API response:",
           data
         );
+        
+const summary =
+  data.marketSummary || {};
+
+document.querySelector(
+  "#market-bias"
+).textContent =
+  summary.marketBias || "Neutral";
+
+document.querySelector(
+  "#market-condition"
+).textContent =
+  summary.marketCondition || "Unknown";
+
+document.querySelector(
+  "#market-details"
+).textContent =
+  `Confidence: ${summary.averageConfidence ?? 0}% | Ready Trades: ${summary.readyTrades ?? 0}`;
 
         if (!response.ok) {
           throw new Error(
