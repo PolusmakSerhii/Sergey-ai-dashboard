@@ -445,7 +445,7 @@ placeholder="Search symbol..."
       coin.symbol.includes(searchValue);
 
     const directionMatch =
-      directionFilter.value === "All" ||
+      directionFilter.value === "all" ||
       coin.direction === directionFilter.value;
 
     return searchMatch && directionMatch;
