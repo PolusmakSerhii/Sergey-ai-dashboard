@@ -244,19 +244,7 @@
         </p>
       </article>
     </section>
-    <section class="card" style="margin-top: 18px;">
-      <p class="card-label">
-        Best Opportunity
-      </p>
-
-      <div class="card-value" id="best-opportunity-symbol">
-        Loading...
-      </div>
-
-      <p class="card-text" id="best-opportunity-details">
-        Opportunity Score: — | Grade: — | Direction: —
-      </p>
-    </section>    
+   
    
       <section class="card" style="margin-top: 18px;">
       <p class="card-label">
@@ -275,7 +263,8 @@
         Confidence: — | Ready Trades: —
       </p>
     </section>  
-    </main> 
+    
+  </main> 
   
   <script>
     const API_URL =
@@ -302,8 +291,8 @@
           data
         );
         
-const summary =
-  data.marketSummary || {};
+ const summary =
+   data.marketSummary || {};
 
 document.querySelector(
   "#market-bias"
