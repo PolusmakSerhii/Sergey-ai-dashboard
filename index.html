@@ -297,18 +297,7 @@
   <p class="card-text" id="best-setup-details">
     Waiting...
   </p>
-</section>
-     <section class="card" style="margin-top: 12px;">
-  <p class="card-label">
-    Market Scanner Results
-  </p>
-
-  <div id="scanner-table">
-    <p class="card-text">
-      Loading scanner results...
-    </p>
-  </div>
-</section>    
+</section>  
     
   </main> 
   
@@ -395,19 +384,36 @@ document.querySelector(
         }
         const scannerElement =
           document.querySelector("#scanner-table");
+        
+        scannerElement.innerHTML = `
+        <table class="scanner-table">
+         <thead>
+          <tr>
+      <th>#</th>
+      <th>Symbol</th>
+      <th>Score</th>
+      <th>Direction</th>
+    </tr>
+  </thead>
 
-     scannerElement.innerHTML =
+  <tbody>
+    ${
       scannerResults
-       .map(
-         (coin) => `
-          <p class="card-text">
-           <strong>${coin.rank}. ${coin.symbol}</strong>
-           | Score: ${coin.opportunityScore ?? 0}
-           | ${coin.direction || "Neutral"}
-         </p>
-      `
-    )
-    .join("");
+        .map(
+          (coin) => `
+<tr>
+  <td>${coin.rank}</td>
+  <td>${coin.symbol}</td>
+  <td>${coin.opportunityScore ?? 0}</td>
+  <td>${coin.direction || "Neutral"}</td>
+</tr>
+`
+        )
+        .join("")
+    }
+  </tbody>
+</table>
+`;
         
         statusElement.innerHTML = `
           <span class="dot"></span>
