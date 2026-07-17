@@ -199,7 +199,26 @@
 .neutral {
   color: #9aa9bb;
   font-weight: 700;
-}  
+} 
+ .buy {
+  color: #4fe3b1;
+  font-weight: 700;
+}
+
+.watch {
+  color: #33a8ff;
+  font-weight: 700;
+}
+
+.risky {
+  color: #ffd166;
+  font-weight: 700;
+}
+
+.avoid {
+  color: #ff5d73;
+  font-weight: 700;
+}    
   .grade {
   font-weight: 800;
 }
@@ -463,9 +482,9 @@ document.querySelector(
 <th>Grade</th>
 <th>Confidence</th>
 <th>Direction</th>
-
-    </tr>
-  </thead>
+<th>Action</th>
+</tr>
+</thead>
 
   <tbody>
     ${
@@ -494,15 +513,37 @@ document.querySelector(
       : "neutral"
   }">
     ${coin.direction || "Neutral"}
-  </span>
+ </span>
 </td>
-</tr>
-`
-        )
-        .join("")
-    }
-  </tbody>
-</table>
+
+<td>
+    <span class="${
+        coin.opportunityScore >= 90
+            ? "buy"
+            : coin.opportunityScore >= 70
+            ? "watch"
+            : coin.opportunityScore >= 40
+            ? "risky"
+            : "avoid"
+    }">
+        ${
+            coin.opportunityScore >= 90
+                ? "Strong Buy"
+                : coin.opportunityScore >= 70
+                ? "Buy"
+                : coin.opportunityScore >= 40
+                ? "Watch"
+                : "Avoid"
+              }
+           </span>
+        </td>
+
+        </tr>`
+       )
+          .join("")
+        }
+    </tbody>
+  </table>
 `;
         
         statusElement.innerHTML = `
