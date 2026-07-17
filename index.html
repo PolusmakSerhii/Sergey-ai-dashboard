@@ -428,6 +428,10 @@ placeholder="Search symbol..."
     
     let scannerResults = [];
 
+    
+    const searchInput =
+    document.querySelector("#search-input");
+    
     function renderScanner(results) {
       const searchValue =
     searchInput.value.trim().toUpperCase();
@@ -542,9 +546,6 @@ const filteredResults =
 scannerResults =
   data.results || [];
         
-        const searchInput =
-          document.querySelector("#search-input");
-        
 document.querySelector(
   "#market-bias"
 ).textContent =
@@ -614,8 +615,13 @@ document.querySelector(
 
   }
     }
-
+     searchInput.addEventListener(
+  "input",
+  () => renderScanner(scannerResults)
+);
+    
     loadScanner();
+    
   </script>
 </body>
 </html>
