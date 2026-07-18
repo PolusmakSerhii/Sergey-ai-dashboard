@@ -451,9 +451,9 @@ placeholder="Search symbol..."
     searchInput.value.trim().toUpperCase();
    
       const filteredResults =
-  results.filter((coin) => {
-    const searchMatch =
-      coin.symbol.includes(searchValue);
+        results.filter((coin) => {
+           const searchMatch =
+               coin.symbol.includes(searchValue);
 
     const directionMatch =
       directionFilter.value === "all" ||
@@ -462,9 +462,15 @@ placeholder="Search symbol..."
     return searchMatch && directionMatch;
   });
       
-  const scannerElement =
-    document.querySelector("#scanner-table");
+    const scannerCount =
+       document.querySelector("#scanner-count");
 
+    scannerCount.textContent =
+      `Showing ${filteredResults.length} of ${results.length} markets`;
+      
+    const scannerElement =
+      document.querySelector("#scanner-table");
+ 
   scannerElement.innerHTML = `
     <table class="scanner-table">
       <thead>
