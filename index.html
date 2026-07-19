@@ -730,6 +730,22 @@ document.querySelector(
 
   }
     }
+    
+    function openCoinModal(symbol) {
+  const coinModal =
+    document.querySelector("#coin-modal");
+
+  const coinDetails =
+    document.querySelector("#coin-details");
+
+  coinDetails.innerHTML = `
+    <h2>${symbol}</h2>
+    <p>Loading coin analysis...</p>
+  `;
+
+  coinModal.classList.remove("hidden");
+}
+    
      searchInput.addEventListener(
   "input",
   () => renderScanner(scannerResults)
@@ -753,14 +769,25 @@ document.querySelector(
     const scoreHeader =
       event.target.closest("#score-sort");
 
-    if (!scoreHeader) return;
+    if (scoreHeader) {
+      scoreSortDirection =
+        scoreSortDirection === "desc"
+          ? "asc"
+          : "desc";
 
-    scoreSortDirection =
-      scoreSortDirection === "desc"
-        ? "asc"
-        : "desc";
+      renderScanner(scannerResults);
+      return;
+    }
 
-    renderScanner(scannerResults);
+    const coinRow =
+      event.target.closest(".scanner-row");
+
+    if (!coinRow) return;
+
+    const symbol =
+      coinRow.dataset.symbol;
+
+    openCoinModal(symbol);
   });
     
     loadScanner();
