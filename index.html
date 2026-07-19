@@ -445,6 +445,9 @@ placeholder="Search symbol..."
     
     const directionFilter =
       document.querySelector("#direction-filter");
+
+    const gradeFilter =
+      document.querySelector("#grade-filter");
     
     function renderScanner(results) {
       const searchValue =
@@ -455,12 +458,18 @@ placeholder="Search symbol..."
            const searchMatch =
                coin.symbol.includes(searchValue);
 
-    const directionMatch =
-      directionFilter.value === "all" ||
-      coin.direction === directionFilter.value;
+   const directionMatch =
+    directionFilter.value === "all" ||
+    coin.direction === directionFilter.value;
 
-    return searchMatch && directionMatch;
-  });
+const gradeMatch =
+    gradeFilter.value === "all" ||
+    coin.opportunityGrade === gradeFilter.value;
+
+return searchMatch &&
+       directionMatch &&
+       gradeMatch;
+    });
       
     const scannerCount =
        document.querySelector("#scanner-count");
@@ -651,6 +660,11 @@ document.querySelector(
   "change",
   () => renderScanner(scannerResults)
 );
+
+    gradeFilter.addEventListener(
+     "change",
+    () => renderScanner(scannerResults)
+ );
     
     loadScanner();
     
