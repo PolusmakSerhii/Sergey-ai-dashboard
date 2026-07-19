@@ -788,7 +788,14 @@ document.querySelector(
       coinRow.dataset.symbol;
 
     openCoinModal(symbol);
-  });
+  })
+    document
+     .querySelector("#close-modal")
+     .addEventListener("click", () => {
+      document
+        .querySelector("#coin-modal")
+        .classList.add("hidden");
+  });   
     
     loadScanner();
     
