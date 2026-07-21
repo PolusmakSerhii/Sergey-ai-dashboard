@@ -876,7 +876,16 @@ const opportunityScore =
     `;
   }
 }   
+    searchInput.addEventListener(
+  "input",
+  () => renderScanner(scannerResults)
+);
 
+directionFilter.addEventListener(
+  "change",
+  () => renderScanner(scannerResults)
+);
+    
     gradeFilter.addEventListener(
      "change",
     () => renderScanner(scannerResults)
