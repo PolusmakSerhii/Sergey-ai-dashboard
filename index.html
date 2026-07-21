@@ -774,56 +774,21 @@ document.querySelector(
   }
     }
     async function openCoinModal(symbol) {
-  const coinModal =
-    document.querySelector("#coin-modal");
-
-  const coinDetails =
-    document.querySelector("#coin-details");
-
- coinDetails.innerHTML = `
-<h2>${symbol}</h2>
-
-<div class="coin-details-grid">
-
-  <div class="coin-detail-card">
-    <div class="coin-detail-label">Price</div>
-    <div class="coin-detail-value">${data.price ?? "—"}</div>
-  </div>
-
-  <div class="coin-detail-card">
-    <div class="coin-detail-label">Opportunity Score</div>
-    <div class="coin-detail-value">${opportunityScore}</div>
-  </div>
-
-  <div class="coin-detail-card">
-    <div class="coin-detail-label">Probability</div>
-    <div class="coin-detail-value">${probability}%</div>
-  </div>
-
-  <div class="coin-detail-card">
-    <div class="coin-detail-label">Direction</div>
-    <div class="coin-detail-value">${direction}</div>
-  </div>
-
-  <div class="coin-detail-card">
-    <div class="coin-detail-label">Grade</div>
-    <div class="coin-detail-value">${grade}</div>
-  </div>
-
-</div>
-
-${
-  data.coinGlass?.available === false
-    ? `<p style="margin-top:20px;color:#ffd166;">
-        ⚠ CoinGlass temporarily unavailable (Rate Limit)
-      </p>`
-    : ""
-}
-`;
+      const coinModal =
+        document.querySelector("#coin-modal");
       
-  coinModal.classList.remove("hidden");
+      const coinDetails =
+        document.querySelector("#coin-details");
 
-  try {
+      coinDetails.innerHTML = `
+        <h2>${symbol}</h2>
+        <p>Loading coin analysis...</p>
+      ;
+  
+     coinModal.classList.remove("hidden");
+ 
+     try {
+  
     const response = await fetch(
       `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${symbol}`
     );
