@@ -288,7 +288,40 @@
     font-size:28px;
     cursor:pointer;
 }
-    
+.coin-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.coin-detail-card {
+  padding: 16px;
+  border: 1px solid #243548;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.coin-detail-label {
+  margin-bottom: 8px;
+  color: #7f91a4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coin-detail-value {
+  color: #f5f7fa;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .coin-details-grid {
+    grid-template-columns: 1fr;
+  }
+}    
   </style>
 </head>
 
@@ -747,11 +780,47 @@ document.querySelector(
   const coinDetails =
     document.querySelector("#coin-details");
 
-  coinDetails.innerHTML = `
-    <h2>${symbol}</h2>
-    <p>Loading coin analysis...</p>
-  `;
+ coinDetails.innerHTML = `
+<h2>${symbol}</h2>
 
+<div class="coin-details-grid">
+
+  <div class="coin-detail-card">
+    <div class="coin-detail-label">Price</div>
+    <div class="coin-detail-value">${data.price ?? "—"}</div>
+  </div>
+
+  <div class="coin-detail-card">
+    <div class="coin-detail-label">Opportunity Score</div>
+    <div class="coin-detail-value">${opportunityScore}</div>
+  </div>
+
+  <div class="coin-detail-card">
+    <div class="coin-detail-label">Probability</div>
+    <div class="coin-detail-value">${probability}%</div>
+  </div>
+
+  <div class="coin-detail-card">
+    <div class="coin-detail-label">Direction</div>
+    <div class="coin-detail-value">${direction}</div>
+  </div>
+
+  <div class="coin-detail-card">
+    <div class="coin-detail-label">Grade</div>
+    <div class="coin-detail-value">${grade}</div>
+  </div>
+
+</div>
+
+${
+  data.coinGlass?.available === false
+    ? `<p style="margin-top:20px;color:#ffd166;">
+        ⚠ CoinGlass temporarily unavailable (Rate Limit)
+      </p>`
+    : ""
+}
+`;
+      
   coinModal.classList.remove("hidden");
 
   try {
