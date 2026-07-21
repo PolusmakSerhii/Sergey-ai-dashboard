@@ -760,7 +760,9 @@ document.querySelector(
     );
 
     const data = await response.json();
-
+    
+    console.log("Coin analysis response:", data);    
+    
     if (!response.ok) {
       throw new Error(
         data?.error ||
