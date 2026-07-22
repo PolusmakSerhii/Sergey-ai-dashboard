@@ -779,12 +779,62 @@ document.querySelector(
       
       const coinDetails =
         document.querySelector("#coin-details");
+      
+     const previewCoin =
+        scannerResults.find(
+          (coin) => coin.symbol === symbol
+  ) || {};      
 
-      coinDetails.innerHTML = `
-      <h2>${symbol}</h2>
-        <p>Loading coin analysis...</p>
-      `;
-  
+     coinDetails.innerHTML = `
+  <h2>${symbol}</h2>
+
+  <div class="coin-details-grid">
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Price</div>
+      <div class="coin-detail-value">
+        ${previewCoin.price ?? "—"}
+      </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Opportunity Score</div>
+      <div class="coin-detail-value">
+        ${previewCoin.opportunityScore ?? "—"}
+      </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Probability</div>
+      <div class="coin-detail-value">
+        ${previewCoin.confidence ?? "—"}%
+      </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Direction</div>
+      <div class="coin-detail-value">
+        ${previewCoin.direction ?? "Neutral"}
+      </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Grade</div>
+      <div class="coin-detail-value">
+        ${previewCoin.opportunityGrade ?? "—"}
+      </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Status</div>
+      <div class="coin-detail-value">
+        Loading full analysis...
+      </div>
+    </div>
+
+  </div>
+`;
+      
      coinModal.classList.remove("hidden");
  
      try {
