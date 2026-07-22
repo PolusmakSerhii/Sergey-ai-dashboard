@@ -878,7 +878,7 @@ const grade =
 const opportunityScore =
   scannerCoin.opportunityScore ?? 0;
        
-const tradePlan = data.tradePlan || {};  
+const tradePlan = data.technical?.tradePlan || {};
        
 const action =
   opportunityScore >= 90
