@@ -327,7 +327,36 @@
     font-size: 14px;
     line-height: 1.6;
 }
+.trade-reasons {
+    margin: 20px 0;
+    padding: 18px;
+    border: 1px solid #243548;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+}
 
+.trade-reasons-title {
+    color: #67d9ff;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.trade-reason-item {
+    color: #f5f7fa;
+    margin: 8px 0;
+    padding-left: 18px;
+    position: relative;
+}
+
+.trade-reason-item::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #37d67a;
+    font-weight: bold;
+}
+    
 @media (max-width: 700px) {
   .coin-details-grid {
     grid-template-columns: 1fr;
@@ -899,6 +928,17 @@ const rejectionReason =
   tradePlan.rejectionReason ||
   "Current market conditions do not meet the minimum requirements for a confirmed trade.";
 
+const probability =
+  data.technical?.probability || {};
+
+const tradeReasons =
+  Array.isArray(tradePlan.reasons) &&
+  tradePlan.reasons.length > 0
+    ? tradePlan.reasons
+    : Array.isArray(probability.reasons)
+      ? probability.reasons
+      : [];
+       
 const recommendation =
   data.technical?.recommendation || {};
 
@@ -1003,6 +1043,23 @@ ${!hasValidTrade ? `
 <div class="trade-plan-status">
    <strong>Trade Status: WATCH</strong><br>
    ${rejectionReason}
+</div>
+` : ""}
+
+${tradeReasons.length > 0 ? `
+<div class="trade-reasons">
+  <div class="trade-reasons-title">
+    Analysis Reasons
+  </div>
+
+  ${tradeReasons
+    .slice(0, 6)
+    .map(reason => `
+      <div class="trade-reason-item">
+        ${reason}
+      </div>
+    `)
+    .join("")}
 </div>
 ` : ""}
 
