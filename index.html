@@ -1000,9 +1000,12 @@ Current market conditions do not meet the minimum requirements for a confirmed t
 
 <div class="coin-detail-card">
 <div class="coin-detail-label">Entry</div>
+
 <div class="coin-detail-value">
-    ${tradePlan.entry ?? "—"}
-</div>
+   ${hasValidTrade
+     ? tradePlan.entry ?? "—"
+     : "—"}
+  </div>
 </div>
 
 <div class="coin-detail-card">
