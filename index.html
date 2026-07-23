@@ -316,6 +316,17 @@
   font-size: 22px;
   font-weight: 800;
 }
+    
+.trade-plan-status {
+    margin: 16px 0 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.35);
+    color: #ffd166;
+    font-size: 14px;
+    line-height: 1.6;
+}
 
 @media (max-width: 700px) {
   .coin-details-grid {
@@ -878,7 +889,11 @@ const grade =
 const opportunityScore =
   scannerCoin.opportunityScore ?? 0;
        
-const tradePlan = data.technical?.tradePlan || {};
+const tradePlan = 
+  data.technical?.tradePlan || {};
+
+const hasValidTrade =
+  tradePlan.validTrade === true;
        
 const action =
   opportunityScore >= 90
@@ -973,6 +988,13 @@ const action =
 >
 Trade Plan
 </h3>
+
+${!hasValidTrade ? `
+<div class="trade-plan-status">
+   <strong>Trade Status: WATCH</strong><br>
+Current market conditions do not meet the minimum requirements for a confirmed trade.
+</div>
+` : ""}
 
 <div class="coin-details-grid">
 
