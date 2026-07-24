@@ -1121,8 +1121,9 @@ const tradeExecutionStatus = !hasExecutionData
               color: "#35d07f",
               message: "Price is inside the entry zone."
           }
-        : executionPrice > executionStopLoss
-        ? {
+  
+       : executionPrice <= executionStopLoss
+  ? {
               title: "INVALIDATED",
               color: "#ff5d5d",
               message: "Stop Loss has already been broken."
@@ -1144,8 +1145,8 @@ const tradeExecutionStatus = !hasExecutionData
           color: "#35d07f",
           message: "Price is inside the entry zone."
       }
-    : executionPrice < executionStopLoss
-    ? {
+    : executionPrice >= executionStopLoss
+  ? {
           title: "INVALIDATED",
           color: "#ff5d5d",
           message: "Stop Loss has already been broken."
@@ -1237,7 +1238,33 @@ const tradeExecutionStatus = !hasExecutionData
   </div>
 </div>
 
-  </div>
+${tradeExecutionStatus ? `
+<div
+    class="coin-detail-card"
+    style="
+        border-color:${tradeExecutionStatus.color};
+        background:${tradeExecutionStatus.color}12;
+    "
+>
+    <div class="coin-detail-label">
+        Execution
+    </div>
+
+    <div
+        class="coin-detail-value"
+        style="
+            color:${tradeExecutionStatus.color};
+            font-size:18px;
+        "
+    >
+        ${tradeExecutionStatus.title}
+    </div>
+</div>
+` : ""}
+
+</div>
+
+ 
  <div
     style="
         margin-top:30px;
