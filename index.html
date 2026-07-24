@@ -966,11 +966,12 @@ const aiSummary =
   "";
        
 const tradeStatistics = {
+  
   confidence:
-    probabilityData.confidence ??
+    probabilityData.confidence?.score ??
     tradePlan.confidence ??
     null,
-
+  
   conviction:
     probabilityData.aiAssessment?.conviction ??
     null,
