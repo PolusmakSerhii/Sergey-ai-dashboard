@@ -317,6 +317,51 @@
   font-weight: 800;
 }
     
+.trade-plan-entry {
+  border-color: rgba(78, 227, 178, 0.35);
+  background: rgba(78, 227, 178, 0.05);
+}
+
+.trade-plan-stop {
+  border-color: rgba(255, 92, 92, 0.35);
+  background: rgba(255, 92, 92, 0.05);
+}
+
+.trade-plan-target {
+  border-color: rgba(69, 185, 255, 0.35);
+  background: rgba(69, 185, 255, 0.05);
+}
+
+.trade-plan-risk {
+  border-color: rgba(255, 193, 7, 0.35);
+  background: rgba(255, 193, 7, 0.05);
+}
+.trade-setup-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  padding: 13px 18px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trade-setup-long {
+  color: #4ee3b2;
+  border-color: rgba(78, 227, 178, 0.4);
+  background: rgba(78, 227, 178, 0.08);
+}
+
+.trade-setup-short {
+  color: #ff7474;
+  border-color: rgba(255, 92, 92, 0.4);
+  background: rgba(255, 92, 92, 0.08);
+}    
+    
 .trade-plan-status {
     margin: 16px 0 20px;
     padding: 14px 18px;
@@ -1332,8 +1377,20 @@ ${Object.keys(marketEnvironment).length > 0 ? `
 
   ${hasValidTrade ? `
   <div class="coin-details-grid">
+  
+<div class="trade-setup-banner ${
+    recommendation.direction === "LONG"
+        ? "trade-setup-long"
+        : "trade-setup-short"
+}">
+    ${
+        recommendation.direction === "LONG"
+            ? "🟢 LONG SETUP"
+            : "🔴 SHORT SETUP"
+    }
+</div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-entry">
 <div class="coin-detail-label">Entry Zone</div>
 
 <div class="coin-detail-value">
@@ -1348,35 +1405,35 @@ ${Object.keys(marketEnvironment).length > 0 ? `
   </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-stop">
 <div class="coin-detail-label">Stop Loss</div>
 <div class="coin-detail-value">
     ${tradePlan.stopLoss ?? "—"}
 </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-target">
 <div class="coin-detail-label">TP1</div>
 <div class="coin-detail-value">
     ${tradePlan.takeProfit1 ?? "—"}
 </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-target">
 <div class="coin-detail-label">TP2</div>
 <div class="coin-detail-value">
     ${tradePlan.takeProfit2 ?? "—"}
 </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-target">
 <div class="coin-detail-label">TP3</div>
 <div class="coin-detail-value">
     ${tradePlan.takeProfit3 ?? "—"}
 </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-risk">
 <div class="coin-detail-label">Risk / Reward</div>
 <div class="coin-detail-value">
     ${tradePlan.riskReward ?? "—"}
