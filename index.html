@@ -1244,17 +1244,62 @@ const tradeExecutionStatus = !hasExecutionData
         }
     </div>
 </div>
-
-    <div class="coin-detail-card">
-      <div class="coin-detail-label">
+     
+    <div
+    class="coin-detail-card"
+    style="
+        border-color:${
+            grade === "A+" || grade === "A"
+                ? "rgba(78, 227, 178, 0.45)"
+                : grade === "B"
+                ? "rgba(255, 209, 102, 0.45)"
+                : grade === "C"
+                ? "rgba(255, 159, 67, 0.45)"
+                : "rgba(255, 92, 92, 0.45)"
+        };
+        background:${
+            grade === "A+" || grade === "A"
+                ? "rgba(78, 227, 178, 0.06)"
+                : grade === "B"
+                ? "rgba(255, 209, 102, 0.06)"
+                : grade === "C"
+                ? "rgba(255, 159, 67, 0.06)"
+                : "rgba(255, 92, 92, 0.06)"
+        };
+    "
+>
+    <div class="coin-detail-label">
         Grade
-      </div>
-
-      <div class="coin-detail-value">
-        ${grade}
-        
-      </div>
     </div>
+
+    <div
+        class="coin-detail-value"
+        style="
+            color:${
+                grade === "A+" || grade === "A"
+                    ? "#4ee3b2"
+                    : grade === "B"
+                    ? "#ffd166"
+                    : grade === "C"
+                    ? "#ff9f43"
+                    : "#ff7474"
+            };
+        "
+    >
+        ${
+            grade === "A+"
+                ? `★ ${grade}`
+                : grade === "A"
+                ? `● ${grade}`
+                : grade === "B"
+                ? `● ${grade}`
+                : grade === "C"
+                ? `● ${grade}`
+                : `● ${grade}`
+        }
+    </div>
+</div>
+
    <div
     class="coin-detail-card"
     style="
