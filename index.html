@@ -1155,13 +1155,20 @@ const tradeExecutionStatus = !hasExecutionData
           color: "#5fb8ff",
           message: "Price already left the entry zone."
       };
-       
-const action =
-  opportunityScore >= 90
-    ? "Strong Buy"
-    : opportunityScore >= 70
-      ? "Buy"
-      : opportunityScore >= 40
+       const action =
+         executionDirection === "SHORT"
+           ? opportunityScore >= 90
+              ? "Strong Sell"
+             : opportunityScore >= 70
+             ? "Sell"
+             : opportunityScore >= 40
+             ? "Watch"
+             : "Avoid"
+        : opportunityScore >= 90
+        ? "Strong Buy"
+        : opportunityScore >= 70
+        ? "Buy"
+        : opportunityScore >= 40
         ? "Watch"
         : "Avoid";
        
