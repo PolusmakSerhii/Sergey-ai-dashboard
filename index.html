@@ -301,6 +301,11 @@
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
 }
+.trade-plan-card {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+}
 
 .coin-detail-label {
   margin-bottom: 8px;
@@ -1318,8 +1323,7 @@ ${!hasValidTrade ? `
          : "🔴 SHORT SETUP"
     }
 </div>
-
-<div class="coin-detail-card trade-plan-entry">
+<div class="coin-detail-card trade-plan-card trade-plan-entry">
 <div class="coin-detail-label">Entry Zone</div>
 
 <div class="coin-detail-value">
@@ -1334,7 +1338,7 @@ ${!hasValidTrade ? `
   </div>
 </div>
 
-<div class="coin-detail-card trade-plan-stop">
+<div class="coin-detail-card trade-plan-card trade-plan-stop">
 <div class="coin-detail-label">Stop Loss</div>
 <div class="coin-detail-value">
     ${tradePlan.stopLoss ?? "—"}
