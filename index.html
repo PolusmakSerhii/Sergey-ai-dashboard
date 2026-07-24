@@ -1334,11 +1334,17 @@ ${Object.keys(marketEnvironment).length > 0 ? `
   <div class="coin-details-grid">
 
 <div class="coin-detail-card">
-<div class="coin-detail-label">Entry</div>
+<div class="coin-detail-label">Entry Zone</div>
+
 <div class="coin-detail-value">
-   ${hasValidTrade
-     ? tradePlan.entry ?? "—"
-     : "—"}
+  ${
+    hasValidTrade
+      ? tradePlan.entryZone?.from != null &&
+        tradePlan.entryZone?.to != null
+        ? `${tradePlan.entryZone.from} – ${tradePlan.entryZone.to}`
+        : tradePlan.entry ?? "—"
+      : "—"
+    }
   </div>
 </div>
 
