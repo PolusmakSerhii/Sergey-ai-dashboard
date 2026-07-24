@@ -1378,15 +1378,23 @@ ${Object.keys(marketEnvironment).length > 0 ? `
   ${hasValidTrade ? `
   <div class="coin-details-grid">
   
-<div class="trade-setup-banner ${
-    recommendation.direction === "LONG"
-        ? "trade-setup-long"
-        : "trade-setup-short"
+  <div class="trade-setup-banner ${
+    String(
+      recommendation.direction ||
+      tradePlan.direction ||
+      ""
+   ).toUpperCase() === "LONG"
+     ? "trade-setup-long"
+     : "trade-setup-short"
 }">
     ${
-        recommendation.direction === "LONG"
-            ? "🟢 LONG SETUP"
-            : "🔴 SHORT SETUP"
+      String(
+        recommendation.direction ||
+        tradePlan.direction ||
+        ""
+      ).toUpperCase() === "LONG"
+         ? "🟢 LONG SETUP"
+         : "🔴 SHORT SETUP"
     }
 </div>
 
