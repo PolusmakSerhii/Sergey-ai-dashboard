@@ -1081,6 +1081,80 @@ const recommendation =
 
 const positionSize =
   recommendation.positionSize || {};
+
+const executionPrice = Number(data.price);
+
+const executionEntryFrom =
+    Number(tradePlan.entryZone?.from);
+
+const executionEntryTo =
+    Number(tradePlan.entryZone?.to);
+
+const executionStopLoss =
+    Number(tradePlan.stopLoss);
+
+const executionDirection = String(
+    recommendation.direction ||
+    tradePlan.direction ||
+    ""
+).toUpperCase();
+
+const hasExecutionData =
+    Number.isFinite(executionPrice) &&
+    Number.isFinite(executionEntryFrom) &&
+    Number.isFinite(executionEntryTo) &&
+    executionEntryFrom > 0 &&
+    executionEntryTo > 0;
+       
+const tradeExecutionStatus = !hasExecutionData
+    ? null
+    : executionDirection === "LONG"
+    ? executionPrice < executionEntryFrom
+        ? {
+              title: "WAIT FOR ENTRY",
+              color: "#f4b942",
+              message: "Price has not reached the entry zone yet."
+          }
+        : executionPrice <= executionEntryTo
+        ? {
+              title: "READY TO ENTER",
+              color: "#35d07f",
+              message: "Price is inside the entry zone."
+          }
+        : executionPrice > executionStopLoss
+        ? {
+              title: "INVALIDATED",
+              color: "#ff5d5d",
+              message: "Stop Loss has already been broken."
+          }
+        : {
+              title: "ENTRY MISSED",
+              color: "#5fb8ff",
+              message: "Price already left the entry zone."
+          }
+    : executionPrice > executionEntryTo
+    ? {
+          title: "WAIT FOR ENTRY",
+          color: "#f4b942",
+          message: "Price has not reached the entry zone yet."
+      }
+    : executionPrice >= executionEntryFrom
+    ? {
+          title: "READY TO ENTER",
+          color: "#35d07f",
+          message: "Price is inside the entry zone."
+      }
+    : executionPrice < executionStopLoss
+    ? {
+          title: "INVALIDATED",
+          color: "#ff5d5d",
+          message: "Stop Loss has already been broken."
+      }
+    : {
+          title: "ENTRY MISSED",
+          color: "#5fb8ff",
+          message: "Price already left the entry zone."
+      };
        
 const action =
   opportunityScore >= 90
@@ -1180,6 +1254,38 @@ ${aiSummary ? `
   ">
     ${aiSummary}
   </div>
+</div>
+` : ""}
+
+${tradeExecutionStatus ? `
+<div
+    style="
+        margin:24px 0;
+        padding:18px;
+        border-radius:14px;
+        border:1px solid ${tradeExecutionStatus.color};
+        background:${tradeExecutionStatus.color}15;
+    "
+>
+    <div
+        style="
+            color:${tradeExecutionStatus.color};
+            font-size:22px;
+            font-weight:800;
+            margin-bottom:8px;
+        "
+    >
+        ${tradeExecutionStatus.title}
+    </div>
+
+    <div
+        style="
+            color:#d5dbe5;
+            font-size:15px;
+        "
+    >
+        ${tradeExecutionStatus.message}
+    </div>
 </div>
 ` : ""}
 
