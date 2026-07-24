@@ -942,7 +942,15 @@ const tradeReasons =
 console.log("Trade Plan Reasons:", tradePlan.reasons);
 console.log("Probability Reasons:", probabilityData.reasons);
 console.log("Final Trade Reasons:", tradeReasons);
-       
+
+const smartMoneyData =
+  data.technical?.smartMoney || {};
+
+const smartMoneyReasons =
+  Array.isArray(smartMoneyData.reasons)
+    ? smartMoneyData.reasons
+    : [];
+
 const recommendation =
   data.technical?.recommendation || {};
 
@@ -1064,6 +1072,23 @@ ${tradeReasons.length > 0 ? `
       </div>
     `)
     .join("")}
+</div>
+` : ""}
+
+${smartMoneyReasons.length > 0 ? `
+<div class="trade-reasons" style="margin-top:20px;">
+    <div class="trade-reasons-title">
+        🏦 Smart Money
+    </div>
+
+    ${smartMoneyReasons
+        .slice(0, 6)
+        .map(reason => `
+            <div class="trade-reason-item">
+                💎 ${reason}
+            </div>
+        `)
+        .join("")}
 </div>
 ` : ""}
 
