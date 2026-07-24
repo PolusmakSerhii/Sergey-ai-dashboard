@@ -1255,14 +1255,58 @@ const tradeExecutionStatus = !hasExecutionData
         
       </div>
     </div>
-   <div class="coin-detail-card">
-  <div class="coin-detail-label">
-    Action
-  </div>
+   <div
+    class="coin-detail-card"
+    style="
+        border-color:${
+            action.includes("Buy")
+                ? "rgba(78, 227, 178, 0.45)"
+                : action.includes("Sell")
+                ? "rgba(255, 92, 92, 0.45)"
+                : action === "Watch"
+                ? "rgba(255, 193, 7, 0.45)"
+                : "rgba(148, 163, 184, 0.35)"
+        };
+        background:${
+            action.includes("Buy")
+                ? "rgba(78, 227, 178, 0.06)"
+                : action.includes("Sell")
+                ? "rgba(255, 92, 92, 0.06)"
+                : action === "Watch"
+                ? "rgba(255, 193, 7, 0.06)"
+                : "rgba(148, 163, 184, 0.05)"
+        };
+    "
+>
+    <div 
+    class="coin-detail-label">
+        Action
+    </div>
 
-  <div class="coin-detail-value">
-    ${action}
-  </div>
+    <div
+        class="coin-detail-value"
+        style="
+            color:${
+                action.includes("Buy")
+                    ? "#4ee3b2"
+                    : action.includes("Sell")
+                    ? "#ff7474"
+                    : action === "Watch"
+                    ? "#ffd166"
+                    : "#94a3b8"
+            };
+        "
+    >
+        ${
+            action.includes("Buy")
+                ? `🟢 ${action}`
+                : action.includes("Sell")
+                ? `🔴 ${action}`
+                : action === "Watch"
+                ? `🟡 ${action}`
+                : `⚪ ${action}`
+        }
+    </div>
 </div>
 
 ${tradeExecutionStatus ? `
