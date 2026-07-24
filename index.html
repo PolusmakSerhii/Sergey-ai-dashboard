@@ -1208,15 +1208,42 @@ const tradeExecutionStatus = !hasExecutionData
       </div>
     </div>
 
-    <div class="coin-detail-card">
-      <div class="coin-detail-label">
+   <div
+    class="coin-detail-card"
+    style="
+        border-color:${
+            String(direction).toUpperCase() === "LONG"
+                ? "rgba(78, 227, 178, 0.45)"
+                : "rgba(255, 92, 92, 0.45)"
+        };
+        background:${
+            String(direction).toUpperCase() === "LONG"
+                ? "rgba(78, 227, 178, 0.06)"
+                : "rgba(255, 92, 92, 0.06)"
+        };
+    "
+>
+    <div class="coin-detail-label">
         Direction
-      </div>
-
-      <div class="coin-detail-value">
-        ${direction}
-      </div>
     </div>
+
+    <div
+        class="coin-detail-value"
+        style="
+            color:${
+                String(direction).toUpperCase() === "LONG"
+                    ? "#4ee3b2"
+                    : "#ff7474"
+            };
+        "
+    >
+        ${
+            String(direction).toUpperCase() === "LONG"
+                ? "🟢 Long"
+                : "🔴 Short"
+        }
+    </div>
+</div>
 
     <div class="coin-detail-card">
       <div class="coin-detail-label">
