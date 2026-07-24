@@ -1177,6 +1177,7 @@ ${aiSummary ? `
   </div>
 </div>
 ` : ""}
+
 ${recommendation.status ? `
 <div class="trade-reasons" style="margin-bottom:24px;">
     <div class="trade-reasons-title">
@@ -1295,86 +1296,6 @@ ${!hasValidTrade ? `
 </div>
 ` : ""}
 
-${tradeReasons.length > 0 ? `
-<div class="trade-reasons">
-  <div class="trade-reasons-title">
-    Analysis Reasons
-  </div>
-
-  ${tradeReasons
-    .slice(0, 6)
-    .map(reason => `
-      <div class="trade-reason-item">
-        ${reason}
-      </div>
-    `)
-    .join("")}
-</div>
-` : ""}
-
-${smartMoneyReasons.length > 0 ? `
-<div class="trade-reasons" style="margin-top:20px;">
-    <div class="trade-reasons-title">
-        🏦 Smart Money
-    </div>
-
-    ${smartMoneyReasons
-        .slice(0, 6)
-        .map(reason => `
-            <div class="trade-reason-item">
-                💎 ${reason}
-            </div>
-        `)
-        .join("")}
-</div>
-` : ""}
-
-${Object.keys(marketEnvironment).length > 0 ? `
-<div class="trade-reasons" style="margin-top:20px;">
-    <div class="trade-reasons-title">
-        🌍 Market Environment
-    </div>
-
-    <div class="trade-reason-item">
-        Score: ${marketEnvironment.score ?? "—"} / 100
-    </div>
-
-    <div class="trade-reason-item">
-        Condition: ${marketEnvironment.condition ?? "—"}
-    </div>
-
-    <div class="trade-reason-item">
-        Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}
-    </div>
-
-    ${
-      Array.isArray(marketEnvironment.reasons)
-        ? marketEnvironment.reasons
-            .slice(0, 4)
-            .map(reason => `
-                <div class="trade-reason-item">
-                    ${reason}
-                </div>
-            `)
-            .join("")
-        : ""
-    }
-
-    ${
-      Array.isArray(marketEnvironment.warnings)
-        ? marketEnvironment.warnings
-            .slice(0, 3)
-            .map(warning => `
-                <div class="trade-reason-item">
-                    ⚠ ${warning}
-                </div>
-            `)
-            .join("")
-        : ""
-    }
-</div>
-` : ""}
-
   ${hasValidTrade ? `
   <div class="coin-details-grid">
   
@@ -1460,6 +1381,88 @@ ${Object.keys(marketEnvironment).length > 0 ? `
 </div>
 
 ` : ""}
+
+${tradeReasons.length > 0 ? `
+<div class="trade-reasons">
+  <div class="trade-reasons-title">
+    Analysis Reasons
+  </div>
+
+  ${tradeReasons
+    .slice(0, 6)
+    .map(reason => `
+      <div class="trade-reason-item">
+        ${reason}
+      </div>
+    `)
+    .join("")}
+</div>
+` : ""}
+
+${smartMoneyReasons.length > 0 ? `
+<div class="trade-reasons" style="margin-top:20px;">
+    <div class="trade-reasons-title">
+        🏦 Smart Money
+    </div>
+
+    ${smartMoneyReasons
+        .slice(0, 6)
+        .map(reason => `
+            <div class="trade-reason-item">
+                💎 ${reason}
+            </div>
+        `)
+        .join("")}
+</div>
+` : ""}
+
+${Object.keys(marketEnvironment).length > 0 ? `
+<div class="trade-reasons" style="margin-top:20px;">
+    <div class="trade-reasons-title">
+        🌍 Market Environment
+    </div>
+
+    <div class="trade-reason-item">
+        Score: ${marketEnvironment.score ?? "—"} / 100
+    </div>
+
+    <div class="trade-reason-item">
+        Condition: ${marketEnvironment.condition ?? "—"}
+    </div>
+
+    <div class="trade-reason-item">
+        Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}
+    </div>
+
+    ${
+      Array.isArray(marketEnvironment.reasons)
+        ? marketEnvironment.reasons
+            .slice(0, 4)
+            .map(reason => `
+                <div class="trade-reason-item">
+                    ${reason}
+                </div>
+            `)
+            .join("")
+        : ""
+    }
+
+    ${
+      Array.isArray(marketEnvironment.warnings)
+        ? marketEnvironment.warnings
+            .slice(0, 3)
+            .map(warning => `
+                <div class="trade-reason-item">
+                    ⚠ ${warning}
+                </div>
+            `)
+            .join("")
+        : ""
+    }
+</div>
+` : ""}
+
+
 
 </div>
 
