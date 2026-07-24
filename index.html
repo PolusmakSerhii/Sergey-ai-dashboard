@@ -1184,20 +1184,47 @@ ${tradeStatistics.confidence !== null ? `
 
 </div>
 
-    <div class="trade-reason-item">
-        🎯 Conviction:
-        ${tradeStatistics.conviction ?? "—"}/100
+   <div class="trade-stat-row">
+    <div class="trade-stat-header">
+        <span>🎯 Conviction</span>
+        <span>${tradeStatistics.conviction ?? "—"}/100</span>
     </div>
 
-    <div class="trade-reason-item">
-        ⚡ Signal Strength:
-        ${tradeStatistics.signalStrength ?? "—"}/100
+    <div class="trade-stat-track">
+        <div
+            class="trade-stat-fill"
+            style="width:${tradeStatistics.conviction ?? 0}%"
+        ></div>
+    </div>
+</div>
+
+<div class="trade-stat-row">
+    <div class="trade-stat-header">
+        <span>⚡ Signal Strength</span>
+        <span>${tradeStatistics.signalStrength ?? "—"}/100</span>
     </div>
 
-    <div class="trade-reason-item">
-        ⭐ Setup Score:
-        ${tradeStatistics.setupScore ?? "—"}/100
+    <div class="trade-stat-track">
+        <div
+            class="trade-stat-fill"
+            style="width:${tradeStatistics.signalStrength ?? 0}%"
+        ></div>
     </div>
+</div>
+
+<div class="trade-stat-row">
+    <div class="trade-stat-header">
+        <span>⭐ Setup Score</span>
+        <span>${tradeStatistics.setupScore ?? "—"}/100</span>
+    </div>
+
+    <div class="trade-stat-track">
+        <div
+            class="trade-stat-fill"
+            style="width:${tradeStatistics.setupScore ?? 0}%"
+        ></div>
+    </div>
+</div>
 
     <div class="trade-reason-item">
         ⚖️ Score Difference:
