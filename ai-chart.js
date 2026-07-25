@@ -1,3 +1,26 @@
+function formatChartValue(value) {
+  const number =
+    Number(value);
+
+  if (!Number.isFinite(number)) {
+    return "—";
+  }
+
+  if (Math.abs(number) >= 1000) {
+    return number.toFixed(2);
+  }
+
+  if (Math.abs(number) >= 1) {
+    return number.toFixed(4);
+  }
+
+  if (Math.abs(number) >= 0.01) {
+    return number.toFixed(6);
+  }
+
+  return number.toPrecision(6);
+}
+
 function calculateEMAData(
   candles,
   period
@@ -106,6 +129,136 @@ function createEMA20Layer(chart) {
       crosshairMarkerVisible: true
     }
   );
+}
+
+function createChartLegend(options = {}) {
+  const {
+    chartContainer,
+    chart,
+    candlestickSeries,
+    ema20Series,
+    symbol,
+    timeframe
+  } = options;
+
+  if (
+    !chartContainer ||
+    !chart ||
+    !candlestickSeries
+  ) {
+    return null;
+  }
+
+  const legend =
+    document.createElement("div");
+
+  legend.style.cssText = `
+    position:absolute;
+    top:14px;
+    left:16px;
+    z-index:20;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 14px;
+    padding:9px 12px;
+    border:1px solid rgba(143,161,181,0.18);
+    border-radius:9px;
+    background:rgba(8,17,28,0.86);
+    color:#a7b5c5;
+    font-size:12px;
+    font-weight:700;
+    pointer-events:none;
+    backdrop-filter:blur(8px);
+  `;
+
+  function renderLegend(
+    candle = null,
+    ema20 = null
+  ) {
+    legend.innerHTML = `
+      <span style="color:#67d9ff;">
+        ${symbol || "—"} · ${timeframe || "—"}
+      </span>
+
+      <span>
+        O:
+        <strong style="color:#f5f7fa;">
+          ${formatChartValue(candle?.open)}
+        </strong>
+      </span>
+
+      <span>
+        H:
+        <strong style="color:#4ee3b2;">
+          ${formatChartValue(candle?.high)}
+        </strong>
+      </span>
+
+      <span>
+        L:
+        <strong style="color:#ff7474;">
+          ${formatChartValue(candle?.low)}
+        </strong>
+      </span>
+
+      <span>
+        C:
+        <strong style="color:#f5f7fa;">
+          ${formatChartValue(candle?.close)}
+        </strong>
+      </span>
+
+      <span>
+        EMA20:
+        <strong style="color:#f4b942;">
+          ${formatChartValue(ema20?.value)}
+        </strong>
+      </span>
+    `;
+  }
+
+  renderLegend();
+
+  chartContainer.appendChild(
+    legend
+  );
+
+  const crosshairHandler =
+    param => {
+      if (
+        !param?.time ||
+        !param.seriesData
+      ) {
+        renderLegend();
+        return;
+      }
+
+      const candle =
+        param.seriesData.get(
+          candlestickSeries
+        );
+
+      const ema20 =
+        ema20Series
+          ? param.seriesData.get(
+              ema20Series
+            )
+          : null;
+
+      renderLegend(
+        candle,
+        ema20
+      );
+    };
+
+  chart.subscribeCrosshairMove(
+    crosshairHandler
+  );
+
+  return {
+    element: legend,
+    crosshairHandler
+  };
 }
 
 async function loadCandlestickData(
@@ -306,6 +459,9 @@ function initializeAIChart(options = {}) {
 
 chartContainer.innerHTML = "";
 
+  chartContainer.style.position =
+  "relative";
+  
 const chart =
   window.LightweightCharts.createChart(
     chartContainer,
@@ -384,6 +540,15 @@ if (!ema20Series) {
     "EMA20 layer is unavailable"
   );
 }
+const chartLegend =
+  createChartLegend({
+    chartContainer,
+    chart,
+    candlestickSeries,
+    ema20Series,
+    symbol,
+    timeframe: "1H"
+  });
   
 const candlesPromise =
   loadCandlestickData({
@@ -434,10 +599,10 @@ return {
   chart,
   candlestickSeries,
   ema20Series,
+  chartLegend,
   candlesPromise,
   resizeObserver
-};
-  
+};  
 }
 
 window.SergeyAIChart = {
