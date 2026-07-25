@@ -437,8 +437,48 @@
     #45b9ff
   );
 }    
-    
-@media (max-width: 700px) {
+    .ai-chart-section {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #243548;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.ai-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ai-chart-title {
+  margin: 0;
+  color: #67d9ff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ai-chart-symbol {
+  color: #7f91a4;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ai-chart-container {
+  display: flex;
+  min-height: 420px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(103, 217, 255, 0.18);
+  border-radius: 12px;
+  background: #08111c;
+  color: #7f91a4;
+  font-size: 14px;
+}
+    @media (max-width: 700px) {
   .coin-details-grid {
     grid-template-columns: 1fr;
   }
@@ -907,9 +947,9 @@ document.querySelector(
   ) || {};      
 
      coinDetails.innerHTML = `
-  <h2>${symbol}</h2>
+      <h2>${symbol}</h2>
 
-  <div class="coin-details-grid">
+      <div class="coin-details-grid">
 
     <div class="coin-detail-card">
       <div class="coin-detail-label">Price</div>
@@ -1379,8 +1419,25 @@ ${tradeExecutionStatus ? `
 ` : ""}
 
 </div>
+<section class="ai-chart-section">
+  <div class="ai-chart-header">
+    <h3 class="ai-chart-title">
+      Interactive AI Chart
+    </h3>
 
- 
+    <span class="ai-chart-symbol">
+      ${symbol} · Chart preparation
+    </span>
+  </div>
+
+  <div
+    id="ai-chart-container"
+    class="ai-chart-container"
+  >
+    Chart engine will be connected in the next step
+  </div>
+</section>
+
  <div
     style="
         margin-top:30px;
