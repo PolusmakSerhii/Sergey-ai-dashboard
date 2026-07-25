@@ -686,6 +686,76 @@ placeholder="Search symbol..."
     
     let scannerResults = [];
     let scoreSortDirection = "desc";
+
+    function getScannerAction(coin = {}) {
+  const direction =
+    String(
+      coin.direction || "Neutral"
+    ).toUpperCase();
+
+  const opportunityScore =
+    Number(
+      coin.opportunityScore
+    ) || 0;
+
+  if (direction === "SHORT") {
+    if (opportunityScore >= 90) {
+      return "Strong Sell";
+    }
+
+    if (opportunityScore >= 70) {
+      return "Sell";
+    }
+
+    if (opportunityScore >= 40) {
+      return "Watch";
+    }
+
+    return "Avoid";
+  }
+
+  if (direction === "LONG") {
+    if (opportunityScore >= 90) {
+      return "Strong Buy";
+    }
+
+    if (opportunityScore >= 70) {
+      return "Buy";
+    }
+
+    if (opportunityScore >= 40) {
+      return "Watch";
+    }
+
+    return "Avoid";
+  }
+
+  return opportunityScore >= 40
+    ? "Watch"
+    : "Avoid";
+}
+
+function getScannerActionClass(action) {
+  if (
+    action === "Strong Buy" ||
+    action === "Buy"
+  ) {
+    return "buy";
+  }
+
+  if (
+    action === "Strong Sell" ||
+    action === "Sell"
+  ) {
+    return "short";
+  }
+
+  if (action === "Watch") {
+    return "risky";
+  }
+
+  return "avoid";
+}
     
     const searchInput =
       document.querySelector("#search-input");
@@ -716,15 +786,9 @@ const gradeMatch =
     gradeFilter.value === "all" ||
     coin.opportunityGrade === gradeFilter.value;
 
-          const action =
-              coin.opportunityScore >= 90
-                ? "Strong Buy"
-                : coin.opportunityScore >= 70
-                ? "Buy"
-                : coin.opportunityScore >= 40
-                ? "Watch"
-                : "Avoid";
-
+const action =
+   getScannerAction(coin);
+          
 const actionMatch =
     actionFilter.value === "all" ||
     action === actionFilter.value;
@@ -807,28 +871,23 @@ const actionMatch =
                       ${coin.direction || "Neutral"}
                     </span>
                   </td>
+                 <td>
+  ${
+    (() => {
+      const action =
+        getScannerAction(coin);
 
-                  <td>
-                    <span class="${
-                      coin.opportunityScore >= 90
-                        ? "buy"
-                        : coin.opportunityScore >= 70
-                          ? "watch"
-                          : coin.opportunityScore >= 40
-                            ? "risky"
-                            : "avoid"
-                    }">
-                      ${
-                        coin.opportunityScore >= 90
-                          ? "Strong Buy"
-                          : coin.opportunityScore >= 70
-                            ? "Buy"
-                            : coin.opportunityScore >= 40
-                              ? "Watch"
-                              : "Avoid"
-                      }
-                    </span>
-                  </td>
+      const actionClass =
+        getScannerActionClass(action);
+
+      return `
+        <span class="${actionClass}">
+          ${action}
+        </span>
+      `;
+    })()
+  }
+</td>                 
                 </tr>
               `
             )
