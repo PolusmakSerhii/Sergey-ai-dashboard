@@ -1,3 +1,64 @@
+function calculateEMAData(
+  candles,
+  period
+) {
+  if (
+    !Array.isArray(candles) ||
+    candles.length < period
+  ) {
+    return [];
+  }
+
+  const multiplier =
+    2 / (period + 1);
+
+  const initialAverage =
+    candles
+      .slice(0, period)
+      .reduce(
+        (sum, candle) =>
+          sum + candle.close,
+        0
+      ) / period;
+
+  const emaData = [];
+
+  let previousEMA =
+    initialAverage;
+
+  emaData.push({
+    time:
+      candles[period - 1].time,
+
+    value:
+      previousEMA
+  });
+
+  for (
+    let index = period;
+    index < candles.length;
+    index++
+  ) {
+    const candle =
+      candles[index];
+
+    previousEMA =
+      candle.close * multiplier +
+      previousEMA *
+        (1 - multiplier);
+
+    emaData.push({
+      time: candle.time,
+      value:
+        Number(
+          previousEMA.toFixed(8)
+        )
+    });
+  }
+
+  return emaData;
+}
+
 function createCandlestickLayer(chart) {
   if (
     !chart ||
@@ -23,17 +84,42 @@ function createCandlestickLayer(chart) {
     }
   );
 }
+function createEMA20Layer(chart) {
+  if (
+    !chart ||
+    !window.LightweightCharts?.LineSeries
+  ) {
+    return null;
+  }
+
+  return chart.addSeries(
+    window.LightweightCharts.LineSeries,
+    {
+      color: "#f4b942",
+      lineWidth: 2,
+
+      title: "EMA 20",
+
+      priceLineVisible: false,
+      lastValueVisible: true,
+
+      crosshairMarkerVisible: true
+    }
+  );
+}
+
 async function loadCandlestickData(
   options = {}
 ) {
   const {
-    chart,
-    candlestickSeries,
-    symbol,
-    timeframe = "1H",
-    limit = 300
-  } = options;
-
+  chart,
+  candlestickSeries,
+  ema20Series,
+  symbol,
+  timeframe = "1H",
+  limit = 300
+} = options;
+  
   if (
     !chart ||
     !candlestickSeries
@@ -135,7 +221,21 @@ async function loadCandlestickData(
   candlestickSeries.setData(
     candles
   );
+   const ema20Data =
+  calculateEMAData(
+    candles,
+    20
+  );
 
+if (
+  ema20Series &&
+  ema20Data.length > 0
+) {
+  ema20Series.setData(
+    ema20Data
+  );
+}
+  
   chart
     .timeScale()
     .fitContent();
@@ -150,13 +250,18 @@ async function loadCandlestickData(
     }
   );
 
-  return {
-    ok: true,
-    symbol,
-    timeframe,
-    count: candles.length,
-    candles
-  };
+ return {
+  ok: true,
+  symbol,
+  timeframe,
+  count: candles.length,
+  candles,
+
+  indicators: {
+    ema20:
+      ema20Data.length
+  }
+};  
 }
 
 function initializeAIChart(options = {}) {
@@ -250,6 +355,11 @@ const candlestickSeries =
     chart
   );
 
+  const ema20Series =
+  createEMA20Layer(
+    chart
+  );
+  
 if (!candlestickSeries) {
   chartContainer.innerHTML = `
     <div style="
@@ -269,16 +379,22 @@ if (!candlestickSeries) {
       "Candlestick layer is unavailable"
   };
 }
-
+if (!ema20Series) {
+  console.warn(
+    "EMA20 layer is unavailable"
+  );
+}
+  
 const candlesPromise =
   loadCandlestickData({
     chart,
     candlestickSeries,
+    ema20Series,
     symbol,
     timeframe: "1H",
     limit: 300
   });
-
+  
 candlesPromise.then(
   result => {
     console.log(
@@ -308,7 +424,7 @@ resizeObserver.observe(
     }
   );
 
- return {
+return {
   ok: true,
   containerId,
   symbol,
@@ -317,9 +433,11 @@ resizeObserver.observe(
 
   chart,
   candlestickSeries,
+  ema20Series,
   candlesPromise,
   resizeObserver
 };
+  
 }
 
 window.SergeyAIChart = {
