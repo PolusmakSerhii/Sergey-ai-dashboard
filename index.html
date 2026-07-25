@@ -1797,6 +1797,17 @@ ${Object.keys(marketEnvironment).length > 0 ? `
   }
 `;
        
+  const chartInitialization =
+  window.SergeyAIChart?.initialize({
+    containerId: "ai-chart-container",
+    symbol
+  });
+
+console.log(
+  "AI Chart module result:",
+  chartInitialization
+);
+       
   } catch (error) {
     console.error(error);
 
@@ -1862,6 +1873,8 @@ directionFilter.addEventListener(
     loadScanner();
     
   </script>
+
+<script src="./ai-chart.js"></script>  
   
 </body>
 </html>
