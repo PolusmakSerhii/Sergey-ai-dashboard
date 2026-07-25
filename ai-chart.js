@@ -1,3 +1,164 @@
+function createCandlestickLayer(chart) {
+  if (
+    !chart ||
+    !window.LightweightCharts?.CandlestickSeries
+  ) {
+    return null;
+  }
+
+  return chart.addSeries(
+    window.LightweightCharts.CandlestickSeries,
+    {
+      upColor: "#4ee3b2",
+      downColor: "#ff7474",
+
+      borderUpColor: "#4ee3b2",
+      borderDownColor: "#ff7474",
+
+      wickUpColor: "#4ee3b2",
+      wickDownColor: "#ff7474",
+
+      priceLineVisible: true,
+      lastValueVisible: true
+    }
+  );
+}
+async function loadCandlestickData(
+  options = {}
+) {
+  const {
+    chart,
+    candlestickSeries,
+    symbol,
+    timeframe = "1H",
+    limit = 300
+  } = options;
+
+  if (
+    !chart ||
+    !candlestickSeries
+  ) {
+    return {
+      ok: false,
+      error:
+        "Chart or candlestick series is unavailable"
+    };
+  }
+
+  if (
+    !window.SergeyMarketData?.getCandles
+  ) {
+    return {
+      ok: false,
+      error:
+        "Market Data module is unavailable"
+    };
+  }
+
+  const response =
+    await window.SergeyMarketData.getCandles({
+      symbol,
+      timeframe,
+      limit
+    });
+
+  if (
+    response.ok !== true ||
+    !Array.isArray(response.candles)
+  ) {
+    console.error(
+      "AI Chart candles failed:",
+      response
+    );
+
+    return {
+      ok: false,
+      error:
+        response.error ||
+        "Could not load candle data"
+    };
+  }
+
+  const candlesByTime =
+    new Map();
+
+  for (const candle of response.candles) {
+    const normalizedCandle = {
+      time: Number(candle.time),
+      open: Number(candle.open),
+      high: Number(candle.high),
+      low: Number(candle.low),
+      close: Number(candle.close)
+    };
+
+    const valid =
+      Number.isFinite(
+        normalizedCandle.time
+      ) &&
+      Number.isFinite(
+        normalizedCandle.open
+      ) &&
+      Number.isFinite(
+        normalizedCandle.high
+      ) &&
+      Number.isFinite(
+        normalizedCandle.low
+      ) &&
+      Number.isFinite(
+        normalizedCandle.close
+      );
+
+    if (!valid) continue;
+
+    candlesByTime.set(
+      normalizedCandle.time,
+      normalizedCandle
+    );
+  }
+
+  const candles =
+    Array
+      .from(candlesByTime.values())
+      .sort(
+        (a, b) =>
+          a.time - b.time
+      );
+
+  if (candles.length === 0) {
+    return {
+      ok: false,
+      error:
+        "Backend returned no valid candles"
+    };
+  }
+
+  candlestickSeries.setData(
+    candles
+  );
+
+  chart
+    .timeScale()
+    .fitContent();
+
+  console.log(
+    "AI Chart candles loaded:",
+    {
+      symbol,
+      timeframe,
+      count: candles.length,
+      source: response.source
+    }
+  );
+
+  return {
+    ok: true,
+    symbol,
+    timeframe,
+    count: candles.length,
+    candles
+  };
+}
+
 function initializeAIChart(options = {}) {
   const {
     containerId,
@@ -84,7 +245,49 @@ const chart =
       }
     }
   );
+const candlestickSeries =
+  createCandlestickLayer(
+    chart
+  );
 
+if (!candlestickSeries) {
+  chartContainer.innerHTML = `
+    <div style="
+      display:flex;
+      min-height:420px;
+      align-items:center;
+      justify-content:center;
+      color:#ff7474;
+    ">
+      Candlestick layer failed to initialize
+    </div>
+  `;
+
+  return {
+    ok: false,
+    error:
+      "Candlestick layer is unavailable"
+  };
+}
+
+const candlesPromise =
+  loadCandlestickData({
+    chart,
+    candlestickSeries,
+    symbol,
+    timeframe: "1H",
+    limit: 300
+  });
+
+candlesPromise.then(
+  result => {
+    console.log(
+      "AI Chart candle result:",
+      result
+    );
+  }
+);
+  
 const resizeObserver =
   new ResizeObserver(() => {
     chart.applyOptions({
@@ -105,11 +308,16 @@ resizeObserver.observe(
     }
   );
 
-  return {
+ return {
   ok: true,
   containerId,
   symbol,
+
+  timeframe: "1H",
+
   chart,
+  candlestickSeries,
+  candlesPromise,
   resizeObserver
 };
 }
