@@ -19,32 +19,84 @@ function initializeAIChart(options = {}) {
     };
   }
 
+ if (!window.LightweightCharts) {
   chartContainer.innerHTML = `
     <div style="
       display:flex;
       min-height:420px;
-      width:100%;
       align-items:center;
       justify-content:center;
-      flex-direction:column;
-      gap:10px;
+      color:#ff7474;
     ">
-      <strong style="
-        color:#67d9ff;
-        font-size:18px;
-      ">
-        ${symbol || "Unknown Symbol"}
-      </strong>
-
-      <span style="
-        color:#7f91a4;
-        font-size:14px;
-      ">
-        AI Chart module connected successfully
-      </span>
+      Chart library failed to load
     </div>
   `;
 
+  return {
+    ok: false,
+    error: "Lightweight Charts is unavailable"
+  };
+}
+
+chartContainer.innerHTML = "";
+
+const chart =
+  window.LightweightCharts.createChart(
+    chartContainer,
+    {
+      width:
+        chartContainer.clientWidth,
+
+      height: 420,
+
+      layout: {
+        background: {
+          color: "#08111c"
+        },
+
+        textColor: "#8fa1b5"
+      },
+
+      grid: {
+        vertLines: {
+          color: "rgba(143, 161, 181, 0.08)"
+        },
+
+        horzLines: {
+          color: "rgba(143, 161, 181, 0.08)"
+        }
+      },
+
+      rightPriceScale: {
+        borderColor:
+          "rgba(143, 161, 181, 0.20)"
+      },
+
+      timeScale: {
+        borderColor:
+          "rgba(143, 161, 181, 0.20)",
+
+        timeVisible: true
+      },
+
+      crosshair: {
+        mode: 1
+      }
+    }
+  );
+
+const resizeObserver =
+  new ResizeObserver(() => {
+    chart.applyOptions({
+      width:
+        chartContainer.clientWidth
+    });
+  });
+
+resizeObserver.observe(
+  chartContainer
+);
+  
   console.log(
     "AI Chart initialized:",
     {
@@ -54,10 +106,12 @@ function initializeAIChart(options = {}) {
   );
 
   return {
-    ok: true,
-    containerId,
-    symbol
-  };
+  ok: true,
+  containerId,
+  symbol,
+  chart,
+  resizeObserver
+};
 }
 
 window.SergeyAIChart = {
