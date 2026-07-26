@@ -339,11 +339,13 @@ function createChartLegend(options = {}) {
 async function loadCandlestickData(
   options = {}
 ) {
- const {
+  
+const {
   chart,
   candlestickSeries,
   ema20Series,
   ema50Series,
+  ema200Series,
   symbol,
   timeframe = "1H",
   limit = 300
@@ -467,7 +469,11 @@ if (ema50Series) {
     priceFormat
   });
 }
-  
+  if (ema200Series) {
+  ema200Series.applyOptions({
+    priceFormat
+  });
+}
   candlestickSeries.setData(
     candles
   );
@@ -500,6 +506,20 @@ if (
     ema50Data
   );
 }
+  const ema200Data =
+  calculateEMAData(
+    candles,
+    200
+  );
+
+if (
+  ema200Series &&
+  ema200Data.length > 0
+) {
+  ema200Series.setData(
+    ema200Data
+  );
+}
   
   chart
     .timeScale()
@@ -523,14 +543,17 @@ return {
   candles,
   priceFormat,
   
- indicators: {
+indicators: {
   ema20:
     ema20Data.length,
 
   ema50:
-    ema50Data.length
+    ema50Data.length,
+
+  ema200:
+    ema200Data.length
 }
- };  
+};  
 }
 
 function initializeAIChart(options = {}) {
@@ -645,6 +668,15 @@ const ema50Series =
       lineWidth: 2
     }
   );  
+  const ema200Series =
+  createEMALayer(
+    chart,
+    {
+      period: 200,
+      color: "#b875ff",
+      lineWidth: 2
+    }
+  );
   
 if (!candlestickSeries) {
   chartContainer.innerHTML = `
@@ -675,6 +707,11 @@ if (!ema50Series) {
     "EMA50 layer is unavailable"
   );
 }
+if (!ema200Series) {
+  console.warn(
+    "EMA200 layer is unavailable"
+  );
+}
   
 const chartLegend =
   createChartLegend({
@@ -685,12 +722,13 @@ const chartLegend =
     symbol,
     timeframe: "1H"
   });
-  const candlesPromise =
+const candlesPromise =
   loadCandlestickData({
     chart,
     candlestickSeries,
     ema20Series,
     ema50Series,
+    ema200Series,
     symbol,
     timeframe: "1H",
     limit: 300
@@ -732,14 +770,14 @@ return {
 
   timeframe: "1H",
 
- chart,
+chart,
 candlestickSeries,
 ema20Series,
 ema50Series,
+ema200Series,
 chartLegend,
 candlesPromise,
-resizeObserver
-};  
+resizeObserver};  
 }
 
 window.SergeyAIChart = {
