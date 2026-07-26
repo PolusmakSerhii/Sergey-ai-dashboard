@@ -529,6 +529,7 @@ return {
   setActiveTimeframe:
     updateActiveButton
 };
+}
   
   function createChartControlsRow(
   options = {}
