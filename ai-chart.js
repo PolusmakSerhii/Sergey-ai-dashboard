@@ -107,10 +107,22 @@ function createCandlestickLayer(chart) {
     }
   );
 }
-function createEMA20Layer(chart) {
+
+function createEMALayer(
+  chart,
+  options = {}
+) {
+  const {
+    period,
+    color,
+    lineWidth = 2
+  } = options;
+
   if (
     !chart ||
-    !window.LightweightCharts?.LineSeries
+    !window.LightweightCharts?.LineSeries ||
+    !Number.isInteger(period) ||
+    period <= 0
   ) {
     return null;
   }
@@ -118,14 +130,16 @@ function createEMA20Layer(chart) {
   return chart.addSeries(
     window.LightweightCharts.LineSeries,
     {
-      color: "#f4b942",
-      lineWidth: 2,
+      color:
+        color || "#f4b942",
 
-      title: "EMA 20",
+      lineWidth,
+
+      title:
+        `EMA ${period}`,
 
       priceLineVisible: false,
       lastValueVisible: true,
-
       crosshairMarkerVisible: true
     }
   );
@@ -511,9 +525,14 @@ const candlestickSeries =
     chart
   );
 
-  const ema20Series =
-  createEMA20Layer(
-    chart
+ const ema20Series =
+  createEMALayer(
+    chart,
+    {
+      period: 20,
+      color: "#f4b942",
+      lineWidth: 2
+    }
   );
   
 if (!candlestickSeries) {
