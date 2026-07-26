@@ -456,12 +456,12 @@ function createChartControlsRow(
     right:16px;
     z-index:30;
 
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    flex-wrap:wrap;
-
-    gap:10px 16px;
+   display:flex;
+   align-items:flex-start;
+   justify-content:space-between;
+   flex-wrap:nowrap; 
+   
+   gap:10px 16px;
 
     pointer-events:none;
   `;
@@ -482,8 +482,14 @@ function createChartControlsRow(
     legendElement.style.maxWidth =
       "100%";
 
-    legendElement.style.flex =
-      "1 1 560px";
+   legendElement.style.flex =
+  "1 1 auto";
+
+legendElement.style.minWidth =
+  "0";
+
+legendElement.style.overflow =
+  "hidden";
 
     controlsRow.appendChild(
       legendElement
@@ -505,7 +511,9 @@ function createChartControlsRow(
 
     toolbarElement.style.flex =
       "0 0 auto";
-
+    toolbarElement.style.maxWidth =
+      "520px";
+    
     toolbarElement.style.marginLeft =
       "auto";
 
