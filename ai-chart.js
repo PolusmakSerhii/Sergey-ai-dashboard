@@ -522,15 +522,6 @@ return {
   count: candles.length,
   candles,
   priceFormat,
-
-  indicators: {
-    ema20:
-      ema20Data.length,
-
-    ema50:
-      ema50Data.length
-  }
-};
   
  indicators: {
   ema20:
