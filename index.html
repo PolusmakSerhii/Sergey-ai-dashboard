@@ -1921,13 +1921,42 @@ directionFilter.addEventListener(
 
     openCoinModal(symbol);
   });
-    document
-     .querySelector("#close-modal")
-     .addEventListener("click", () => {
-      document
-        .querySelector("#coin-modal")
-        .classList.add("hidden");
-  });   
+    
+const coinModal =
+  document.querySelector("#coin-modal");
+
+const closeModalButton =
+  document.querySelector("#close-modal");
+
+function closeCoinModal() {
+  coinModal?.classList.add("hidden");
+}
+
+closeModalButton?.addEventListener(
+  "click",
+  closeCoinModal
+);
+
+coinModal?.addEventListener(
+  "click",
+  event => {
+    if (event.target === coinModal) {
+      closeCoinModal();
+    }
+  }
+);
+
+document.addEventListener(
+  "keydown",
+  event => {
+    if (
+      event.key === "Escape" &&
+      !coinModal?.classList.contains("hidden")
+    ) {
+      closeCoinModal();
+    }
+  }
+);
     
     loadScanner();
     
