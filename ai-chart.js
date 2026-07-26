@@ -360,7 +360,7 @@ function createTimeframeToolbar(options = {}) {
 
   toolbar.style.cssText = `
     position:absolute;
-    top:14px;
+    top:76px;
     right:16px;
     z-index:21;
     display:flex;
