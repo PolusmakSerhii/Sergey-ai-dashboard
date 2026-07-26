@@ -336,6 +336,104 @@ function createChartLegend(options = {}) {
   };
 }
 
+function createTimeframeToolbar(options = {}) {
+  const {
+    chartContainer,
+    activeTimeframe = "1H"
+  } = options;
+
+  if (!chartContainer) {
+    return null;
+  }
+
+  const timeframes = [
+    "1m",
+    "5m",
+    "15m",
+    "1H",
+    "4H",
+    "1D"
+  ];
+
+  const toolbar =
+    document.createElement("div");
+
+  toolbar.style.cssText = `
+    position:absolute;
+    top:14px;
+    right:16px;
+    z-index:21;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px;
+    border:1px solid rgba(143,161,181,0.18);
+    border-radius:9px;
+    background:rgba(8,17,28,0.86);
+    backdrop-filter:blur(8px);
+  `;
+
+  const buttons = new Map();
+
+  for (const timeframe of timeframes) {
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+    button.textContent = timeframe;
+    button.dataset.timeframe =
+      timeframe;
+
+    const isActive =
+      timeframe === activeTimeframe;
+
+    button.style.cssText = `
+      min-width:38px;
+      height:30px;
+      padding:0 9px;
+      border:1px solid ${
+        isActive
+          ? "rgba(103,217,255,0.75)"
+          : "transparent"
+      };
+      border-radius:7px;
+      background:${
+        isActive
+          ? "rgba(103,217,255,0.16)"
+          : "transparent"
+      };
+      color:${
+        isActive
+          ? "#67d9ff"
+          : "#8fa1b5"
+      };
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    `;
+
+    button.title =
+      `${timeframe} timeframe`;
+
+    toolbar.appendChild(button);
+
+    buttons.set(
+      timeframe,
+      button
+    );
+  }
+
+  chartContainer.appendChild(
+    toolbar
+  );
+
+  return {
+    element: toolbar,
+    buttons,
+    activeTimeframe
+  };
+}
+
 async function loadCandlestickData(
   options = {}
 ) {
@@ -722,6 +820,13 @@ const chartLegend =
     symbol,
     timeframe: "1H"
   });
+  
+const timeframeToolbar =
+  createTimeframeToolbar({
+    chartContainer,
+    activeTimeframe: "1H"
+  });
+  
 const candlesPromise =
   loadCandlestickData({
     chart,
@@ -776,8 +881,10 @@ ema20Series,
 ema50Series,
 ema200Series,
 chartLegend,
+timeframeToolbar,
 candlesPromise,
-resizeObserver};  
+resizeObserver
+};  
 }
 
 window.SergeyAIChart = {
