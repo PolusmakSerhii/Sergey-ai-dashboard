@@ -21,6 +21,67 @@ function formatChartValue(value) {
   return number.toPrecision(6);
 }
 
+function getDynamicPriceFormat(
+  candles = []
+) {
+  const validPrices =
+    candles
+      .map(candle =>
+        Number(candle?.close)
+      )
+      .filter(price =>
+        Number.isFinite(price) &&
+        price > 0
+      );
+
+  if (validPrices.length === 0) {
+    return {
+      type: "price",
+      precision: 2,
+      minMove: 0.01
+    };
+  }
+
+  const latestPrice =
+    validPrices[
+      validPrices.length - 1
+    ];
+
+  let precision = 2;
+
+  if (latestPrice < 1) {
+    precision = 4;
+  }
+
+  if (latestPrice < 0.1) {
+    precision = 5;
+  }
+
+  if (latestPrice < 0.01) {
+    precision = 6;
+  }
+
+  if (latestPrice < 0.001) {
+    precision = 7;
+  }
+
+  if (latestPrice < 0.0001) {
+    precision = 8;
+  }
+
+  const minMove =
+    1 / Math.pow(
+      10,
+      precision
+    );
+
+  return {
+    type: "price",
+    precision,
+    minMove
+  };
+}
+
 function calculateEMAData(
   candles,
   period
@@ -386,9 +447,31 @@ async function loadCandlestickData(
     };
   }
 
+  const priceFormat =
+  getDynamicPriceFormat(
+    candles
+  );
+
+candlestickSeries.applyOptions({
+  priceFormat
+});
+
+if (ema20Series) {
+  ema20Series.applyOptions({
+    priceFormat
+  });
+}
+
+if (ema50Series) {
+  ema50Series.applyOptions({
+    priceFormat
+  });
+}
+  
   candlestickSeries.setData(
     candles
   );
+  
    const ema20Data =
   calculateEMAData(
     candles,
@@ -432,13 +515,23 @@ if (
     }
   );
 
- return {
+return {
   ok: true,
   symbol,
   timeframe,
   count: candles.length,
   candles,
+  priceFormat,
 
+  indicators: {
+    ema20:
+      ema20Data.length,
+
+    ema50:
+      ema50Data.length
+  }
+};
+  
  indicators: {
   ema20:
     ema20Data.length,
