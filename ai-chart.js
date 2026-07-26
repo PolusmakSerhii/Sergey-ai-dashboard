@@ -223,7 +223,9 @@ function createChartLegend(options = {}) {
   ) {
     return null;
   }
-
+   let currentTimeframe =
+     timeframe || "1H";
+  
   const legend =
     document.createElement("div");
 
@@ -252,7 +254,7 @@ function createChartLegend(options = {}) {
   ) {
     legend.innerHTML = `
       <span style="color:#67d9ff;">
-        ${symbol || "—"} · ${timeframe || "—"}
+       ${symbol || "—"} · ${currentTimeframe}
       </span>
 
       <span>
@@ -331,17 +333,24 @@ function createChartLegend(options = {}) {
   );
 
   return {
-    element: legend,
-    crosshairHandler
-  };
-}
+  element: legend,
+  crosshairHandler,
 
+  setTimeframe(nextTimeframe) {
+    currentTimeframe =
+      nextTimeframe || "1H";
+
+    renderLegend();
+  }
+};
+  
 function createTimeframeToolbar(options = {}) {
   const {
-    chartContainer,
-    activeTimeframe = "1H"
-  } = options;
-
+  chartContainer,
+  activeTimeframe = "1H",
+  onTimeframeChange
+} = options;
+  
   if (!chartContainer) {
     return null;
   }
@@ -355,6 +364,9 @@ function createTimeframeToolbar(options = {}) {
     "1D"
   ];
 
+  let currentTimeframe =
+  activeTimeframe;
+  
   const toolbar =
     document.createElement("div");
 
@@ -375,6 +387,39 @@ function createTimeframeToolbar(options = {}) {
 
   const buttons = new Map();
 
+  function updateActiveButton(
+  nextTimeframe
+) {
+  currentTimeframe =
+    nextTimeframe;
+
+  for (
+    const [
+      timeframe,
+      button
+    ] of buttons
+  ) {
+    const isActive =
+      timeframe ===
+      currentTimeframe;
+
+    button.style.borderColor =
+      isActive
+        ? "rgba(103,217,255,0.75)"
+        : "transparent";
+
+    button.style.background =
+      isActive
+        ? "rgba(103,217,255,0.16)"
+        : "transparent";
+
+    button.style.color =
+      isActive
+        ? "#67d9ff"
+        : "#8fa1b5";
+  }
+}
+  
   for (const timeframe of timeframes) {
     const button =
       document.createElement("button");
@@ -414,7 +459,54 @@ function createTimeframeToolbar(options = {}) {
 
     button.title =
       `${timeframe} timeframe`;
+    
+    button.addEventListener(
+     "click",
+    async () => {
+     if (
+      timeframe ===
+      currentTimeframe
+    ) {
+      return;
+    }
 
+    const previousTimeframe =
+      currentTimeframe;
+
+    updateActiveButton(
+      timeframe
+    );
+
+    button.disabled = true;
+    button.style.opacity = "0.65";
+
+    try {
+      const result =
+        await onTimeframeChange?.(
+          timeframe
+        );
+
+      if (result?.ok === false) {
+        updateActiveButton(
+          previousTimeframe
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Timeframe change failed:",
+        error
+      );
+
+      updateActiveButton(
+        previousTimeframe
+      );
+    } finally {
+      button.disabled = false;
+      button.style.opacity = "1";
+    }
+  }
+);    
+    
     toolbar.appendChild(button);
 
     buttons.set(
@@ -426,14 +518,19 @@ function createTimeframeToolbar(options = {}) {
   chartContainer.appendChild(
     toolbar
   );
+return {
+  element: toolbar,
+  buttons,
 
-  return {
-    element: toolbar,
-    buttons,
-    activeTimeframe
-  };
-}
-function createChartControlsRow(
+  get activeTimeframe() {
+    return currentTimeframe;
+  },
+
+  setActiveTimeframe:
+    updateActiveButton
+};
+  
+  function createChartControlsRow(
   options = {}
 ) {
   const {
@@ -920,11 +1017,58 @@ const chartLegend =
     symbol,
     timeframe: "1H"
   });
+
+  let activeTimeframe = "1H";
+
+let latestRequestId = 0;
+
+async function reloadTimeframe(
+  nextTimeframe
+) {
+  const requestId =
+    ++latestRequestId;
+
+  const result =
+    await loadCandlestickData({
+      chart,
+      candlestickSeries,
+      ema20Series,
+      ema50Series,
+      ema200Series,
+      symbol,
+      timeframe: nextTimeframe,
+      limit: 300
+    });
+
+  if (
+    requestId !==
+    latestRequestId
+  ) {
+    return {
+      ok: false,
+      ignored: true
+    };
+  }
+
+  if (result?.ok === true) {
+    activeTimeframe =
+      nextTimeframe;
+
+    chartLegend?.setTimeframe(
+      nextTimeframe
+    );
+  }
+
+  return result;
+}
   
 const timeframeToolbar =
   createTimeframeToolbar({
     chartContainer,
-    activeTimeframe: "1H"
+    activeTimeframe: "1H",
+
+    onTimeframeChange:
+      reloadTimeframe
   });
   
 const chartControlsRow =
@@ -935,16 +1079,9 @@ const chartControlsRow =
   });
   
 const candlesPromise =
-  loadCandlestickData({
-    chart,
-    candlestickSeries,
-    ema20Series,
-    ema50Series,
-    ema200Series,
-    symbol,
-    timeframe: "1H",
-    limit: 300
-  });
+  reloadTimeframe(
+    "1H"
+  );
   
 candlesPromise.then(
   result => {
@@ -980,8 +1117,10 @@ return {
   containerId,
   symbol,
 
-  timeframe: "1H",
-
+get timeframe() {
+  return activeTimeframe;
+},
+  
 chart,
 candlestickSeries,
 ema20Series,
