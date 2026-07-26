@@ -483,6 +483,47 @@
     grid-template-columns: 1fr;
   }
 }    
+.coin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  margin-top: 28px;
+  padding-top: 22px;
+
+  border-top: 1px solid rgba(143, 161, 181, 0.2);
+}
+
+.coin-modal-close-bottom {
+  min-width: 140px;
+  padding: 13px 24px;
+
+  border: 1px solid rgba(103, 217, 255, 0.65);
+  border-radius: 10px;
+
+  background: rgba(103, 217, 255, 0.12);
+  color: #67d9ff;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.coin-modal-close-bottom:hover {
+  background: rgba(103, 217, 255, 0.2);
+  border-color: rgba(103, 217, 255, 0.9);
+}
+
+.coin-modal-close-bottom:active {
+  transform: scale(0.98);
+}
+    
   </style>
 </head>
 
@@ -1928,6 +1969,9 @@ const coinModal =
 const closeModalButton =
   document.querySelector("#close-modal");
 
+const closeModalBottomButton =
+    document.querySelector("#close-modal-bottom");
+
 function closeCoinModal() {
   coinModal?.classList.add("hidden");
 }
@@ -1935,6 +1979,11 @@ function closeCoinModal() {
 closeModalButton?.addEventListener(
   "click",
   closeCoinModal
+);
+
+closeModalBottomButton?.addEventListener(
+    "click",
+    closeCoinModal
 );
 
 coinModal?.addEventListener(
