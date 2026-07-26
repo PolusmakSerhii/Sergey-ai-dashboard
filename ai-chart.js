@@ -433,6 +433,98 @@ function createTimeframeToolbar(options = {}) {
     activeTimeframe
   };
 }
+function createChartControlsRow(
+  options = {}
+) {
+  const {
+    chartContainer,
+    chartLegend,
+    timeframeToolbar
+  } = options;
+
+  if (!chartContainer) {
+    return null;
+  }
+
+  const controlsRow =
+    document.createElement("div");
+
+  controlsRow.style.cssText = `
+    position:absolute;
+    top:14px;
+    left:16px;
+    right:16px;
+    z-index:30;
+
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-wrap:wrap;
+
+    gap:10px 16px;
+
+    pointer-events:none;
+  `;
+
+  if (chartLegend?.element) {
+    const legendElement =
+      chartLegend.element;
+
+    legendElement.style.position =
+      "static";
+
+    legendElement.style.top =
+      "auto";
+
+    legendElement.style.left =
+      "auto";
+
+    legendElement.style.maxWidth =
+      "100%";
+
+    legendElement.style.flex =
+      "1 1 560px";
+
+    controlsRow.appendChild(
+      legendElement
+    );
+  }
+
+  if (timeframeToolbar?.element) {
+    const toolbarElement =
+      timeframeToolbar.element;
+
+    toolbarElement.style.position =
+      "static";
+
+    toolbarElement.style.top =
+      "auto";
+
+    toolbarElement.style.right =
+      "auto";
+
+    toolbarElement.style.flex =
+      "0 0 auto";
+
+    toolbarElement.style.marginLeft =
+      "auto";
+
+    toolbarElement.style.pointerEvents =
+      "auto";
+
+    controlsRow.appendChild(
+      toolbarElement
+    );
+  }
+
+  chartContainer.appendChild(
+    controlsRow
+  );
+
+  return {
+    element: controlsRow
+  };
+}
 
 async function loadCandlestickData(
   options = {}
@@ -827,6 +919,13 @@ const timeframeToolbar =
     activeTimeframe: "1H"
   });
   
+const chartControlsRow =
+  createChartControlsRow({
+    chartContainer,
+    chartLegend,
+    timeframeToolbar
+  });
+  
 const candlesPromise =
   loadCandlestickData({
     chart,
@@ -882,6 +981,7 @@ ema50Series,
 ema200Series,
 chartLegend,
 timeframeToolbar,
+chartControlsRow,
 candlesPromise,
 resizeObserver
 };  
