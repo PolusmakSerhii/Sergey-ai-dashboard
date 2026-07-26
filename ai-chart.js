@@ -623,7 +623,64 @@ legendElement.style.overflow =
       toolbarElement
     );
   }
+  const fullscreenButton =
+  document.createElement("button");
 
+fullscreenButton.type = "button";
+fullscreenButton.textContent = "⛶";
+
+fullscreenButton.title =
+  "Open chart in fullscreen";
+
+fullscreenButton.style.cssText = `
+  flex: 0 0 auto;
+
+  min-width: 44px;
+  height: 44px;
+
+  padding: 0 12px;
+
+  border: 1px solid
+    rgba(103, 217, 255, 0.45);
+
+  border-radius: 10px;
+
+  background:
+    rgba(8, 17, 28, 0.92);
+
+  color: #67d9ff;
+
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+
+  cursor: pointer;
+
+  pointer-events: auto;
+`;
+
+fullscreenButton.addEventListener(
+  "click",
+  async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await chartContainer.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error(
+        "Chart fullscreen failed:",
+        error
+      );
+    }
+  }
+);
+
+controlsRow.appendChild(
+  fullscreenButton
+);
+    
   chartContainer.appendChild(
     controlsRow
   );
