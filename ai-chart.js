@@ -278,10 +278,11 @@ function createChartLegend(options = {}) {
 async function loadCandlestickData(
   options = {}
 ) {
-  const {
+ const {
   chart,
   candlestickSeries,
   ema20Series,
+  ema50Series,
   symbol,
   timeframe = "1H",
   limit = 300
@@ -402,6 +403,20 @@ if (
     ema20Data
   );
 }
+   const ema50Data =
+  calculateEMAData(
+    candles,
+    50
+  );
+
+if (
+  ema50Series &&
+  ema50Data.length > 0
+) {
+  ema50Series.setData(
+    ema50Data
+  );
+}
   
   chart
     .timeScale()
@@ -424,11 +439,14 @@ if (
   count: candles.length,
   candles,
 
-  indicators: {
-    ema20:
-      ema20Data.length
-  }
-};  
+ indicators: {
+  ema20:
+    ema20Data.length,
+
+  ema50:
+    ema50Data.length
+}
+ };  
 }
 
 function initializeAIChart(options = {}) {
@@ -534,6 +552,15 @@ const candlestickSeries =
       lineWidth: 2
     }
   );
+const ema50Series =
+  createEMALayer(
+    chart,
+    {
+      period: 50,
+      color: "#4da3ff",
+      lineWidth: 2
+    }
+  );  
   
 if (!candlestickSeries) {
   chartContainer.innerHTML = `
@@ -559,6 +586,12 @@ if (!ema20Series) {
     "EMA20 layer is unavailable"
   );
 }
+if (!ema50Series) {
+  console.warn(
+    "EMA50 layer is unavailable"
+  );
+}
+  
 const chartLegend =
   createChartLegend({
     chartContainer,
@@ -568,12 +601,12 @@ const chartLegend =
     symbol,
     timeframe: "1H"
   });
-  
-const candlesPromise =
+  const candlesPromise =
   loadCandlestickData({
     chart,
     candlestickSeries,
     ema20Series,
+    ema50Series,
     symbol,
     timeframe: "1H",
     limit: 300
@@ -615,12 +648,13 @@ return {
 
   timeframe: "1H",
 
-  chart,
-  candlestickSeries,
-  ema20Series,
-  chartLegend,
-  candlesPromise,
-  resizeObserver
+ chart,
+candlestickSeries,
+ema20Series,
+ema50Series,
+chartLegend,
+candlesPromise,
+resizeObserver
 };  
 }
 
