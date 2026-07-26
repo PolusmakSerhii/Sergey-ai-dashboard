@@ -343,7 +343,8 @@ function createChartLegend(options = {}) {
     renderLegend();
   }
 };
-  
+}
+
 function createTimeframeToolbar(options = {}) {
   const {
   chartContainer,
