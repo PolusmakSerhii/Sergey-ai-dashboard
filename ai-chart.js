@@ -1060,6 +1060,12 @@ const ema50Series =
     }
   );
   
+const indicatorVisibility = {
+  ema20: true,
+  ema50: true,
+  ema200: true
+};
+  
 if (!candlestickSeries) {
   chartContainer.innerHTML = `
     <div style="
@@ -1089,10 +1095,51 @@ if (!ema50Series) {
     "EMA50 layer is unavailable"
   );
 }
+  
 if (!ema200Series) {
   console.warn(
     "EMA200 layer is unavailable"
   );
+}
+  function setEMAVisibility(
+  indicator,
+  isVisible
+) {
+  const seriesMap = {
+    ema20: ema20Series,
+    ema50: ema50Series,
+    ema200: ema200Series
+  };
+
+  const series =
+    seriesMap[indicator];
+
+  if (!series) {
+    console.warn(
+      `Indicator series is unavailable: ${indicator}`
+    );
+
+    return {
+      ok: false,
+      indicator,
+      error: "Series unavailable"
+    };
+  }
+
+  indicatorVisibility[indicator] =
+    Boolean(isVisible);
+
+  series.applyOptions({
+    visible:
+      indicatorVisibility[indicator]
+  });
+
+  return {
+    ok: true,
+    indicator,
+    visible:
+      indicatorVisibility[indicator]
+  };
 }
   
 const chartLegend =
