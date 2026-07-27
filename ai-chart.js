@@ -676,7 +676,35 @@ fullscreenButton.addEventListener(
     }
   }
 );
+document.addEventListener(
+  "fullscreenchange",
+  () => {
+    const isChartFullscreen =
+      document.fullscreenElement === chartContainer;
 
+    if (isChartFullscreen) {
+      chartContainer.style.width = "100vw";
+      chartContainer.style.height = "100vh";
+      chartContainer.style.background = "#08111c";
+      chartContainer.style.padding = "20px";
+      chartContainer.style.boxSizing =
+        "border-box";
+    } else {
+      chartContainer.style.width = "";
+      chartContainer.style.height = "";
+      chartContainer.style.background = "";
+      chartContainer.style.padding = "";
+      chartContainer.style.boxSizing = "";
+    }
+
+    window.setTimeout(() => {
+      window.dispatchEvent(
+        new Event("resize")
+      );
+    }, 100);
+  }
+);
+    
 controlsRow.appendChild(
   fullscreenButton
 );
@@ -1153,11 +1181,26 @@ candlesPromise.then(
   
 const resizeObserver =
   new ResizeObserver(() => {
-    chart.applyOptions({
-      width:
-        chartContainer.clientWidth
-    });
-  });
+    const isFullscreen =
+      document.fullscreenElement ===
+      chartContainer;
+
+const fullscreenHeight =
+  Math.max(
+    420,
+    window.innerHeight - 40
+  );
+
+chart.applyOptions({
+  width:
+    chartContainer.clientWidth,
+
+  height:
+    isFullscreen
+      ? fullscreenHeight
+      : 420
+});
+});
 
 resizeObserver.observe(
   chartContainer
