@@ -1124,15 +1124,11 @@ const probabilitySignal =
   data.derivativesHistory?.probabilitySignal || {};
 
 const probability =
-  probabilitySignal.available
-    ? probabilitySignal.confidence ?? 0
-    : scannerCoin.confidence ?? 0;
-
+  scannerCoin.confidence ?? 0;
+       
 const direction =
-  probabilitySignal.available
-    ? probabilitySignal.direction || "Neutral"
-    : scannerCoin.direction || "Neutral";
-
+   scannerCoin.direction || "Neutral";
+       
 const grade =
   scannerCoin.opportunityGrade || "—";
 
