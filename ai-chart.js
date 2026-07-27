@@ -1206,6 +1206,36 @@ resizeObserver.observe(
   chartContainer
 );
   
+  chartContainer.onfullscreenchange = () => {
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const isFullscreen =
+        document.fullscreenElement ===
+        chartContainer;
+
+      const nextHeight =
+        isFullscreen
+          ? Math.max(
+              420,
+              window.innerHeight - 40
+            )
+          : 420;
+
+      chart.applyOptions({
+        width:
+          chartContainer.clientWidth,
+
+        height:
+          nextHeight
+      });
+
+      chart
+        .timeScale()
+        .fitContent();
+    });
+  });
+};
+  
   console.log(
     "AI Chart initialized:",
     {
