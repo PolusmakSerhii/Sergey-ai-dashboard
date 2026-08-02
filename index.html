@@ -733,8 +733,15 @@ placeholder="Search symbol..."
     let scoreSortDirection = "desc";
 
     function getScannerAction(coin = {}) {
-  const direction =
-    String(
+      const backendAction =
+         String(coin.action || "").trim();
+
+   if (backendAction) {
+     return backendAction;
+} 
+    
+    const direction =
+     String(
       coin.direction || "Neutral"
     ).toUpperCase();
 
