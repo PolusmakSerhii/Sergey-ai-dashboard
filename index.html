@@ -2018,10 +2018,15 @@ console.log(
     const searchValue =
       searchInput.value.trim();
 
-    searchDebounceTimer =
-      setTimeout(() => {
-        loadScanner(searchValue);
-      }, 400);
+  searchDebounceTimer =
+   setTimeout(() => {
+    if (searchValue) {
+      loadScanner(searchValue);
+    } else {
+      loadGlobalRanking();
+    }
+  }, 400);
+         
   }
 );
 
