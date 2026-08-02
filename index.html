@@ -2018,10 +2018,23 @@ console.log(
     const searchValue =
       searchInput.value.trim();
 
-  searchDebounceTimer =
-   setTimeout(() => {
+ searchDebounceTimer =
+  setTimeout(() => {
     if (searchValue) {
       loadScanner(searchValue);
+    } else if (globalRankingResults.length) {
+      scannerResults =
+        globalRankingResults.map(
+          coin => ({
+            ...coin,
+            opportunityGrade:
+              coin.grade ||
+              coin.opportunityGrade ||
+              "D"
+          })
+        );
+
+      renderScanner(scannerResults);
     } else {
       loadGlobalRanking();
     }
