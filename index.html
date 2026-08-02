@@ -1080,6 +1080,26 @@ document.querySelector(
         ? data.globalTop10
         : [];
 
+     if (
+  !searchInput.value.trim() &&
+  directionFilter.value === "all" &&
+  gradeFilter.value === "all" &&
+  actionFilter.value === "all"
+) {
+  scannerResults =
+    globalRankingResults.map(
+      coin => ({
+        ...coin,
+        opportunityGrade:
+          coin.grade ||
+          coin.opportunityGrade ||
+          "D"
+      })
+    );
+
+  renderScanner(scannerResults);
+}
+    
     console.log(
       "Global Ranking API response:",
       data
