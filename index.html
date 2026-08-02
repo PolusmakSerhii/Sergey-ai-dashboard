@@ -1028,6 +1028,7 @@ document.querySelector(
   bestOpportunity
     ? `Opportunity Score: ${bestOpportunity.opportunityScore ?? 0} | Grade: ${bestOpportunity.opportunityGrade || "D"} | Direction: ${bestOpportunity.direction || "Neutral"}`
     : "No opportunity found";
+        
 const bestSetup =
   data.bestSetup || null;
 
@@ -2055,9 +2056,9 @@ document.querySelector(
     : "No opportunity found";
 
     const bestGlobalSetup =
-  scannerResults.find(coin => {
-    const action =
-      String(coin.action || "");
+     scannerResults.find(coin => {
+      const action =
+        String(coin.action || "");
 
     return (
       action === "Strong Buy" ||
