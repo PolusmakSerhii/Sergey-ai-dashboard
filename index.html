@@ -2035,6 +2035,23 @@ console.log(
         );
 
       renderScanner(scannerResults);
+
+      const bestGlobalOpportunity =
+  scannerResults[0] || null;
+
+document.querySelector(
+  "#best-opportunity-symbol"
+).textContent =
+  bestGlobalOpportunity?.symbol ||
+  "No Opportunity";
+
+document.querySelector(
+  "#best-opportunity-details"
+).textContent =
+  bestGlobalOpportunity
+    ? `Opportunity Score: ${bestGlobalOpportunity.opportunityScore ?? 0} | Grade: ${bestGlobalOpportunity.opportunityGrade ?? bestGlobalOpportunity.grade ?? "D"} | Direction: ${bestGlobalOpportunity.direction || "Neutral"}`
+    : "No opportunity found";
+    
     } else {
       loadGlobalRanking();
     }
