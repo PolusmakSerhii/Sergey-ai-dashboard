@@ -938,8 +938,8 @@ const actionMatch =
     </table>
   `;
 }    
-    async function loadScanner() {
-      const statusElement =
+   async function loadScanner(search = "") {
+     const statusElement =
         document.querySelector(".status");
 
       try {
@@ -948,9 +948,30 @@ const actionMatch =
           Connecting to API...
         `;
 
-        const response =
-          await fetch(API_URL);
+        const requestUrl =
+          new URL(API_URL);
 
+        const normalizedSearch =
+          String(search || "")
+           .trim()
+           .toUpperCase();
+
+        if (normalizedSearch) {
+          requestUrl.searchParams.set(
+             "search",
+             normalizedSearch
+           );
+         } else {
+       requestUrl.searchParams.delete(
+         "search"
+      );
+   }
+        
+       const response =
+         await fetch(
+          requestUrl.toString()
+         );
+        
         const data =
           await response.json();
 
@@ -1914,9 +1935,21 @@ console.log(
     `;
   }
 }   
-    searchInput.addEventListener(
-  "input",
-  () => renderScanner(scannerResults)
+    let searchDebounceTimer = null;
+    
+   searchInput.addEventListener(
+     "input",
+       () => {
+         clearTimeout(searchDebounceTimer);
+
+    const searchValue =
+      searchInput.value.trim();
+
+    searchDebounceTimer =
+      setTimeout(() => {
+        loadScanner(searchValue);
+      }, 400);
+  }
 );
 
 directionFilter.addEventListener(
