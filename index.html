@@ -729,6 +729,7 @@ placeholder="Search symbol..."
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=scanner&globalRank=true";
     
     let scannerResults = [];
+    let globalRankingResults = [];
     let scoreSortDirection = "desc";
 
     function getScannerAction(coin = {}) {
@@ -1058,6 +1059,48 @@ document.querySelector(
 
   }
     }
+
+    async function loadGlobalRanking() {
+  try {
+    const response =
+      await fetch(GLOBAL_RANKING_URL);
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+        `Global Ranking request failed: ${response.status}`
+      );
+    }
+
+    globalRankingResults =
+      Array.isArray(data.globalTop10)
+        ? data.globalTop10
+        : [];
+
+    console.log(
+      "Global Ranking API response:",
+      data
+    );
+
+    console.log(
+      "Global TOP-10:",
+      globalRankingResults
+    );
+
+    return globalRankingResults;
+  } catch (error) {
+    console.error(
+      "Global Ranking Error:",
+      error
+    );
+
+    return [];
+  }
+}
+    
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -2038,7 +2081,7 @@ document.addEventListener(
     }
   }
 );
-    
+    loadGlobalRanking();
     loadScanner();
     
   </script>
