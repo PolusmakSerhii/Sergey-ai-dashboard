@@ -2053,7 +2053,33 @@ document.querySelector(
   bestGlobalOpportunity
     ? `Opportunity Score: ${bestGlobalOpportunity.opportunityScore ?? 0} | Grade: ${bestGlobalOpportunity.opportunityGrade ?? bestGlobalOpportunity.grade ?? "D"} | Direction: ${bestGlobalOpportunity.direction || "Neutral"}`
     : "No opportunity found";
-    
+
+    const bestGlobalSetup =
+  scannerResults.find(coin => {
+    const action =
+      String(coin.action || "");
+
+    return (
+      action === "Strong Buy" ||
+      action === "Buy" ||
+      action === "Sell" ||
+      action === "Strong Sell"
+    );
+  }) || null;
+
+document.querySelector(
+  "#best-setup-symbol"
+).textContent =
+  bestGlobalSetup?.symbol ||
+  "No Setup";
+
+document.querySelector(
+  "#best-setup-details"
+).textContent =
+  bestGlobalSetup
+    ? `Confidence: ${bestGlobalSetup.confidence ?? 0}% | ${bestGlobalSetup.direction || "Neutral"} | ${bestGlobalSetup.action || "Wait"}`
+    : "No setup found";
+      
     } else {
       loadGlobalRanking();
     }
