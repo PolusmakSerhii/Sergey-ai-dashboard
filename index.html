@@ -951,6 +951,69 @@ const actionMatch =
     </table>
   `;
 }    
+
+   async function loadMarketSummary() {
+  try {
+    const requestUrl =
+      new URL(API_URL);
+
+    const response =
+      await fetch(
+        requestUrl.toString()
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        `Market Summary request failed: ${response.status}`
+      );
+    }
+
+    const data =
+      await response.json();
+
+    const summary =
+      data.marketSummary || {};
+
+    document.querySelector(
+      "#market-bias"
+    ).textContent =
+      summary.marketBias ||
+      "Neutral";
+
+    document.querySelector(
+      "#market-condition"
+    ).textContent =
+      summary.marketCondition ||
+      "Unknown";
+
+    document.querySelector(
+      "#market-details"
+    ).textContent =
+      `Confidence: ${summary.averageConfidence ?? 0}% | Ready Trades: ${summary.readyTrades ?? 0}`;
+
+  } catch (error) {
+    console.error(
+      "Market Summary Error:",
+      error
+    );
+
+    document.querySelector(
+      "#market-bias"
+    ).textContent =
+      "Unavailable";
+
+    document.querySelector(
+      "#market-condition"
+    ).textContent =
+      "API Error";
+
+    document.querySelector(
+      "#market-details"
+    ).textContent =
+      "Confidence: — | Ready Trades: —";
+  }
+}
+    
    async function loadScanner(search = "") {
      const statusElement =
         document.querySelector(".status");
@@ -2215,7 +2278,7 @@ document.addEventListener(
   }
 );
     loadGlobalRanking();
-    
+    loadMarketSummary();
   </script>
 
 <script
