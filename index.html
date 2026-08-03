@@ -2150,63 +2150,9 @@ console.log(
       scannerCurrentPage = 1;
       loadScanner(searchValue);
       
-    } else if (globalRankingResults.length) {
-      scannerCurrentPage = 1;
-    
-      scannerResults =
-        globalRankingResults.map(
-          coin => ({
-            ...coin,
-            opportunityGrade:
-              coin.grade ||
-              coin.opportunityGrade ||
-              "D"
-          })
-        );
-
-      renderScanner(scannerResults);
-
-      const bestGlobalOpportunity =
-  scannerResults[0] || null;
-
-document.querySelector(
-  "#best-opportunity-symbol"
-).textContent =
-  bestGlobalOpportunity?.symbol ||
-  "No Opportunity";
-
-document.querySelector(
-  "#best-opportunity-details"
-).textContent =
-  bestGlobalOpportunity
-    ? `Opportunity Score: ${bestGlobalOpportunity.opportunityScore ?? 0} | Grade: ${bestGlobalOpportunity.opportunityGrade ?? bestGlobalOpportunity.grade ?? "D"} | Direction: ${bestGlobalOpportunity.direction || "Neutral"}`
-    : "No opportunity found";
-
-    const bestGlobalSetup =
-     scannerResults.find(coin => {
-      const action =
-        String(coin.action || "");
-
-    return (
-      action === "Strong Buy" ||
-      action === "Buy" ||
-      action === "Sell" ||
-      action === "Strong Sell"
-    );
-  }) || null;
-
-document.querySelector(
-  "#best-setup-symbol"
-).textContent =
-  bestGlobalSetup?.symbol ||
-  "No Setup";
-
-document.querySelector(
-  "#best-setup-details"
-).textContent =
-  bestGlobalSetup
-    ? `Confidence: ${bestGlobalSetup.confidence ?? 0}% | ${bestGlobalSetup.direction || "Neutral"} | ${bestGlobalSetup.action || "Wait"}`
-    : "No setup found";
+   } else if (globalRankingResults.length) {
+     scannerCurrentPage = 1;
+     loadScanner("");
       
     } else {
       loadGlobalRanking();
