@@ -1101,7 +1101,22 @@ const actionMatch =
           pageInfoElement.textContent =
             `Page ${scannerCurrentPage} of ${scannerTotalPages}`;
        }
-        
+
+        const prevButton =
+          document.querySelector("#scanner-prev");
+
+       const nextButton =
+         document.querySelector("#scanner-next");
+
+       if (prevButton) {
+        prevButton.disabled =
+          scannerCurrentPage <= 1;
+       }
+
+       if (nextButton) {
+         nextButton.disabled =
+           scannerCurrentPage >= scannerTotalPages;
+       }        
         if (!response.ok) {
           throw new Error(
             data?.error ||
