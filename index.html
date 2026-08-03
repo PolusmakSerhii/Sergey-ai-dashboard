@@ -1056,56 +1056,8 @@ const actionMatch =
           data
         );
         
- const summary =
-   data.marketSummary || {};
-        
-scannerResults =
-  data.results || [];
-        
-document.querySelector(
-  "#market-bias"
-).textContent =
-  summary.marketBias || "Neutral";
-
-document.querySelector(
-  "#market-condition"
-).textContent =
-  summary.marketCondition || "Unknown";
-
-document.querySelector(
-  "#market-details"
-).textContent =
-  `Confidence: ${summary.averageConfidence ?? 0}% | Ready Trades: ${summary.readyTrades ?? 0}`;
-        
-        const bestOpportunity =
-           summary.bestOpportunity || null;
-
-        document.querySelector(
-          "#best-opportunity-symbol"
-        ).textContent =
-          bestOpportunity?.symbol || "No Opportunity";
-
-document.querySelector(
-  "#best-opportunity-details"
-).textContent =
-  bestOpportunity
-    ? `Opportunity Score: ${bestOpportunity.opportunityScore ?? 0} | Grade: ${bestOpportunity.opportunityGrade || "D"} | Direction: ${bestOpportunity.direction || "Neutral"}`
-    : "No opportunity found";
-        
-const bestSetup =
-  data.bestSetup || null;
-
-document.querySelector(
-  "#best-setup-symbol"
-).textContent =
-  bestSetup?.symbol || "No Setup";
-
-document.querySelector(
-  "#best-setup-details"
-).textContent =
-  bestSetup
-    ? `Confidence: ${bestSetup.confidence ?? 0}% | ${bestSetup.direction || "Neutral"}`
-    : "No setup found";
+        scannerResults =
+          data.results || []; 
         
         if (!response.ok) {
           throw new Error(
