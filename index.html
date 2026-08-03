@@ -1086,7 +1086,21 @@ const actionMatch =
         );
         
         scannerResults =
-          data.results || []; 
+          data.results || [];
+
+        scannerCurrentPage =
+          data.page || scannerCurrentPage;
+
+       scannerTotalPages =
+         data.totalPages || 1;
+
+       const pageInfoElement =
+         document.querySelector("#scanner-page-info");
+
+       if (pageInfoElement) {
+          pageInfoElement.textContent =
+            `Page ${scannerCurrentPage} of ${scannerTotalPages}`;
+       }
         
         if (!response.ok) {
           throw new Error(
