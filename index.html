@@ -749,6 +749,10 @@ placeholder="Search symbol..."
     let globalRankingResults = [];
     let scoreSortDirection = "desc";
 
+    let scannerCurrentPage = 1;
+    const scannerPageLimit = 10;
+    let scannerTotalPages = 1;
+
     function getScannerAction(coin = {}) {
       const backendAction =
          String(coin.action || "").trim();
