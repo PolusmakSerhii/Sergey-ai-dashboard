@@ -1046,6 +1046,16 @@ const actionMatch =
         const requestUrl =
           new URL(API_URL);
 
+        requestUrl.searchParams.set(
+          "page",
+          scannerCurrentPage
+         );
+
+       requestUrl.searchParams.set(
+         "limit",
+         scannerPageLimit
+        );
+        
         const normalizedSearch =
           String(search || "")
            .trim()
