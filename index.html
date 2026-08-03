@@ -2147,8 +2147,12 @@ console.log(
  searchDebounceTimer =
   setTimeout(() => {
     if (searchValue) {
+      scannerCurrentPage = 1;
       loadScanner(searchValue);
-    } else if (globalRankingResults.length) {
+      
+    } else if (globalRankingResults.length) 
+      scannerCurrentPage = 1;
+    
       scannerResults =
         globalRankingResults.map(
           coin => ({
