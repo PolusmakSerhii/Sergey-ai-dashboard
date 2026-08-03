@@ -2229,9 +2229,43 @@ directionFilter.addEventListener(
     "change",
     () => renderScanner(scannerResults)
 );
+
+    const scannerPrevButton =
+      document.querySelector("#scanner-prev");
+
+   const scannerNextButton =
+      document.querySelector("#scanner-next");
+
+   scannerPrevButton?.addEventListener(
+    "click",
+    () => {
+      if (scannerCurrentPage <= 1) {
+        return;
+     }
+
+    scannerCurrentPage -= 1;
+
+    loadScanner(
+      searchInput.value.trim()
+    );
+  }
+);
+
+scannerNextButton?.addEventListener(
+  "click",
+  () => {
+    scannerCurrentPage += 1;
+
+    loadScanner(
+      searchInput.value.trim()
+    );
+  }
+);
+    
    document
-  .querySelector("#scanner-table")
-  .addEventListener("click", (event) => {
+     .querySelector("#scanner-table")
+     .addEventListener("click", (event) => {
+       
     const scoreHeader =
       event.target.closest("#score-sort");
 
