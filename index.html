@@ -558,10 +558,10 @@
           Market Scanner
         </p>
 
-        <div class="card-value">
-          408 рынков
+       <div class="card-value" id="market-count">
+          Loading...
         </div>
-
+        
         <p class="card-text">
           Opportunity Score, сортировки, фильтры и поиск
           готовых торговых сетапов.
@@ -1105,12 +1105,20 @@ const actionMatch =
         ? data.globalTop10
         : [];
 
+      const marketCountElement =
+         document.querySelector("#market-count");
+
+if (marketCountElement) {
+  marketCountElement.textContent =
+    `${data.totalAvailableSymbols ?? 0} рынков`;
+}
+    
      if (
-  !searchInput.value.trim() &&
-  directionFilter.value === "all" &&
-  gradeFilter.value === "all" &&
-  actionFilter.value === "all"
-) {
+      !searchInput.value.trim() &&
+      directionFilter.value === "all" &&
+      gradeFilter.value === "all" &&
+      actionFilter.value === "all"
+    ) {
   scannerResults =
     globalRankingResults.map(
       coin => ({
