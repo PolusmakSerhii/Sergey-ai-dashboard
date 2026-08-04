@@ -753,6 +753,9 @@ placeholder="Search symbol..."
     const scannerPageLimit = 10;
     let scannerTotalPages = 1;
 
+    const scannerPageCache =
+      new Map();
+    
     function getScannerAction(coin = {}) {
       const backendAction =
          String(coin.action || "").trim();
@@ -1056,30 +1059,57 @@ const actionMatch =
          scannerPageLimit
         );
         
-        const normalizedSearch =
-          String(search || "")
-           .trim()
-           .toUpperCase();
+      const normalizedSearch =
+  String(search || "")
+    .trim()
+    .toUpperCase();
 
-        if (normalizedSearch) {
-          requestUrl.searchParams.set(
-             "search",
-             normalizedSearch
-           );
-         } else {
-       requestUrl.searchParams.delete(
-         "search"
-      );
-   }
-        
-       const response =
-         await fetch(
-          requestUrl.toString()
-         );
-        
-        const data =
-          await response.json();
+if (normalizedSearch) {
+  requestUrl.searchParams.set(
+    "search",
+    normalizedSearch
+  );
+} else {
+  requestUrl.searchParams.delete(
+    "search"
+  );
+}
 
+const cacheKey =
+  `${normalizedSearch}:${scannerCurrentPage}`;
+
+let data =
+  scannerPageCache.get(
+    cacheKey
+  );
+
+if (!data) {
+  const response =
+    await fetch(
+      requestUrl.toString()
+    );
+
+  data =
+    await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error ||
+      `API request failed: ${response.status}`
+    );
+  }
+
+  scannerPageCache.set(
+    cacheKey,
+    data
+  );
+} else {
+  console.log(
+    "Scanner cache hit:",
+    cacheKey
+  );
+}
+        
         console.log(
           "Scanner API response:",
           data
@@ -1117,12 +1147,7 @@ const actionMatch =
          nextButton.disabled =
            scannerCurrentPage >= scannerTotalPages;
        }        
-        if (!response.ok) {
-          throw new Error(
-            data?.error ||
-            `API request failed: ${response.status}`
-          );
-        }
+       
         renderScanner(scannerResults);
         
         statusElement.innerHTML = `
