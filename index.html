@@ -2414,10 +2414,15 @@ directionFilter.addEventListener(
   }
 );
     
-    gradeFilter.addEventListener(
-     "change",
-    () => renderScanner(scannerResults)
- );
+   gradeFilter.addEventListener(
+  "change",
+  () => {
+    scannerCurrentPage = 1;
+
+    renderGlobalRankingPage();
+  }
+);
+    
     actionFilter.addEventListener(
     "change",
     () => renderScanner(scannerResults)
@@ -2440,12 +2445,23 @@ directionFilter.addEventListener(
               coin.direction ===
                  directionFilter.value
          );
-    
+
+      const gradeFilteredResults =
+  directionFilteredResults.filter(
+    coin =>
+      gradeFilter.value === "all" ||
+      (
+        coin.opportunityGrade ||
+        coin.grade ||
+        "D"
+      ) === gradeFilter.value
+  );
+      
  scannerTotalPages =
   Math.max(
     1,
     Math.ceil(
-      directionFilteredResults.length /
+      gradeFilteredResults.length /
       scannerPageLimit
     )
   );
@@ -2464,7 +2480,7 @@ directionFilter.addEventListener(
     scannerPageLimit;
 
   scannerResults =
-    directionFilteredResults
+   gradeFilteredResults
       .slice(
         startIndex,
         startIndex +
