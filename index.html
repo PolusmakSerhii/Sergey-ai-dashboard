@@ -1306,7 +1306,7 @@ scannerCurrentPage = 1;
 
 scannerTotalPages =
   Math.ceil(
-    globalRankingResults.length /
+   directionFilteredResults.length /
     scannerPageLimit
   );
 
@@ -2407,7 +2407,11 @@ console.log(
 
 directionFilter.addEventListener(
   "change",
-  () => renderScanner(scannerResults)
+  () => {
+    scannerCurrentPage = 1;
+
+    renderGlobalRankingPage();
+  }
 );
     
     gradeFilter.addEventListener(
@@ -2429,16 +2433,23 @@ directionFilter.addEventListener(
   if (!globalRankingResults.length) {
     return;
   }
-
-  scannerTotalPages =
-    Math.max(
-      1,
-      Math.ceil(
-        globalRankingResults.length /
-        scannerPageLimit
-      )
-    );
-
+      const directionFilteredResults =
+        globalRankingResults.filter(
+          coin =>
+            directionFilter.value === "all" ||
+              coin.direction ===
+                 directionFilter.value
+         );
+    
+ scannerTotalPages =
+  Math.max(
+    1,
+    Math.ceil(
+      directionFilteredResults.length /
+      scannerPageLimit
+    )
+  );
+      
   scannerCurrentPage =
     Math.max(
       1,
@@ -2453,7 +2464,7 @@ directionFilter.addEventListener(
     scannerPageLimit;
 
   scannerResults =
-    globalRankingResults
+    directionFilteredResults
       .slice(
         startIndex,
         startIndex +
