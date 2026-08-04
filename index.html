@@ -1173,6 +1173,113 @@ if (!data) {
   }
     }
 
+    async function testFullGlobalAggregation() {
+  try {
+    const pagesToTest = [
+      1,
+      2
+    ];
+
+    const batchResponses =
+      await Promise.all(
+        pagesToTest.map(async page => {
+          const url =
+            new URL(API_URL);
+
+          url.searchParams.set(
+            "global",
+            "true"
+          );
+
+          url.searchParams.set(
+            "fullGlobal",
+            "true"
+          );
+
+          url.searchParams.set(
+            "page",
+            String(page)
+          );
+
+          const response =
+            await fetch(
+              url.toString()
+            );
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data?.error ||
+              `Full Global batch ${page} failed: ${response.status}`
+            );
+          }
+
+          return data;
+        })
+      );
+
+    const combinedResults =
+      batchResponses.flatMap(
+        batch =>
+          Array.isArray(
+            batch.globalBatchResults
+          )
+            ? batch.globalBatchResults
+            : []
+      );
+
+    const sortedResults =
+      [...combinedResults]
+        .sort((a, b) => {
+          const scoreDifference =
+            (b.opportunityScore || 0) -
+            (a.opportunityScore || 0);
+
+          if (scoreDifference !== 0) {
+            return scoreDifference;
+          }
+
+          return (
+            (b.confidence || 0) -
+            (a.confidence || 0)
+          );
+        })
+        .map(
+          (coin, index) => ({
+            rank:
+              index + 1,
+            ...coin
+          })
+        );
+
+    console.log(
+      "FULL GLOBAL TEST:",
+      {
+        batches:
+          pagesToTest.length,
+
+        results:
+          combinedResults.length,
+
+        ranking:
+          sortedResults
+      }
+    );
+
+    return sortedResults;
+
+  } catch (error) {
+    console.error(
+      "Full Global Aggregation Test Error:",
+      error
+    );
+
+    return [];
+  }
+}
+    
     async function loadGlobalRanking() {
   try {
     const response =
@@ -2311,6 +2418,7 @@ document.addEventListener(
 );
     loadGlobalRanking();
     loadMarketSummary();
+    testFullGlobalAggregation();
   </script>
 
 <script
