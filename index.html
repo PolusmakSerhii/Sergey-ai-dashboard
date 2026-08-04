@@ -1301,6 +1301,54 @@ for (
         );
    globalRankingResults =
      sortedResults;
+
+scannerCurrentPage = 1;
+
+scannerTotalPages =
+  Math.ceil(
+    globalRankingResults.length /
+    scannerPageLimit
+  );
+
+scannerResults =
+  globalRankingResults
+    .slice(
+      0,
+      scannerPageLimit
+    )
+    .map(
+      coin => ({
+        ...coin,
+
+        opportunityGrade:
+          coin.grade ||
+          coin.opportunityGrade ||
+          "D"
+      })
+    );
+
+renderScanner(
+  scannerResults
+);
+
+const pageInfoElement =
+  document.querySelector(
+    "#scanner-page-info"
+  );
+
+if (pageInfoElement) {
+  pageInfoElement.textContent =
+    `Page 1 of ${scannerTotalPages}`;
+}
+
+const prevButton =
+  document.querySelector(
+    "#scanner-prev"
+  );
+
+if (prevButton) {
+  prevButton.disabled = true;
+}
     
     console.log(
       "FULL GLOBAL TEST:",
