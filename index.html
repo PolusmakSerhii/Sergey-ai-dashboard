@@ -2425,29 +2425,107 @@ directionFilter.addEventListener(
    const scannerNextButton =
       document.querySelector("#scanner-next");
 
-   scannerPrevButton?.addEventListener(
-    "click",
-    () => {
-      if (scannerCurrentPage <= 1) {
-        return;
-     }
+    function renderGlobalRankingPage() {
+  if (!globalRankingResults.length) {
+    return;
+  }
+
+  scannerTotalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        globalRankingResults.length /
+        scannerPageLimit
+      )
+    );
+
+  scannerCurrentPage =
+    Math.max(
+      1,
+      Math.min(
+        scannerCurrentPage,
+        scannerTotalPages
+      )
+    );
+
+  const startIndex =
+    (scannerCurrentPage - 1) *
+    scannerPageLimit;
+
+  scannerResults =
+    globalRankingResults
+      .slice(
+        startIndex,
+        startIndex +
+          scannerPageLimit
+      )
+      .map(
+        coin => ({
+          ...coin,
+
+          opportunityGrade:
+            coin.grade ||
+            coin.opportunityGrade ||
+            "D"
+        })
+      );
+
+  renderScanner(
+    scannerResults
+  );
+
+  const pageInfoElement =
+    document.querySelector(
+      "#scanner-page-info"
+    );
+
+  if (pageInfoElement) {
+    pageInfoElement.textContent =
+      `Page ${scannerCurrentPage} of ${scannerTotalPages}`;
+  }
+
+  if (scannerPrevButton) {
+    scannerPrevButton.disabled =
+      scannerCurrentPage <= 1;
+  }
+
+  if (scannerNextButton) {
+    scannerNextButton.disabled =
+      scannerCurrentPage >=
+      scannerTotalPages;
+  }
+}
+    
+ scannerPrevButton?.addEventListener(
+  "click",
+  () => {
+    if (
+      scannerCurrentPage <= 1 ||
+      !globalRankingResults.length
+    ) {
+      return;
+    }
 
     scannerCurrentPage -= 1;
 
-    loadScanner(
-      searchInput.value.trim()
-    );
+    renderGlobalRankingPage();
   }
 );
-
+    
 scannerNextButton?.addEventListener(
   "click",
   () => {
+    if (
+      scannerCurrentPage >=
+        scannerTotalPages ||
+      !globalRankingResults.length
+    ) {
+      return;
+    }
+
     scannerCurrentPage += 1;
 
-    loadScanner(
-      searchInput.value.trim()
-    );
+    renderGlobalRankingPage();
   }
 );
     
