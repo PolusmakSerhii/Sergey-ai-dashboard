@@ -1391,12 +1391,19 @@ if (prevButton) {
       );
     }
 
-    globalRankingResults =
+    const quickGlobalTop10 =
       Array.isArray(data.globalTop10)
-        ? data.globalTop10
-        : [];
+      ? data.globalTop10
+      : [];
 
-      const marketCountElement =
+  if (
+   globalRankingResults.length <=
+   scannerPageLimit
+) {
+  globalRankingResults =
+    quickGlobalTop10;
+}
+    const marketCountElement =
          document.querySelector("#market-count");
 
 if (marketCountElement) {
@@ -1404,12 +1411,15 @@ if (marketCountElement) {
     `${data.totalAvailableSymbols ?? 0} рынков`;
 }
     
-     if (
-      !searchInput.value.trim() &&
-      directionFilter.value === "all" &&
-      gradeFilter.value === "all" &&
-      actionFilter.value === "all"
-    ) {
+ if (
+  globalRankingResults.length <=
+    scannerPageLimit &&
+  !searchInput.value.trim() &&
+  directionFilter.value === "all" &&
+  gradeFilter.value === "all" &&
+  actionFilter.value === "all"
+) {
+   
   scannerResults =
     globalRankingResults.map(
       coin => ({
