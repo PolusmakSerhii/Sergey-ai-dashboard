@@ -2423,9 +2423,13 @@ directionFilter.addEventListener(
   }
 );
     
-    actionFilter.addEventListener(
-    "change",
-    () => renderScanner(scannerResults)
+   actionFilter.addEventListener(
+  "change",
+  () => {
+    scannerCurrentPage = 1;
+
+    renderGlobalRankingPage();
+  }
 );
 
     const scannerPrevButton =
@@ -2447,21 +2451,29 @@ directionFilter.addEventListener(
          );
 
       const gradeFilteredResults =
-  directionFilteredResults.filter(
-    coin =>
-      gradeFilter.value === "all" ||
-      (
+       directionFilteredResults.filter(
+        coin =>
+          gradeFilter.value === "all" ||
+          (
         coin.opportunityGrade ||
         coin.grade ||
         "D"
       ) === gradeFilter.value
   );
+
+      const actionFilteredResults =
+        gradeFilteredResults.filter(
+          coin =>
+           actionFilter.value === "all" ||
+           getScannerAction(coin) ===
+             actionFilter.value
+      );
       
  scannerTotalPages =
   Math.max(
     1,
     Math.ceil(
-      gradeFilteredResults.length /
+      actionFilteredResults.length /
       scannerPageLimit
     )
   );
@@ -2480,7 +2492,7 @@ directionFilter.addEventListener(
     scannerPageLimit;
 
   scannerResults =
-   gradeFilteredResults
+   actionFilteredResults
       .slice(
         startIndex,
         startIndex +
