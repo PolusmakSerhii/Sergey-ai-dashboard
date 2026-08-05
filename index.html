@@ -1336,6 +1336,67 @@ if (bestOpportunityDetailsElement) {
         }`
       : "No opportunity found";
 }
+
+   const fullGlobalBestSetup =
+  [...globalRankingResults]
+    .filter(
+      coin =>
+        coin.tradeAllowed === true &&
+        coin.tradeReadiness?.ready === true
+    )
+    .sort((a, b) => {
+      const opportunityDifference =
+        (b.opportunityScore || 0) -
+        (a.opportunityScore || 0);
+
+      if (opportunityDifference !== 0) {
+        return opportunityDifference;
+      }
+
+      const readinessDifference =
+        (b.tradeReadiness?.score || 0) -
+        (a.tradeReadiness?.score || 0);
+
+      if (readinessDifference !== 0) {
+        return readinessDifference;
+      }
+
+      return (
+        (b.confidence || 0) -
+        (a.confidence || 0)
+      );
+    })[0] || null;
+
+const bestSetupSymbolElement =
+  document.querySelector(
+    "#best-setup-symbol"
+  );
+
+const bestSetupDetailsElement =
+  document.querySelector(
+    "#best-setup-details"
+  );
+
+if (bestSetupSymbolElement) {
+  bestSetupSymbolElement.textContent =
+    fullGlobalBestSetup?.symbol ||
+    "No Setup";
+}
+
+if (bestSetupDetailsElement) {
+  bestSetupDetailsElement.textContent =
+    fullGlobalBestSetup
+      ? `Confidence: ${
+          fullGlobalBestSetup.confidence ?? 0
+        }% | Score: ${
+          fullGlobalBestSetup.opportunityScore ?? 0
+        } | Readiness: ${
+          fullGlobalBestSetup.tradeReadiness?.score ?? 0
+        } | Action: ${
+          fullGlobalBestSetup.action || "Wait"
+        }`
+      : "No ready trade setup found";
+}
     
 scannerCurrentPage = 1;
 
