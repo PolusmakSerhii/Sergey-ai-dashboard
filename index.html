@@ -1302,6 +1302,41 @@ for (
    globalRankingResults =
      sortedResults;
 
+  const fullGlobalBestOpportunity =
+  globalRankingResults[0] || null;
+
+const bestOpportunitySymbolElement =
+  document.querySelector(
+    "#best-opportunity-symbol"
+  );
+
+const bestOpportunityDetailsElement =
+  document.querySelector(
+    "#best-opportunity-details"
+  );
+
+if (bestOpportunitySymbolElement) {
+  bestOpportunitySymbolElement.textContent =
+    fullGlobalBestOpportunity?.symbol ||
+    "No Opportunity";
+}
+
+if (bestOpportunityDetailsElement) {
+  bestOpportunityDetailsElement.textContent =
+    fullGlobalBestOpportunity
+      ? `Opportunity Score: ${
+          fullGlobalBestOpportunity.opportunityScore ?? 0
+        } | Grade: ${
+          fullGlobalBestOpportunity.grade ||
+          fullGlobalBestOpportunity.opportunityGrade ||
+          "D"
+        } | Direction: ${
+          fullGlobalBestOpportunity.direction ||
+          "Neutral"
+        }`
+      : "No opportunity found";
+}
+    
 scannerCurrentPage = 1;
 
 scannerTotalPages =
