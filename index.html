@@ -145,6 +145,72 @@
       line-height: 1.45;
     }
 
+    .statistics-chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .statistics-chart-card {
+      padding: 16px;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 16px;
+      background: rgba(9, 24, 39, 0.45);
+    }
+
+    .statistics-chart-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .statistics-chart-period {
+      color: #75869a;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .statistics-chart {
+      display: block;
+      width: 100%;
+      height: 96px;
+      overflow: visible;
+    }
+
+    .statistics-chart-grid-line {
+      stroke: rgba(139, 152, 169, 0.14);
+      stroke-width: 1;
+    }
+
+    .statistics-chart-area {
+      fill: rgba(79, 227, 177, 0.1);
+    }
+
+    .statistics-chart-line {
+      fill: none;
+      stroke: #4fe3b1;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .statistics-chart-line.is-blue {
+      stroke: #3ca8ff;
+    }
+
+    .statistics-chart-dot {
+      fill: #4fe3b1;
+      stroke: #0a1521;
+      stroke-width: 2;
+    }
+
+    .statistics-chart-dot.is-blue {
+      fill: #3ca8ff;
+    }
+
     @media (max-width: 900px) {
       .statistics-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -153,6 +219,10 @@
 
     @media (max-width: 560px) {
       .statistics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .statistics-chart-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -801,6 +871,44 @@
       </p>
     </article>
   </div>
+
+  <div class="statistics-chart-grid">
+    <article class="statistics-chart-card">
+      <div class="statistics-chart-header">
+        <p class="statistics-metric-label" style="margin: 0;">
+          Confidence Trend
+        </p>
+        <span class="statistics-chart-period" id="statistics-confidence-range">
+          Ожидаем данные
+        </span>
+      </div>
+      <svg
+        class="statistics-chart"
+        id="statistics-confidence-chart"
+        viewBox="0 0 500 96"
+        preserveAspectRatio="none"
+        aria-label="График средней уверенности за 24 часа"
+      ></svg>
+    </article>
+
+    <article class="statistics-chart-card">
+      <div class="statistics-chart-header">
+        <p class="statistics-metric-label" style="margin: 0;">
+          Ready Trades Trend
+        </p>
+        <span class="statistics-chart-period" id="statistics-ready-range">
+          Ожидаем данные
+        </span>
+      </div>
+      <svg
+        class="statistics-chart"
+        id="statistics-ready-chart"
+        viewBox="0 0 500 96"
+        preserveAspectRatio="none"
+        aria-label="График готовых сделок за 24 часа"
+      ></svg>
+    </article>
+  </div>
 </section>
     
 <section class="card" style="margin-top: 12px;">
@@ -1377,6 +1485,104 @@ if (!data) {
       return String(numericValue);
     }
 
+    function renderStatisticsChart(
+      selector,
+      history,
+      valueKey,
+      blue = false
+    ) {
+      const chart = document.querySelector(selector);
+
+      if (!chart) {
+        return;
+      }
+
+      const values = history
+        .slice()
+        .reverse()
+        .map((item) => Number(item?.[valueKey]))
+        .filter(Number.isFinite);
+
+      if (!values.length) {
+        chart.innerHTML = `
+          <text x="250" y="52" text-anchor="middle" fill="#75869a" font-size="13">
+            Ожидаем историю
+          </text>
+        `;
+        return;
+      }
+
+      const width = 500;
+      const height = 96;
+      const padding = 7;
+      const minimum = Math.min(...values);
+      const maximum = Math.max(...values);
+      const range = Math.max(maximum - minimum, 1);
+      const points = values.map((value, index) => {
+        const x = values.length === 1
+          ? width / 2
+          : padding +
+            (index / (values.length - 1)) *
+            (width - padding * 2);
+        const y = height - padding -
+          ((value - minimum) / range) *
+          (height - padding * 2);
+
+        return { x, y };
+      });
+      const linePoints = points
+        .map(({ x, y }) => `${x},${y}`)
+        .join(" ");
+      const firstPoint = points[0];
+      const lastPoint = points[points.length - 1];
+      const areaPoints = [
+        `${firstPoint.x},${height - padding}`,
+        linePoints,
+        `${lastPoint.x},${height - padding}`
+      ].join(" ");
+      const colorClass = blue ? " is-blue" : "";
+
+      chart.innerHTML = `
+        <line class="statistics-chart-grid-line" x1="0" y1="24" x2="500" y2="24"></line>
+        <line class="statistics-chart-grid-line" x1="0" y1="48" x2="500" y2="48"></line>
+        <line class="statistics-chart-grid-line" x1="0" y1="72" x2="500" y2="72"></line>
+        <polygon class="statistics-chart-area" points="${areaPoints}"></polygon>
+        <polyline class="statistics-chart-line${colorClass}" points="${linePoints}"></polyline>
+        <circle class="statistics-chart-dot${colorClass}" cx="${lastPoint.x}" cy="${lastPoint.y}" r="5"></circle>
+      `;
+    }
+
+    function formatStatisticsRange(history) {
+      if (!history.length) {
+        return "Ожидаем данные";
+      }
+
+      if (history.length === 1) {
+        return "1 снимок";
+      }
+
+      const oldest = new Date(
+        history[history.length - 1]?.generatedAt
+      );
+      const latest = new Date(history[0]?.generatedAt);
+
+      if (
+        Number.isNaN(oldest.getTime()) ||
+        Number.isNaN(latest.getTime())
+      ) {
+        return `${history.length} снимков`;
+      }
+
+      const elapsedMinutes = Math.max(
+        1,
+        Math.round((latest - oldest) / 60000)
+      );
+
+      return elapsedMinutes >= 60
+        ? `${(elapsedMinutes / 60).toFixed(1)} ч · ${history.length} снимков`
+        : `${elapsedMinutes} мин · ${history.length} снимков`;
+    }
+
     async function loadStatisticsOverview() {
       try {
         const response = await fetch(
@@ -1452,6 +1658,28 @@ if (!data) {
         ).textContent = best
           ? `Score: ${best.opportunityScore || 0} · Confidence: ${best.confidence || 0}% · ${best.direction || "Neutral"}`
           : "Score: — · Confidence: —";
+
+        renderStatisticsChart(
+          "#statistics-confidence-chart",
+          history,
+          "averageConfidence"
+        );
+        renderStatisticsChart(
+          "#statistics-ready-chart",
+          history,
+          "readyTrades",
+          true
+        );
+
+        const statisticsRange =
+          formatStatisticsRange(history);
+
+        document.querySelector(
+          "#statistics-confidence-range"
+        ).textContent = statisticsRange;
+        document.querySelector(
+          "#statistics-ready-range"
+        ).textContent = statisticsRange;
       } catch (error) {
         console.error(
           "Statistics Overview Error:",
