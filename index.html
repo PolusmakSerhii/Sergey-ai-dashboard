@@ -2035,6 +2035,37 @@ if (!data) {
       ].join("\n");
     }
 
+    function findCoinInChatQuestion(question) {
+      const normalizedQuestion = String(question || "")
+        .trim()
+        .toUpperCase();
+
+      const fullSymbolMatch = globalRankingResults.find(
+        (coin) =>
+          normalizedQuestion.includes(coin.symbol)
+      );
+
+      if (fullSymbolMatch) {
+        return fullSymbolMatch;
+      }
+
+      const tokens = normalizedQuestion
+        .split(/[^A-Z0-9]+/)
+        .filter(Boolean);
+
+      if (!tokens.length) {
+        return null;
+      }
+
+      return globalRankingResults.find((coin) => {
+        const baseSymbol = coin.symbol.endsWith("USDT")
+          ? coin.symbol.slice(0, -4)
+          : coin.symbol;
+
+        return tokens.includes(baseSymbol);
+      }) || null;
+    }
+
     function answerAiChatQuestion(question, displayText) {
       addAiChatMessage(displayText, "user");
 
@@ -2080,18 +2111,13 @@ if (!data) {
         return;
       }
 
-      const normalizedQuestion = question
-        .trim()
-        .toUpperCase();
-      const mentionedCoin = globalRankingResults.find(
-        (coin) =>
-          normalizedQuestion.includes(coin.symbol)
-      );
+      const mentionedCoin =
+        findCoinInChatQuestion(question);
 
       addAiChatMessage(
         mentionedCoin
-          ? describeRankingCoin(mentionedCoin)
-          : "В Preview-режиме я могу разобрать символ монеты или ответить на один из быстрых вопросов. Например, введите BTCUSDT."
+          ? `Я не принимаю решение о покупке вместо трейдера. Вот текущие данные для оценки:\n${describeRankingCoin(mentionedCoin)}`
+          : "Монета не распознана в текущем рейтинге. Можно вводить короткое название (BTC, XRP, ETH) или полную пару (BTCUSDT)."
       );
     }
 
