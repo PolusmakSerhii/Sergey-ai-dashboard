@@ -1173,108 +1173,33 @@ if (!data) {
   }
     }
 
-    async function testFullGlobalAggregation() {
+    async function loadFullGlobalRanking() {
   try {
+    const response =
+      await fetch(GLOBAL_RANKING_URL);
 
-    const concurrency = 2;
+    const data =
+      await response.json();
 
-async function loadFullGlobalBatch(page) {
-  const url =
-    new URL(API_URL);
-
-  url.searchParams.set(
-    "global",
-    "true"
-  );
-
-  url.searchParams.set(
-    "fullGlobal",
-    "true"
-  );
-
-  url.searchParams.set(
-    "page",
-    String(page)
-  );
-
-  const response =
-    await fetch(
-      url.toString()
-    );
-
-  const data =
-    await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data?.error ||
-      `Full Global batch ${page} failed: ${response.status}`
-    );
-  }
-
-  return data;
-}
-
-const firstBatch =
-  await loadFullGlobalBatch(1);
-
-const totalBatches =
-  Number(
-    firstBatch.totalBatches
-  ) || 1;
-
-const batchResponses = [
-  firstBatch
-];
-
-for (
-  let startPage = 2;
-  startPage <= totalBatches;
-  startPage += concurrency
-) {
-  const pages =
-    Array.from(
-      {
-        length: Math.min(
-          concurrency,
-          totalBatches -
-            startPage +
-            1
-        )
-      },
-      (_, index) =>
-        startPage + index
-    );
-
-  console.log(
-    "Full Global loading batches:",
-    pages
-  );
-
-  const waveResponses =
-    await Promise.all(
-      pages.map(
-        page =>
-          loadFullGlobalBatch(
-            page
-          )
-      )
-    );
-
-  batchResponses.push(
-    ...waveResponses
-  );
-}
-    
-    const combinedResults =
-      batchResponses.flatMap(
-        batch =>
-          Array.isArray(
-            batch.globalBatchResults
-          )
-            ? batch.globalBatchResults
-            : []
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+        `Global Ranking request failed: ${response.status}`
       );
+    }
+
+    const combinedResults =
+      Array.isArray(data.globalRanking)
+        ? data.globalRanking
+        : [];
+
+    const marketCountElement =
+      document.querySelector("#market-count");
+
+    if (marketCountElement) {
+      marketCountElement.textContent =
+        `${data.totalAvailableSymbols ?? 0} рынков`;
+    }
 
     const sortedResults =
       [...combinedResults]
@@ -1450,9 +1375,10 @@ if (prevButton) {
       "FULL GLOBAL TEST:",
       {
         batches:
-          batchResponses.length,
-        
+          data.batchesProcessed ?? 0,
+
         results:
+          data.resultsCollected ??
           combinedResults.length,
 
         ranking:
@@ -2735,9 +2661,8 @@ document.addEventListener(
     }
   }
 );
-    loadGlobalRanking();
     loadMarketSummary();
-    testFullGlobalAggregation();
+    loadFullGlobalRanking();
   </script>
 
 <script
