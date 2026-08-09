@@ -303,6 +303,135 @@
       font-size: 13px;
     }
 
+    .ai-chat-preview {
+      margin-top: 18px;
+    }
+
+    .ai-chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .ai-chat-mode {
+      padding: 6px 10px;
+      border: 1px solid rgba(79, 227, 177, 0.26);
+      border-radius: 999px;
+      background: rgba(79, 227, 177, 0.08);
+      color: #77f1c8;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .ai-chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 330px;
+      min-height: 130px;
+      padding: 14px;
+      overflow-y: auto;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 16px;
+      background: rgba(5, 16, 27, 0.5);
+    }
+
+    .ai-chat-message {
+      max-width: min(82%, 720px);
+      margin: 0;
+      padding: 11px 13px;
+      border-radius: 14px;
+      color: #c8d3df;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .ai-chat-message.is-assistant {
+      align-self: flex-start;
+      border: 1px solid rgba(60, 168, 255, 0.2);
+      background: rgba(20, 53, 78, 0.48);
+    }
+
+    .ai-chat-message.is-user {
+      align-self: flex-end;
+      border: 1px solid rgba(79, 227, 177, 0.22);
+      background: rgba(33, 97, 79, 0.36);
+      color: #e5fff6;
+    }
+
+    .ai-chat-quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .ai-chat-quick-button {
+      padding: 8px 11px;
+      border: 1px solid rgba(124, 151, 180, 0.24);
+      border-radius: 999px;
+      background: rgba(10, 27, 43, 0.72);
+      color: #aebdcd;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .ai-chat-quick-button:hover,
+    .ai-chat-quick-button:focus-visible {
+      border-color: rgba(60, 168, 255, 0.54);
+      color: #e8f5ff;
+      outline: none;
+    }
+
+    .ai-chat-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .ai-chat-input {
+      width: 100%;
+      min-width: 0;
+      padding: 11px 13px;
+      border: 1px solid rgba(124, 151, 180, 0.26);
+      border-radius: 12px;
+      background: rgba(4, 13, 23, 0.74);
+      color: #f4f7fb;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .ai-chat-input:focus {
+      border-color: rgba(79, 227, 177, 0.54);
+      outline: none;
+    }
+
+    .ai-chat-submit {
+      padding: 0 16px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4fe3b1, #3ca8ff);
+      color: #03101b;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .ai-chat-note {
+      margin: 9px 0 0;
+      color: #75869a;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
     @media (max-width: 900px) {
       .statistics-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -324,6 +453,18 @@
 
       .statistics-history-list {
         grid-template-columns: 1fr;
+      }
+
+      .ai-chat-message {
+        max-width: 92%;
+      }
+
+      .ai-chat-form {
+        grid-template-columns: 1fr;
+      }
+
+      .ai-chat-submit {
+        min-height: 42px;
       }
     }
 
@@ -1028,6 +1169,56 @@
       </p>
     </div>
   </article>
+</section>
+
+<section class="card ai-chat-preview">
+  <div class="ai-chat-header">
+    <p class="card-label" style="margin: 0;">
+      AI Chat Assistant · Preview
+    </p>
+    <span class="ai-chat-mode">
+      Market Data Mode
+    </span>
+  </div>
+
+  <div
+    class="ai-chat-messages"
+    id="ai-chat-messages"
+    aria-live="polite"
+  >
+    <p class="ai-chat-message is-assistant">
+      Я помогу прочитать текущий рейтинг. Выберите быстрый вопрос или введите символ монеты, например KSMUSDT.
+    </p>
+  </div>
+
+  <div class="ai-chat-quick-actions">
+    <button type="button" class="ai-chat-quick-button" data-chat-question="leader">
+      Почему эта монета лидер?
+    </button>
+    <button type="button" class="ai-chat-quick-button" data-chat-question="market">
+      Что сейчас с рынком?
+    </button>
+    <button type="button" class="ai-chat-quick-button" data-chat-question="setup">
+      Какой лучший готовый сетап?
+    </button>
+  </div>
+
+  <form class="ai-chat-form" id="ai-chat-form">
+    <input
+      class="ai-chat-input"
+      id="ai-chat-input"
+      type="text"
+      autocomplete="off"
+      placeholder="Введите символ или вопрос о рынке..."
+    >
+    <button class="ai-chat-submit" type="submit">
+      Спросить
+    </button>
+  </form>
+
+  <p class="ai-chat-note">
+    Preview отвечает только по текущим данным Dashboard и не является торговым советом. Подключение языковой AI-модели будет следующим отдельным этапом.
+  </p>
 </section>
     
 <section class="card" style="margin-top: 12px;">
@@ -1793,6 +1984,115 @@ if (!data) {
           `;
         })
         .join("");
+    }
+
+    function addAiChatMessage(text, role = "assistant") {
+      const messages = document.querySelector(
+        "#ai-chat-messages"
+      );
+
+      if (!messages) {
+        return;
+      }
+
+      const message = document.createElement("p");
+      message.className =
+        `ai-chat-message is-${role}`;
+      message.textContent = text;
+      messages.appendChild(message);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function getBestReadySetup() {
+      return [...globalRankingResults]
+        .filter((coin) =>
+          coin.tradeAllowed === true &&
+          coin.tradeReadiness?.ready === true
+        )
+        .sort((a, b) =>
+          (b.opportunityScore || 0) -
+          (a.opportunityScore || 0)
+        )[0] || null;
+    }
+
+    function describeRankingCoin(coin) {
+      if (!coin) {
+        return "Монета не найдена в текущем рейтинге. Проверьте символ, например BTCUSDT или KSMUSDT.";
+      }
+
+      const direction = coin.direction || "Neutral";
+      const action = coin.action ||
+        getScannerAction(coin) ||
+        "Wait";
+      const readiness = coin.tradeReadiness?.ready
+        ? "READY TO ENTER"
+        : "ещё не готов к входу";
+
+      return [
+        `${coin.symbol}: Score ${coin.opportunityScore || 0}, Confidence ${coin.confidence || 0}%, Grade ${coin.grade || coin.opportunityGrade || "—"}.`,
+        `Направление: ${direction}. Действие: ${action}. Статус: ${readiness}.`,
+        "Для решения откройте карточку монеты и проверьте Entry Zone, Stop Loss, TP и Market Environment."
+      ].join("\n");
+    }
+
+    function answerAiChatQuestion(question, displayText) {
+      addAiChatMessage(displayText, "user");
+
+      if (!globalRankingResults.length) {
+        addAiChatMessage(
+          "Рейтинг ещё загружается. Повторите вопрос через несколько секунд."
+        );
+        return;
+      }
+
+      if (question === "leader") {
+        const leader = globalRankingResults[0];
+        addAiChatMessage(
+          `${leader.symbol} находится на первом месте, потому что имеет лучший общий Opportunity Score (${leader.opportunityScore || 0}) среди текущих рынков. Его Confidence: ${leader.confidence || 0}%, направление: ${leader.direction || "Neutral"}, действие: ${leader.action || getScannerAction(leader) || "Wait"}.`
+        );
+        return;
+      }
+
+      if (question === "market") {
+        const bias = document.querySelector(
+          "#market-bias"
+        )?.textContent?.trim() || "—";
+        const condition = document.querySelector(
+          "#market-condition"
+        )?.textContent?.trim() || "—";
+        const details = document.querySelector(
+          "#market-details"
+        )?.textContent?.trim() || "—";
+
+        addAiChatMessage(
+          `Текущий Market Summary: ${bias}. ${condition}. ${details}. Сравните это с направлением конкретной монеты перед входом.`
+        );
+        return;
+      }
+
+      if (question === "setup") {
+        const setup = getBestReadySetup();
+        addAiChatMessage(
+          setup
+            ? `Лучший готовый сетап сейчас:\n${describeRankingCoin(setup)}`
+            : "Сейчас нет сетапа, который одновременно разрешён системой и имеет статус готовности. Лучше дождаться нового обновления."
+        );
+        return;
+      }
+
+      const normalizedQuestion = question
+        .trim()
+        .toUpperCase();
+      const mentionedCoin = globalRankingResults.find(
+        (coin) =>
+          normalizedQuestion.includes(coin.symbol)
+      );
+
+      addAiChatMessage(
+        mentionedCoin
+          ? describeRankingCoin(mentionedCoin)
+          : "В Preview-режиме я могу разобрать символ монеты или ответить на один из быстрых вопросов. Например, введите BTCUSDT."
+      );
     }
 
     async function loadStatisticsOverview() {
@@ -3390,6 +3690,43 @@ document
     }
 
     openCoinModal(symbol);
+  });
+
+document
+  .querySelector(".ai-chat-quick-actions")
+  ?.addEventListener("click", (event) => {
+    const button = event.target.closest(
+      ".ai-chat-quick-button"
+    );
+
+    if (!button) {
+      return;
+    }
+
+    answerAiChatQuestion(
+      button.dataset.chatQuestion || "",
+      button.textContent.trim()
+    );
+  });
+
+document
+  .querySelector("#ai-chat-form")
+  ?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const input = document.querySelector(
+      "#ai-chat-input"
+    );
+    const question = input?.value?.trim() || "";
+
+    if (!question) {
+      input?.focus();
+      return;
+    }
+
+    answerAiChatQuestion(question, question);
+    input.value = "";
+    input.focus();
   });
     
 const coinModal =
