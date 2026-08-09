@@ -82,6 +82,19 @@
       white-space: nowrap;
     }
 
+    .header-status-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .ranking-updated-at {
+      color: #8b98a9;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
     .dot {
       width: 10px;
       height: 10px;
@@ -554,9 +567,17 @@
         </p>
       </div>
 
-      <div class="status">
-        <span class="dot"></span>
-        Dashboard online
+      <div class="header-status-group">
+        <div class="status">
+          <span class="dot"></span>
+          Dashboard online
+        </div>
+        <div
+          class="ranking-updated-at"
+          id="ranking-updated-at"
+        >
+          Рейтинг: загрузка...
+        </div>
       </div>
     </header>
 
@@ -756,6 +777,10 @@ placeholder="Search symbol..."
     let scannerResults = [];
     let globalRankingResults = [];
     let scoreSortDirection = "desc";
+    let globalRankingRefreshInFlight = false;
+
+    const GLOBAL_RANKING_REFRESH_MS =
+      4 * 60 * 1000;
 
     let scannerCurrentPage = 1;
     const scannerPageLimit = 10;
@@ -1181,10 +1206,44 @@ if (!data) {
   }
     }
 
+    function updateRankingTimestamp(generatedAt) {
+      const element =
+        document.querySelector(
+          "#ranking-updated-at"
+        );
+
+      if (!element || !generatedAt) {
+        return;
+      }
+
+      const generatedDate =
+        new Date(generatedAt);
+
+      if (Number.isNaN(generatedDate.getTime())) {
+        return;
+      }
+
+      element.textContent =
+        `Рейтинг обновлён: ${generatedDate.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        })}`;
+    }
+
     async function loadFullGlobalRanking() {
+  if (globalRankingRefreshInFlight) {
+    return globalRankingResults;
+  }
+
+  globalRankingRefreshInFlight = true;
+
   try {
     const response =
-      await fetch(GLOBAL_RANKING_URL);
+      await fetch(
+        GLOBAL_RANKING_URL,
+        { cache: "no-store" }
+      );
 
     const data =
       await response.json();
@@ -1200,6 +1259,10 @@ if (!data) {
       Array.isArray(data.globalRanking)
         ? data.globalRanking
         : [];
+
+    updateRankingTimestamp(
+      data.generatedAt
+    );
 
     const marketCountElement =
       document.querySelector("#market-count");
@@ -1331,53 +1394,7 @@ if (bestSetupDetailsElement) {
       : "No ready trade setup found";
 }
     
-scannerCurrentPage = 1;
-
-scannerTotalPages =
-  Math.ceil(
-    globalRankingResults.length /
-    scannerPageLimit
-  );
-
-scannerResults =
-  globalRankingResults
-    .slice(
-      0,
-      scannerPageLimit
-    )
-    .map(
-      coin => ({
-        ...coin,
-
-        opportunityGrade:
-          coin.grade ||
-          coin.opportunityGrade ||
-          "D"
-      })
-    );
-
-renderScanner(
-  scannerResults
-);
-
-const pageInfoElement =
-  document.querySelector(
-    "#scanner-page-info"
-  );
-
-if (pageInfoElement) {
-  pageInfoElement.textContent =
-    `Page 1 of ${scannerTotalPages}`;
-}
-
-const prevButton =
-  document.querySelector(
-    "#scanner-prev"
-  );
-
-if (prevButton) {
-  prevButton.disabled = true;
-}
+renderGlobalRankingPage();
     
     console.log(
       "FULL GLOBAL TEST:",
@@ -1403,6 +1420,8 @@ if (prevButton) {
     );
 
     return [];
+  } finally {
+    globalRankingRefreshInFlight = false;
   }
 }
     
@@ -2675,6 +2694,11 @@ document.addEventListener(
 );
     loadMarketSummary();
     loadFullGlobalRanking();
+
+    window.setInterval(
+      loadFullGlobalRanking,
+      GLOBAL_RANKING_REFRESH_MS
+    );
   </script>
 
 <script
