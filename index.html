@@ -211,8 +211,83 @@
       fill: #3ca8ff;
     }
 
+    .statistics-history-card {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 16px;
+      background: rgba(9, 24, 39, 0.45);
+    }
+
+    .statistics-history-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .statistics-history-item {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid rgba(124, 151, 180, 0.16);
+      border-radius: 12px;
+      background: rgba(5, 16, 27, 0.5);
+    }
+
+    .statistics-history-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .statistics-history-symbol {
+      overflow: hidden;
+      color: #f4f7fb;
+      font-size: 16px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .statistics-history-time {
+      color: #75869a;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .statistics-history-details {
+      margin: 7px 0 0;
+      color: #a7b5c5;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .statistics-history-direction {
+      font-weight: 800;
+    }
+
+    .statistics-history-direction.is-long {
+      color: #4fe3b1;
+    }
+
+    .statistics-history-direction.is-short {
+      color: #ff5f75;
+    }
+
+    .statistics-history-empty {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: #75869a;
+      font-size: 13px;
+    }
+
     @media (max-width: 900px) {
       .statistics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .statistics-history-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
@@ -223,6 +298,10 @@
       }
 
       .statistics-chart-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .statistics-history-list {
         grid-template-columns: 1fr;
       }
     }
@@ -909,6 +988,25 @@
       ></svg>
     </article>
   </div>
+
+  <article class="statistics-history-card">
+    <div class="statistics-chart-header">
+      <p class="statistics-metric-label" style="margin: 0;">
+        Best Opportunity History
+      </p>
+      <span class="statistics-chart-period" id="statistics-opportunity-count">
+        Ожидаем данные
+      </span>
+    </div>
+    <div
+      class="statistics-history-list"
+      id="statistics-opportunity-history"
+    >
+      <p class="statistics-history-empty">
+        Загружаем историю лидеров...
+      </p>
+    </div>
+  </article>
 </section>
     
 <section class="card" style="margin-top: 12px;">
@@ -1583,6 +1681,93 @@ if (!data) {
         : `${elapsedMinutes} мин · ${history.length} снимков`;
     }
 
+    function renderBestOpportunityHistory(history) {
+      const container = document.querySelector(
+        "#statistics-opportunity-history"
+      );
+      const countElement = document.querySelector(
+        "#statistics-opportunity-count"
+      );
+
+      if (!container || !countElement) {
+        return;
+      }
+
+      const changes = [];
+      let previousSignature = "";
+
+      history.forEach((snapshot) => {
+        const opportunity = snapshot?.bestOpportunity;
+
+        if (!opportunity?.symbol) {
+          return;
+        }
+
+        const signature = [
+          opportunity.symbol,
+          opportunity.direction,
+          opportunity.action
+        ].join("|");
+
+        if (signature === previousSignature) {
+          return;
+        }
+
+        previousSignature = signature;
+        changes.push({
+          generatedAt: snapshot.generatedAt,
+          ...opportunity
+        });
+      });
+
+      const visibleChanges = changes.slice(0, 8);
+
+      countElement.textContent = changes.length
+        ? `${changes.length} смен лидера`
+        : "Нет изменений";
+
+      if (!visibleChanges.length) {
+        container.innerHTML = `
+          <p class="statistics-history-empty">
+            История лидеров пока не накоплена
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = visibleChanges
+        .map((item) => {
+          const generatedDate = new Date(item.generatedAt);
+          const time = Number.isNaN(generatedDate.getTime())
+            ? "—"
+            : generatedDate.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+          const direction = item.direction || "Neutral";
+          const directionClass = direction === "Long"
+            ? " is-long"
+            : direction === "Short"
+              ? " is-short"
+              : "";
+
+          return `
+            <div class="statistics-history-item">
+              <div class="statistics-history-item-head">
+                <span class="statistics-history-symbol">${item.symbol}</span>
+                <time class="statistics-history-time">${time}</time>
+              </div>
+              <p class="statistics-history-details">
+                Score: ${item.opportunityScore || 0} · Confidence: ${item.confidence || 0}%<br>
+                <span class="statistics-history-direction${directionClass}">${direction}</span>
+                · ${item.action || "Wait"}
+              </p>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
     async function loadStatisticsOverview() {
       try {
         const response = await fetch(
@@ -1680,6 +1865,8 @@ if (!data) {
         document.querySelector(
           "#statistics-ready-range"
         ).textContent = statisticsRange;
+
+        renderBestOpportunityHistory(history);
       } catch (error) {
         console.error(
           "Statistics Overview Error:",
