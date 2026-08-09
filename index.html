@@ -95,6 +95,11 @@
       white-space: nowrap;
     }
 
+    .ranking-updated-at.is-stale {
+      color: #ffd166;
+      font-weight: 700;
+    }
+
     .dot {
       width: 10px;
       height: 10px;
@@ -778,9 +783,14 @@ placeholder="Search symbol..."
     let globalRankingResults = [];
     let scoreSortDirection = "desc";
     let globalRankingRefreshInFlight = false;
+    let lastGlobalRankingGeneratedAt = null;
+    let globalRankingRefreshFailed = false;
 
     const GLOBAL_RANKING_REFRESH_MS =
       4 * 60 * 1000;
+
+    const GLOBAL_RANKING_STALE_MS =
+      6 * 60 * 1000;
 
     let scannerCurrentPage = 1;
     const scannerPageLimit = 10;
@@ -1207,12 +1217,7 @@ if (!data) {
     }
 
     function updateRankingTimestamp(generatedAt) {
-      const element =
-        document.querySelector(
-          "#ranking-updated-at"
-        );
-
-      if (!element || !generatedAt) {
+      if (!generatedAt) {
         return;
       }
 
@@ -1223,12 +1228,55 @@ if (!data) {
         return;
       }
 
-      element.textContent =
-        `Рейтинг обновлён: ${generatedDate.toLocaleTimeString([], {
+      lastGlobalRankingGeneratedAt =
+        generatedDate;
+      globalRankingRefreshFailed = false;
+
+      renderRankingFreshness();
+    }
+
+    function renderRankingFreshness() {
+      const element =
+        document.querySelector(
+          "#ranking-updated-at"
+        );
+
+      if (!element) {
+        return;
+      }
+
+      if (!lastGlobalRankingGeneratedAt) {
+        element.textContent =
+          globalRankingRefreshFailed
+            ? "Рейтинг временно недоступен"
+            : "Рейтинг: загрузка...";
+        element.classList.toggle(
+          "is-stale",
+          globalRankingRefreshFailed
+        );
+        return;
+      }
+
+      const ageMs =
+        Date.now() -
+        lastGlobalRankingGeneratedAt.getTime();
+      const isStale =
+        globalRankingRefreshFailed ||
+        ageMs > GLOBAL_RANKING_STALE_MS;
+      const timeText =
+        lastGlobalRankingGeneratedAt.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit"
-        })}`;
+        });
+
+      element.textContent = isStale
+        ? `⚠ Обновление задерживается · данные ${timeText}`
+        : `Рейтинг обновлён: ${timeText}`;
+      element.classList.toggle(
+        "is-stale",
+        isStale
+      );
     }
 
     async function loadFullGlobalRanking() {
@@ -1418,6 +1466,9 @@ renderGlobalRankingPage();
       "Full Global Aggregation Test Error:",
       error
     );
+
+    globalRankingRefreshFailed = true;
+    renderRankingFreshness();
 
     return [];
   } finally {
@@ -2698,6 +2749,20 @@ document.addEventListener(
     window.setInterval(
       loadFullGlobalRanking,
       GLOBAL_RANKING_REFRESH_MS
+    );
+
+    window.setInterval(
+      renderRankingFreshness,
+      30 * 1000
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.visibilityState === "visible") {
+          loadFullGlobalRanking();
+        }
+      }
     );
   </script>
 
