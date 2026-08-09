@@ -294,6 +294,14 @@
   margin-top: 22px;
 }
 
+.trade-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+  margin-top: 22px;
+}
+
 .coin-detail-card {
   padding: 16px;
   border: 1px solid #243548;
@@ -478,7 +486,8 @@
   font-size: 14px;
 }
     @media (max-width: 700px) {
-  .coin-details-grid {
+  .coin-details-grid,
+  .trade-analysis-grid {
     grid-template-columns: 1fr;
   }
 }    
@@ -2277,7 +2286,11 @@ ${!hasValidTrade ? `
 </div>
 </div>
 
+  </div>
+
 ` : ""}
+
+<div class="trade-analysis-grid">
 
 ${tradeReasons.length > 0 ? `
 <div class="trade-reasons">
@@ -2297,7 +2310,7 @@ ${tradeReasons.length > 0 ? `
 ` : ""}
 
 ${smartMoneyReasons.length > 0 ? `
-<div class="trade-reasons" style="margin-top:20px;">
+<div class="trade-reasons">
     <div class="trade-reasons-title">
         🏦 Smart Money
     </div>
@@ -2314,7 +2327,7 @@ ${smartMoneyReasons.length > 0 ? `
 ` : ""}
 
 ${Object.keys(marketEnvironment).length > 0 ? `
-<div class="trade-reasons" style="margin-top:20px;">
+<div class="trade-reasons">
     <div class="trade-reasons-title">
         🌍 Market Environment
     </div>
