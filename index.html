@@ -108,6 +108,55 @@
       box-shadow: 0 0 18px #4fe3b1;
     }
 
+    .statistics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .statistics-metric {
+      padding: 16px;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 16px;
+      background: rgba(9, 24, 39, 0.45);
+    }
+
+    .statistics-metric-label {
+      margin: 0 0 8px;
+      color: #8b98a9;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .statistics-metric-value {
+      margin: 0;
+      color: #f4f7fb;
+      font-size: 24px;
+      font-weight: 850;
+    }
+
+    .statistics-metric-detail {
+      margin: 8px 0 0;
+      color: #a7b5c5;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .statistics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .statistics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .grid {
       display: grid;
       grid-template-columns:
@@ -673,6 +722,86 @@
     Opportunity Score: — | Grade: — | Direction: —
   </p>
 </section>  
+
+<section class="card" style="margin-top: 18px;">
+  <p class="card-label">
+    Statistics & Analytics · 24H
+  </p>
+
+  <div class="statistics-grid">
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Ranking History
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-snapshots"
+      >
+        Loading...
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-window"
+      >
+        До 360 снимков
+      </p>
+    </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Average Confidence
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-confidence"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-confidence-change"
+      >
+        Ожидаем историю
+      </p>
+    </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Ready Trades
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-ready-trades"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-direction-balance"
+      >
+        Long: — · Short: —
+      </p>
+    </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Best Opportunity
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-best-symbol"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-best-details"
+      >
+        Score: — · Confidence: —
+      </p>
+    </article>
+  </div>
+</section>
     
 <section class="card" style="margin-top: 12px;">
   <p class="card-label">
@@ -778,6 +907,9 @@ placeholder="Search symbol..."
     
     const GLOBAL_RANKING_URL =
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=scanner&globalRank=true";
+
+    const STATISTICS_URL =
+      "https://sergey-ai-trader-api.vercel.app/api/market?mode=statistics";
     
     let scannerResults = [];
     let globalRankingResults = [];
@@ -1233,6 +1365,104 @@ if (!data) {
       globalRankingRefreshFailed = false;
 
       renderRankingFreshness();
+    }
+
+    function formatSignedChange(value) {
+      const numericValue = Number(value) || 0;
+
+      if (numericValue > 0) {
+        return `+${numericValue}`;
+      }
+
+      return String(numericValue);
+    }
+
+    async function loadStatisticsOverview() {
+      try {
+        const response = await fetch(
+          STATISTICS_URL,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error ||
+            `Statistics request failed: ${response.status}`
+          );
+        }
+
+        const history =
+          Array.isArray(data.history)
+            ? data.history
+            : [];
+        const latest = history[0] || null;
+        const previous = history[1] || null;
+
+        document.querySelector(
+          "#statistics-snapshots"
+        ).textContent =
+          `${data.count || 0} / ${data.maxEntries || 360}`;
+
+        document.querySelector(
+          "#statistics-window"
+        ).textContent =
+          `Окно ${data.historyWindowHours || 24} ч · шаг ${data.snapshotIntervalMinutes || 4} мин`;
+
+        document.querySelector(
+          "#statistics-confidence"
+        ).textContent = latest
+          ? `${latest.averageConfidence || 0}%`
+          : "—";
+
+        const confidenceChange =
+          latest && previous
+            ? (latest.averageConfidence || 0) -
+              (previous.averageConfidence || 0)
+            : 0;
+
+        document.querySelector(
+          "#statistics-confidence-change"
+        ).textContent = latest && previous
+          ? `Изменение: ${formatSignedChange(confidenceChange)} п.п.`
+          : "Ожидаем второй снимок";
+
+        document.querySelector(
+          "#statistics-ready-trades"
+        ).textContent = latest
+          ? String(latest.readyTrades || 0)
+          : "—";
+
+        document.querySelector(
+          "#statistics-direction-balance"
+        ).textContent = latest
+          ? `Long: ${latest.longCount || 0} · Short: ${latest.shortCount || 0}`
+          : "Long: — · Short: —";
+
+        const best =
+          latest?.bestOpportunity || null;
+
+        document.querySelector(
+          "#statistics-best-symbol"
+        ).textContent =
+          best?.symbol || "No Opportunity";
+
+        document.querySelector(
+          "#statistics-best-details"
+        ).textContent = best
+          ? `Score: ${best.opportunityScore || 0} · Confidence: ${best.confidence || 0}% · ${best.direction || "Neutral"}`
+          : "Score: — · Confidence: —";
+      } catch (error) {
+        console.error(
+          "Statistics Overview Error:",
+          error
+        );
+
+        document.querySelector(
+          "#statistics-window"
+        ).textContent =
+          "История временно недоступна";
+      }
     }
 
     function renderRankingFreshness() {
@@ -2745,9 +2975,15 @@ document.addEventListener(
 );
     loadMarketSummary();
     loadFullGlobalRanking();
+    loadStatisticsOverview();
 
     window.setInterval(
       loadFullGlobalRanking,
+      GLOBAL_RANKING_REFRESH_MS
+    );
+
+    window.setInterval(
+      loadStatisticsOverview,
       GLOBAL_RANKING_REFRESH_MS
     );
 
@@ -2761,6 +2997,7 @@ document.addEventListener(
       () => {
         if (document.visibilityState === "visible") {
           loadFullGlobalRanking();
+          loadStatisticsOverview();
         }
       }
     );
