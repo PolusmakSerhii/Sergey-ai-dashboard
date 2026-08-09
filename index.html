@@ -227,11 +227,32 @@
     }
 
     .statistics-history-item {
+      width: 100%;
       min-width: 0;
       padding: 12px;
       border: 1px solid rgba(124, 151, 180, 0.16);
       border-radius: 12px;
       background: rgba(5, 16, 27, 0.5);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color 160ms ease,
+        background 160ms ease,
+        transform 160ms ease;
+    }
+
+    .statistics-history-item:hover,
+    .statistics-history-item:focus-visible {
+      border-color: rgba(79, 227, 177, 0.48);
+      background: rgba(20, 50, 65, 0.58);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .statistics-history-item:active {
+      transform: translateY(0);
     }
 
     .statistics-history-item-head {
@@ -1752,7 +1773,13 @@ if (!data) {
               : "";
 
           return `
-            <div class="statistics-history-item">
+            <button
+              type="button"
+              class="statistics-history-item"
+              data-symbol="${item.symbol}"
+              aria-label="Открыть полный анализ ${item.symbol}"
+              title="Открыть полный анализ"
+            >
               <div class="statistics-history-item-head">
                 <span class="statistics-history-symbol">${item.symbol}</span>
                 <time class="statistics-history-time">${time}</time>
@@ -1762,7 +1789,7 @@ if (!data) {
                 <span class="statistics-history-direction${directionClass}">${direction}</span>
                 · ${item.action || "Wait"}
               </p>
-            </div>
+            </button>
           `;
         })
         .join("");
@@ -3341,6 +3368,26 @@ scannerNextButton?.addEventListener(
 
     const symbol =
       coinRow.dataset.symbol;
+
+    openCoinModal(symbol);
+  });
+
+document
+  .querySelector("#statistics-opportunity-history")
+  ?.addEventListener("click", (event) => {
+    const historyItem = event.target.closest(
+      ".statistics-history-item"
+    );
+
+    if (!historyItem) {
+      return;
+    }
+
+    const symbol = historyItem.dataset.symbol;
+
+    if (!symbol) {
+      return;
+    }
 
     openCoinModal(symbol);
   });
