@@ -2043,7 +2043,26 @@ if (!data) {
         .trim()
         .toUpperCase();
 
-      const fullSymbolMatch = globalRankingResults.find(
+      const coinsBySymbol = new Map();
+
+      globalRankingResults.forEach((coin) => {
+        if (coin?.symbol) {
+          coinsBySymbol.set(coin.symbol, coin);
+        }
+      });
+
+      scannerResults.forEach((coin) => {
+        if (coin?.symbol) {
+          coinsBySymbol.set(coin.symbol, {
+            ...(coinsBySymbol.get(coin.symbol) || {}),
+            ...coin
+          });
+        }
+      });
+
+      const availableCoins = [...coinsBySymbol.values()];
+
+      const fullSymbolMatch = availableCoins.find(
         (coin) =>
           normalizedQuestion.includes(coin.symbol)
       );
@@ -2060,7 +2079,7 @@ if (!data) {
         return null;
       }
 
-      return globalRankingResults.find((coin) => {
+      return availableCoins.find((coin) => {
         const baseSymbol = coin.symbol.endsWith("USDT")
           ? coin.symbol.slice(0, -4)
           : coin.symbol;
