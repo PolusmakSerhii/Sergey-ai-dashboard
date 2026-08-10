@@ -2069,7 +2069,7 @@ if (!data) {
       }) || null;
     }
 
-    function getAiChatContext(question) {
+    async function getAiChatContext(question) {
       const setup = getBestReadySetup();
       const requestedCoin = findCoinInChatQuestion(question);
       const compactCoin = (coin) => coin
@@ -2085,6 +2085,59 @@ if (!data) {
           }
         : null;
 
+      let requestedCoinAnalysis = null;
+
+      if (requestedCoin?.symbol) {
+        try {
+          const response = await fetch(
+            `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${encodeURIComponent(requestedCoin.symbol)}`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            const technical = data.technical || {};
+            const tradePlan = technical.tradePlan || {};
+            const probability = technical.probability || {};
+            const smartMoney = technical.smartMoney || {};
+            const environment = technical.marketEnvironment || {};
+
+            requestedCoinAnalysis = {
+              analysisReasons: Array.isArray(tradePlan.reasons) && tradePlan.reasons.length
+                ? tradePlan.reasons.slice(0, 8)
+                : Array.isArray(probability.reasons)
+                  ? probability.reasons.slice(0, 8)
+                  : [],
+              smartMoneyReasons: Array.isArray(smartMoney.reasons)
+                ? smartMoney.reasons.slice(0, 8)
+                : [],
+              marketEnvironment: {
+                score: environment.score ?? null,
+                condition: environment.condition ?? null,
+                tradable: environment.tradable === true,
+                reasons: Array.isArray(environment.reasons)
+                  ? environment.reasons.slice(0, 6)
+                  : [],
+                warnings: Array.isArray(environment.warnings)
+                  ? environment.warnings.slice(0, 4)
+                  : []
+              },
+              tradePlan: {
+                validTrade: tradePlan.validTrade === true,
+                direction: tradePlan.direction || null,
+                entryZone: tradePlan.entryZone || null,
+                stopLoss: tradePlan.stopLoss ?? null,
+                takeProfit1: tradePlan.takeProfit1 ?? null,
+                takeProfit2: tradePlan.takeProfit2 ?? null,
+                takeProfit3: tradePlan.takeProfit3 ?? null,
+                riskReward: tradePlan.riskReward ?? null
+              }
+            };
+          }
+        } catch (error) {
+          console.error("AI Chat coin analysis error:", error);
+        }
+      }
+
       return {
         marketSummary: {
           bias: document.querySelector("#market-bias")?.textContent?.trim() || "—",
@@ -2092,6 +2145,7 @@ if (!data) {
           details: document.querySelector("#market-details")?.textContent?.trim() || "—"
         },
         requestedCoin: compactCoin(requestedCoin),
+        requestedCoinAnalysis,
         leader: compactCoin(globalRankingResults[0]),
         bestReadySetup: compactCoin(setup),
         topMarkets: globalRankingResults.slice(0, 10).map(compactCoin)
@@ -2131,7 +2185,7 @@ if (!data) {
           },
           body: JSON.stringify({
             question: prompt,
-            context: getAiChatContext(prompt)
+            context: await getAiChatContext(prompt)
           })
         });
         const data = await response.json();
