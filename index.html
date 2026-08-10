@@ -1176,8 +1176,8 @@
     <p class="card-label" style="margin: 0;">
       AI Chat Assistant · Preview
     </p>
-    <span class="ai-chat-mode">
-      Market Data Mode
+    <span class="ai-chat-mode" id="ai-chat-mode">
+      AI Online
     </span>
   </div>
 
@@ -1217,7 +1217,7 @@
   </form>
 
   <p class="ai-chat-note">
-    Preview отвечает только по текущим данным Dashboard и не является торговым советом. Подключение языковой AI-модели будет следующим отдельным этапом.
+    AI отвечает по текущим данным Dashboard и не является торговым советом.
   </p>
 </section>
     
@@ -1328,6 +1328,9 @@ placeholder="Search symbol..."
 
     const STATISTICS_URL =
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=statistics";
+
+    const CHAT_URL =
+      "https://sergey-ai-trader-api.vercel.app/api/chat";
     
     let scannerResults = [];
     let globalRankingResults = [];
@@ -2066,7 +2069,34 @@ if (!data) {
       }) || null;
     }
 
-    function answerAiChatQuestion(question, displayText) {
+    function getAiChatContext() {
+      const setup = getBestReadySetup();
+      const compactCoin = (coin) => coin
+        ? {
+            symbol: coin.symbol,
+            opportunityScore: coin.opportunityScore || 0,
+            confidence: coin.confidence || 0,
+            grade: coin.grade || coin.opportunityGrade || "—",
+            direction: coin.direction || "Neutral",
+            action: coin.action || getScannerAction(coin) || "Wait",
+            tradeAllowed: coin.tradeAllowed === true,
+            ready: coin.tradeReadiness?.ready === true
+          }
+        : null;
+
+      return {
+        marketSummary: {
+          bias: document.querySelector("#market-bias")?.textContent?.trim() || "—",
+          condition: document.querySelector("#market-condition")?.textContent?.trim() || "—",
+          details: document.querySelector("#market-details")?.textContent?.trim() || "—"
+        },
+        leader: compactCoin(globalRankingResults[0]),
+        bestReadySetup: compactCoin(setup),
+        topMarkets: globalRankingResults.slice(0, 10).map(compactCoin)
+      };
+    }
+
+    async function answerAiChatQuestion(question, displayText) {
       addAiChatMessage(displayText, "user");
 
       if (!globalRankingResults.length) {
@@ -2076,49 +2106,58 @@ if (!data) {
         return;
       }
 
-      if (question === "leader") {
-        const leader = globalRankingResults[0];
-        addAiChatMessage(
-          `${leader.symbol} находится на первом месте, потому что имеет лучший общий Opportunity Score (${leader.opportunityScore || 0}) среди текущих рынков. Его Confidence: ${leader.confidence || 0}%, направление: ${leader.direction || "Neutral"}, действие: ${leader.action || getScannerAction(leader) || "Wait"}.`
-        );
-        return;
+      const submitButton = document.querySelector(".ai-chat-submit");
+      const modeBadge = document.querySelector("#ai-chat-mode");
+      const prompt = question === "leader"
+        ? "Почему монета на первом месте является лидером рейтинга?"
+        : question === "market"
+          ? "Что сейчас происходит с рынком по данным Dashboard?"
+          : question === "setup"
+            ? "Какой сейчас лучший готовый торговый сетап и почему?"
+            : question;
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Думаю...";
       }
 
-      if (question === "market") {
-        const bias = document.querySelector(
-          "#market-bias"
-        )?.textContent?.trim() || "—";
-        const condition = document.querySelector(
-          "#market-condition"
-        )?.textContent?.trim() || "—";
-        const details = document.querySelector(
-          "#market-details"
-        )?.textContent?.trim() || "—";
+      try {
+        const response = await fetch(CHAT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question: prompt,
+            context: getAiChatContext()
+          })
+        });
+        const data = await response.json();
 
+        if (!response.ok || !data?.answer) {
+          throw new Error(data?.error || `AI request failed: ${response.status}`);
+        }
+
+        addAiChatMessage(data.answer);
+
+        if (modeBadge) {
+          modeBadge.textContent = "AI Online";
+        }
+      } catch (error) {
+        console.error("AI Chat request error:", error);
         addAiChatMessage(
-          `Текущий Market Summary: ${bias}. ${condition}. ${details}. Сравните это с направлением конкретной монеты перед входом.`
+          "AI временно не ответил. Повторите вопрос через минуту."
         );
-        return;
+
+        if (modeBadge) {
+          modeBadge.textContent = "AI unavailable";
+        }
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Спросить";
+        }
       }
-
-      if (question === "setup") {
-        const setup = getBestReadySetup();
-        addAiChatMessage(
-          setup
-            ? `Лучший готовый сетап сейчас:\n${describeRankingCoin(setup)}`
-            : "Сейчас нет сетапа, который одновременно разрешён системой и имеет статус готовности. Лучше дождаться нового обновления."
-        );
-        return;
-      }
-
-      const mentionedCoin =
-        findCoinInChatQuestion(question);
-
-      addAiChatMessage(
-        mentionedCoin
-          ? `Я не принимаю решение о покупке вместо трейдера. Вот текущие данные для оценки:\n${describeRankingCoin(mentionedCoin)}`
-          : "Монета не распознана в текущем рейтинге. Можно вводить короткое название (BTC, XRP, ETH) или полную пару (BTCUSDT)."
-      );
     }
 
     async function loadStatisticsOverview() {
