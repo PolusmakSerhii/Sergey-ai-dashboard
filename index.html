@@ -2069,8 +2069,9 @@ if (!data) {
       }) || null;
     }
 
-    function getAiChatContext() {
+    function getAiChatContext(question) {
       const setup = getBestReadySetup();
+      const requestedCoin = findCoinInChatQuestion(question);
       const compactCoin = (coin) => coin
         ? {
             symbol: coin.symbol,
@@ -2090,6 +2091,7 @@ if (!data) {
           condition: document.querySelector("#market-condition")?.textContent?.trim() || "—",
           details: document.querySelector("#market-details")?.textContent?.trim() || "—"
         },
+        requestedCoin: compactCoin(requestedCoin),
         leader: compactCoin(globalRankingResults[0]),
         bestReadySetup: compactCoin(setup),
         topMarkets: globalRankingResults.slice(0, 10).map(compactCoin)
@@ -2129,7 +2131,7 @@ if (!data) {
           },
           body: JSON.stringify({
             question: prompt,
-            context: getAiChatContext()
+            context: getAiChatContext(prompt)
           })
         });
         const data = await response.json();
