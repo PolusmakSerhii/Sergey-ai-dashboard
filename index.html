@@ -2087,9 +2087,11 @@ if (!data) {
 
       scannerResults.forEach((coin) => {
         if (coin?.symbol) {
+          const rankingCoin = coinsBySymbol.get(coin.symbol);
+
           coinsBySymbol.set(coin.symbol, {
-            ...(coinsBySymbol.get(coin.symbol) || {}),
-            ...coin
+            ...coin,
+            ...(rankingCoin || {})
           });
         }
       });
