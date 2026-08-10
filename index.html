@@ -2153,10 +2153,13 @@ if (!data) {
             const technical = data.technical || {};
             const tradePlan = technical.tradePlan || {};
             const probability = technical.probability || {};
+            const confidenceBreakdown =
+              probability.confidence?.confidenceBreakdown || null;
             const smartMoney = technical.smartMoney || {};
             const environment = technical.marketEnvironment || {};
 
             requestedCoinAnalysis = {
+              confidenceBreakdown,
               analysisReasons: Array.isArray(tradePlan.reasons) && tradePlan.reasons.length
                 ? tradePlan.reasons.slice(0, 8)
                 : Array.isArray(probability.reasons)
