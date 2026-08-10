@@ -1349,6 +1349,7 @@ placeholder="Search symbol..."
     let globalRankingResults = [];
     let scoreSortDirection = "desc";
     let globalRankingRefreshInFlight = false;
+    let aiChatHistory = [];
     let lastGlobalRankingGeneratedAt = null;
     let globalRankingRefreshFailed = false;
 
@@ -2218,13 +2219,15 @@ if (!data) {
 
       const submitButton = document.querySelector(".ai-chat-submit");
       const modeBadge = document.querySelector("#ai-chat-mode");
-      const prompt = question === "leader"
-        ? "Почему монета на первом месте является лидером рейтинга?"
-        : question === "market"
-          ? "Что сейчас происходит с рынком по данным Dashboard?"
-          : question === "setup"
-            ? "Какой сейчас лучший готовый торговый сетап и почему?"
-            : question;
+      const prompt =
+        question === "leader"
+          ? "Почему монета на первом месте является лидером рейтинга?"
+          : question === "market"
+            ? "Что сейчас происходит с рынком по данным Dashboard?"
+            : question === "setup"
+              ? "Какой сейчас лучший готовый торговый сетап и почему?"
+              : question;
+      const requestHistory = aiChatHistory.slice(-8);
 
       if (submitButton) {
         submitButton.disabled = true;
@@ -2239,7 +2242,8 @@ if (!data) {
           },
           body: JSON.stringify({
             question: prompt,
-            context: await getAiChatContext(prompt)
+            context: await getAiChatContext(prompt),
+            history: requestHistory
           })
         });
         const data = await response.json();
@@ -2248,6 +2252,11 @@ if (!data) {
           throw new Error(data?.error || `AI request failed: ${response.status}`);
         }
 
+        aiChatHistory.push(
+          { role: "user", content: prompt },
+          { role: "assistant", content: data.answer }
+        );
+        aiChatHistory = aiChatHistory.slice(-8);
         addAiChatMessage(data.answer);
 
         if (modeBadge) {
