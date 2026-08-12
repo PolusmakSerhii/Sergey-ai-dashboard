@@ -1592,7 +1592,12 @@
           coin.opportunityGrade ||
           "D",
         direction: coin.direction || "Neutral",
-        action: getScannerAction(coin)
+        action: getScannerAction(coin),
+        updatedAt:
+          coin.updatedAt ||
+          new Date().toISOString(),
+        updateStatus:
+          coin.updateStatus || "ranking"
       };
     }
 
@@ -1626,6 +1631,13 @@
               <span class="favorite-coin-details">
                 ${coin.direction || "Neutral"} · ${coin.action || "Wait"}
               </span>
+              <span class="favorite-coin-details">
+                ${coin.updateStatus === "direct"
+                  ? "Анализ обновлён · Score из последнего рейтинга"
+                  : coin.updateStatus === "stale"
+                    ? "⚠ Обновление временно недоступно"
+                    : "Данные глобального рейтинга"}
+              </span>
             </button>
             <button
               class="favorite-remove"
@@ -1658,21 +1670,80 @@
       renderFavoriteCoins();
     }
 
-    function syncFavoriteCoinsWithRanking() {
+    async function loadFavoriteCoinAnalysis(saved) {
+      try {
+        const response = await fetch(
+          `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${encodeURIComponent(saved.symbol)}`,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+
+        if (!response.ok || data?.ok !== true) {
+          throw new Error(
+            data?.error ||
+            `Favorite update failed: ${response.status}`
+          );
+        }
+
+        const technical = data.technical || {};
+        const probability = technical.probability || {};
+        const confidence = probability.confidence || {};
+        const assessment = probability.aiAssessment || {};
+        const recommendation =
+          technical.recommendation || {};
+
+        return {
+          ...saved,
+          confidence:
+            typeof confidence.score === "number"
+              ? confidence.score
+              : saved.confidence,
+          grade:
+            recommendation.grade ||
+            assessment.grade ||
+            saved.grade,
+          direction:
+            assessment.direction ||
+            probability.direction ||
+            saved.direction,
+          action:
+            recommendation.action ||
+            saved.action,
+          updatedAt:
+            data.time ||
+            new Date().toISOString(),
+          updateStatus: "direct"
+        };
+      } catch (error) {
+        console.error(
+          `Favorite ${saved.symbol} update error:`,
+          error
+        );
+
+        return {
+          ...saved,
+          updateStatus: "stale"
+        };
+      }
+    }
+
+    async function syncFavoriteCoinsWithRanking() {
       if (!favoriteCoins.length) {
         renderFavoriteCoins();
         return;
       }
 
-      favoriteCoins = favoriteCoins.map(saved => {
-        const current = globalRankingResults.find(
-          coin => coin.symbol === saved.symbol
-        );
+      favoriteCoins = await Promise.all(
+        favoriteCoins.map(async saved => {
+          const current = globalRankingResults.find(
+            coin => coin.symbol === saved.symbol
+          );
 
-        return current
-          ? compactFavoriteCoin(current)
-          : saved;
-      });
+          return current
+            ? compactFavoriteCoin(current)
+            : loadFavoriteCoinAnalysis(saved);
+        })
+      );
 
       saveFavoriteCoins();
       renderFavoriteCoins();
