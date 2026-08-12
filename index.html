@@ -586,9 +586,112 @@
   color: #d7e0ea;
 }
 
-.scanner-table tbody tr:hover {
-  background: rgba(79, 227, 177, 0.05);
-}
+    .scanner-table tbody tr:hover {
+      background: rgba(79, 227, 177, 0.05);
+    }
+
+    .favorite-toggle {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid rgba(255, 209, 102, 0.24);
+      border-radius: 10px;
+      background: rgba(255, 209, 102, 0.06);
+      color: #75869a;
+      font: inherit;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .favorite-toggle:hover,
+    .favorite-toggle:focus-visible,
+    .favorite-toggle.is-active {
+      border-color: rgba(255, 209, 102, 0.7);
+      color: #ffd166;
+      outline: none;
+    }
+
+    .favorites-panel {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-color: rgba(255, 209, 102, 0.2);
+    }
+
+    .favorites-panel[hidden] {
+      display: none;
+    }
+
+    .favorites-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .favorites-note {
+      color: #75869a;
+      font-size: 11px;
+    }
+
+    .favorites-list {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .favorite-coin {
+      min-width: 180px;
+      padding: 10px 42px 10px 12px;
+      border: 1px solid rgba(255, 209, 102, 0.2);
+      border-radius: 14px;
+      background: rgba(35, 31, 20, 0.42);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .favorite-item {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .favorite-remove {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #ffd166;
+      font: inherit;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .favorite-coin:hover,
+    .favorite-coin:focus-visible {
+      border-color: rgba(255, 209, 102, 0.58);
+      outline: none;
+    }
+
+    .favorite-coin-symbol {
+      color: #f4f7fb;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .favorite-coin-details {
+      display: block;
+      margin-top: 4px;
+      color: #a7b5c5;
+      font-size: 11px;
+      white-space: nowrap;
+    }
     .scanner-row{
        cursor:pointer;
        transition:.2s;
@@ -1098,6 +1201,18 @@
   </article>
 </section>
 
+<section class="card favorites-panel" id="favorites-panel" hidden>
+  <div class="favorites-header">
+    <p class="card-label">
+      ⭐ Избранные
+    </p>
+    <span class="favorites-note">
+      Сохраняются в этом браузере
+    </span>
+  </div>
+  <div class="favorites-list" id="favorites-list"></div>
+</section>
+
 <section class="card" style="margin-top: 12px;">
   <p class="card-label">
     Market Scanner
@@ -1401,6 +1516,141 @@
     let lastGlobalRankingGeneratedAt = null;
     let globalRankingRefreshFailed = false;
 
+    const FAVORITES_STORAGE_KEY =
+      "sergey-ai-trader:favorites:v1";
+
+    function loadFavoriteCoins() {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem(
+            FAVORITES_STORAGE_KEY
+          ) || "[]"
+        );
+
+        return Array.isArray(saved)
+          ? saved
+              .filter(coin =>
+                typeof coin?.symbol === "string"
+              )
+              .slice(0, 20)
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    let favoriteCoins = loadFavoriteCoins();
+
+    function saveFavoriteCoins() {
+      localStorage.setItem(
+        FAVORITES_STORAGE_KEY,
+        JSON.stringify(favoriteCoins)
+      );
+    }
+
+    function isFavoriteCoin(symbol) {
+      return favoriteCoins.some(
+        coin => coin.symbol === symbol
+      );
+    }
+
+    function compactFavoriteCoin(coin) {
+      return {
+        symbol: coin.symbol,
+        opportunityScore:
+          coin.opportunityScore ?? 0,
+        confidence: coin.confidence ?? 0,
+        grade:
+          coin.grade ||
+          coin.opportunityGrade ||
+          "D",
+        direction: coin.direction || "Neutral",
+        action: getScannerAction(coin)
+      };
+    }
+
+    function renderFavoriteCoins() {
+      const panel = document.querySelector(
+        "#favorites-panel"
+      );
+      const list = document.querySelector(
+        "#favorites-list"
+      );
+
+      if (!panel || !list) return;
+
+      panel.hidden = favoriteCoins.length === 0;
+
+      list.innerHTML = favoriteCoins
+        .map(coin => `
+          <div class="favorite-item">
+            <button
+              class="favorite-coin"
+              type="button"
+              data-symbol="${coin.symbol}"
+              aria-label="Открыть анализ ${coin.symbol}"
+            >
+              <span class="favorite-coin-symbol">
+                ${coin.symbol}
+              </span>
+              <span class="favorite-coin-details">
+                Score ${coin.opportunityScore ?? 0} · Confidence ${coin.confidence ?? 0}%
+              </span>
+              <span class="favorite-coin-details">
+                ${coin.direction || "Neutral"} · ${coin.action || "Wait"}
+              </span>
+            </button>
+            <button
+              class="favorite-remove"
+              type="button"
+              data-symbol="${coin.symbol}"
+              aria-label="Удалить ${coin.symbol} из избранного"
+              title="Удалить из избранного"
+            >★</button>
+          </div>
+        `)
+        .join("");
+    }
+
+    function toggleFavoriteCoin(coin) {
+      if (!coin?.symbol) return;
+
+      if (isFavoriteCoin(coin.symbol)) {
+        favoriteCoins = favoriteCoins.filter(
+          favorite =>
+            favorite.symbol !== coin.symbol
+        );
+      } else {
+        favoriteCoins = [
+          compactFavoriteCoin(coin),
+          ...favoriteCoins
+        ].slice(0, 20);
+      }
+
+      saveFavoriteCoins();
+      renderFavoriteCoins();
+    }
+
+    function syncFavoriteCoinsWithRanking() {
+      if (!favoriteCoins.length) {
+        renderFavoriteCoins();
+        return;
+      }
+
+      favoriteCoins = favoriteCoins.map(saved => {
+        const current = globalRankingResults.find(
+          coin => coin.symbol === saved.symbol
+        );
+
+        return current
+          ? compactFavoriteCoin(current)
+          : saved;
+      });
+
+      saveFavoriteCoins();
+      renderFavoriteCoins();
+    }
+
     const GLOBAL_RANKING_REFRESH_MS =
       4 * 60 * 1000;
 
@@ -1559,6 +1809,7 @@ const actionMatch =
     <table class="scanner-table">
       <thead>
         <tr>
+          <th aria-label="Избранное">⭐</th>
           <th>#</th>
           <th>Symbol</th>
           <th id="score-sort" style="cursor:pointer;">
@@ -1580,6 +1831,17 @@ const actionMatch =
             class="scanner-row"
             data-symbol="${coin.symbol}"
           > 
+                 <td>
+                   <button
+                     class="favorite-toggle ${isFavoriteCoin(coin.symbol) ? "is-active" : ""}"
+                     type="button"
+                     data-favorite-symbol="${coin.symbol}"
+                     aria-label="${isFavoriteCoin(coin.symbol) ? "Удалить из избранного" : "Добавить в избранное"} ${coin.symbol}"
+                     aria-pressed="${isFavoriteCoin(coin.symbol)}"
+                   >
+                     ${isFavoriteCoin(coin.symbol) ? "★" : "☆"}
+                   </button>
+                 </td>
                  <td>${
                    (scannerCurrentPage - 1) *
                    scannerPageLimit +
@@ -2553,6 +2815,8 @@ if (!data) {
    globalRankingResults =
      sortedResults;
 
+  syncFavoriteCoinsWithRanking();
+
   const fullGlobalBestOpportunity =
   globalRankingResults[0] || null;
 
@@ -2709,6 +2973,8 @@ renderGlobalRankingPage();
 ) {
   globalRankingResults =
     quickGlobalTop10;
+
+  syncFavoriteCoinsWithRanking();
 }
     const marketCountElement =
          document.querySelector("#market-count");
@@ -3896,6 +4162,26 @@ scannerNextButton?.addEventListener(
       return;
     }
 
+    const favoriteButton = event.target.closest(
+      ".favorite-toggle"
+    );
+
+    if (favoriteButton) {
+      const symbol =
+        favoriteButton.dataset.favoriteSymbol;
+      const coin =
+        scannerResults.find(
+          item => item.symbol === symbol
+        ) ||
+        globalRankingResults.find(
+          item => item.symbol === symbol
+        );
+
+      toggleFavoriteCoin(coin);
+      renderScanner(scannerResults);
+      return;
+    }
+
     const coinRow =
       event.target.closest(".scanner-row");
 
@@ -3905,6 +4191,33 @@ scannerNextButton?.addEventListener(
       coinRow.dataset.symbol;
 
     openCoinModal(symbol);
+  });
+
+document
+  .querySelector("#favorites-list")
+  ?.addEventListener("click", (event) => {
+    const removeButton = event.target.closest(
+      ".favorite-remove"
+    );
+
+    if (removeButton) {
+      const savedCoin = favoriteCoins.find(
+        coin =>
+          coin.symbol === removeButton.dataset.symbol
+      );
+
+      toggleFavoriteCoin(savedCoin);
+      renderScanner(scannerResults);
+      return;
+    }
+
+    const favoriteCoin = event.target.closest(
+      ".favorite-coin"
+    );
+
+    if (!favoriteCoin) return;
+
+    openCoinModal(favoriteCoin.dataset.symbol);
   });
 
 document
@@ -4007,6 +4320,7 @@ document.addEventListener(
     }
   }
 );
+    renderFavoriteCoins();
     loadMarketSummary();
     loadFullGlobalRanking();
     loadStatisticsOverview();
