@@ -485,7 +485,7 @@
       display: grid;
       grid-template-columns:
         repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      gap: 12px;
     }
 
    .card {
@@ -518,6 +518,29 @@
       line-height: 1.55;
     }
 
+    .grid > .card {
+      min-height: 0;
+      padding: 14px 16px;
+    }
+
+    .grid > .card .card-label {
+      font-size: 12px;
+    }
+
+    .grid > .card .card-value {
+      margin: 8px 0 4px;
+      font-size: 26px;
+    }
+
+    .grid > .card .card-text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .grid > .card .progress {
+      margin-top: 12px;
+    }
+
     .market-overview-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -527,17 +550,17 @@
 
     .market-overview-card {
       min-height: 0;
-      padding: 14px 16px;
+      padding: 11px 14px;
     }
 
     .market-overview-card .card-value {
-      margin: 8px 0 4px;
-      font-size: 24px;
+      margin: 6px 0 3px;
+      font-size: 21px;
     }
 
     .market-overview-card .card-text {
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.35;
     }
     .scanner-table {
   width: 100%;
