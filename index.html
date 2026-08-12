@@ -868,6 +868,15 @@
     flex-direction: column;
 }
 
+.trade-plan-grid > * {
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+.trade-plan-grid .trade-setup-banner {
+  margin-bottom: 0;
+}
+
 .coin-detail-label {
   margin-bottom: 8px;
   color: #7f91a4;
@@ -3909,7 +3918,7 @@ ${!hasValidTrade ? `
 ` : ""}
 
   ${hasValidTrade ? `
-  <div class="coin-details-grid">
+  <div class="coin-details-grid trade-plan-grid">
   
   <div class="trade-setup-banner ${
     String(
