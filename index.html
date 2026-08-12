@@ -3744,7 +3744,7 @@ ${tradeExecutionStatus ? `
 ` : ""}
 
 </div>
-<section class="ai-chart-section">
+<section id="coin-ai-chart-section" class="ai-chart-section">
   <div class="ai-chart-header">
     <h3 class="ai-chart-title">
       Interactive AI Chart
@@ -3763,7 +3763,7 @@ ${tradeExecutionStatus ? `
   </div>
 </section>
 
- <div
+ <div id="coin-analysis-content"
     style="
         margin-top:30px;
         padding:24px;
@@ -3774,7 +3774,7 @@ ${tradeExecutionStatus ? `
 >
 
 ${aiSummary ? `
-<div class="trade-reasons" style="margin-bottom:24px;">
+<div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
   <div class="trade-reasons-title">
     🧠 AI Summary
   </div>
@@ -3790,7 +3790,7 @@ ${aiSummary ? `
 ` : ""}
 
 ${recommendation.status ? `
-<div class="trade-reasons" style="margin-bottom:24px;">
+<div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
     <div class="trade-reasons-title">
         🎯 Recommendation
     </div>
@@ -3819,7 +3819,7 @@ ${recommendation.status ? `
 ` : ""}
 
 ${tradeStatistics.confidence !== null ? `
-<div class="trade-reasons" style="margin-bottom:24px;">
+<div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
 
     <div class="trade-reasons-title">
         📊 Trade Statistics
@@ -3891,6 +3891,7 @@ ${tradeStatistics.confidence !== null ? `
 </div>
 ` : ""}
 
+<div id="coin-trade-plan-section">
 <h3
     style="
         margin:0 0 20px 0;
@@ -3993,6 +3994,7 @@ ${!hasValidTrade ? `
   </div>
 
 ` : ""}
+</div>
 
 <div class="trade-analysis-grid">
 
@@ -4093,6 +4095,22 @@ ${Object.keys(marketEnvironment).length > 0 ? `
       : ""
   }
 `;
+
+  const analysisContent = document.getElementById("coin-analysis-content");
+  const tradePlanSection = document.getElementById("coin-trade-plan-section");
+  const chartSection = document.getElementById("coin-ai-chart-section");
+  const firstAnalysisSummary = analysisContent?.querySelector("[data-analysis-summary]");
+
+  if (analysisContent && tradePlanSection) {
+    analysisContent.prepend(tradePlanSection);
+  }
+
+  if (analysisContent && chartSection) {
+    analysisContent.insertBefore(
+      chartSection,
+      firstAnalysisSummary || analysisContent.querySelector(".trade-analysis-grid")
+    );
+  }
        
   const chartInitialization =
   window.SergeyAIChart?.initialize({
