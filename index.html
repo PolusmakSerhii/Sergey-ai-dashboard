@@ -110,7 +110,7 @@
 
     .statistics-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
@@ -1380,6 +1380,24 @@
         id="statistics-best-details"
       >
         Score: — · Confidence: —
+      </p>
+    </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Win Rate
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-win-rate"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-outcomes"
+      >
+        Нет завершённых сделок
       </p>
     </article>
   </div>
@@ -2801,6 +2819,23 @@ if (!data) {
         ).textContent = best
           ? `Score: ${best.opportunityScore || 0} · Confidence: ${best.confidence || 0}% · ${best.direction || "Neutral"}`
           : "Score: — · Confidence: —";
+
+        const outcomes = data.outcomes || {};
+        const completedOutcomes =
+          Number(outcomes.completed) || 0;
+
+        document.querySelector(
+          "#statistics-win-rate"
+        ).textContent = completedOutcomes > 0 &&
+          Number.isFinite(Number(outcomes.winRate))
+            ? `${Number(outcomes.winRate)}%`
+            : "—";
+
+        document.querySelector(
+          "#statistics-outcomes"
+        ).textContent = completedOutcomes > 0
+          ? `TP1: ${Number(outcomes.wins) || 0} · Stop Loss: ${Number(outcomes.losses) || 0} · Всего: ${completedOutcomes}`
+          : "Нет завершённых сделок";
 
         renderStatisticsChart(
           "#statistics-confidence-chart",
