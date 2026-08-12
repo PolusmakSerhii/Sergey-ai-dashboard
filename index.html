@@ -3789,38 +3789,6 @@ ${aiSummary ? `
 </div>
 ` : ""}
 
-${tradeExecutionStatus ? `
-<div
-    style="
-        margin:24px 0;
-        padding:18px;
-        border-radius:14px;
-        border:1px solid ${tradeExecutionStatus.color};
-        background:${tradeExecutionStatus.color}15;
-    "
->
-    <div
-        style="
-            color:${tradeExecutionStatus.color};
-            font-size:22px;
-            font-weight:800;
-            margin-bottom:8px;
-        "
-    >
-        ${tradeExecutionStatus.title}
-    </div>
-
-    <div
-        style="
-            color:#d5dbe5;
-            font-size:15px;
-        "
-    >
-        ${tradeExecutionStatus.message}
-    </div>
-</div>
-` : ""}
-
 ${recommendation.status ? `
 <div class="trade-reasons" style="margin-bottom:24px;">
     <div class="trade-reasons-title">
