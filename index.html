@@ -1899,68 +1899,6 @@ const actionMatch =
   `;
 }    
 
-   async function loadMarketSummary() {
-  try {
-    const requestUrl =
-      new URL(API_URL);
-
-    const response =
-      await fetch(
-        requestUrl.toString()
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        `Market Summary request failed: ${response.status}`
-      );
-    }
-
-    const data =
-      await response.json();
-
-    const summary =
-      data.marketSummary || {};
-
-    document.querySelector(
-      "#market-bias"
-    ).textContent =
-      summary.marketBias ||
-      "Neutral";
-
-    document.querySelector(
-      "#market-condition"
-    ).textContent =
-      summary.marketCondition ||
-      "Unknown";
-
-    document.querySelector(
-      "#market-details"
-    ).textContent =
-      `Confidence: ${summary.averageConfidence ?? 0}% | Ready Trades: ${summary.readyTrades ?? 0}`;
-
-  } catch (error) {
-    console.error(
-      "Market Summary Error:",
-      error
-    );
-
-    document.querySelector(
-      "#market-bias"
-    ).textContent =
-      "Unavailable";
-
-    document.querySelector(
-      "#market-condition"
-    ).textContent =
-      "API Error";
-
-    document.querySelector(
-      "#market-details"
-    ).textContent =
-      "Confidence: — | Ready Trades: —";
-  }
-}
-    
    async function loadScanner(search = "") {
      const statusElement =
         document.querySelector(".status");
@@ -2704,7 +2642,7 @@ if (!data) {
       }
     }
 
-    function renderRankingFreshness() {
+function renderRankingFreshness() {
       const element =
         document.querySelector(
           "#ranking-updated-at"
@@ -2746,6 +2684,72 @@ if (!data) {
         "is-stale",
         isStale
       );
+    }
+
+    function renderGlobalMarketSummary() {
+      if (!globalRankingResults.length) return;
+
+      const longCount = globalRankingResults.filter(
+        coin => coin.direction === "Long"
+      ).length;
+      const shortCount = globalRankingResults.filter(
+        coin => coin.direction === "Short"
+      ).length;
+      const readyTrades = globalRankingResults.filter(
+        coin =>
+          coin.tradeAllowed === true &&
+          coin.tradeReadiness?.ready === true
+      ).length;
+      const confidenceValues = globalRankingResults
+        .map(coin => Number(coin.confidence))
+        .filter(Number.isFinite);
+      const averageConfidence = confidenceValues.length
+        ? Math.round(
+            confidenceValues.reduce(
+              (total, value) => total + value,
+              0
+            ) / confidenceValues.length
+          )
+        : 0;
+      const directionalDifference = Math.abs(
+        longCount - shortCount
+      );
+
+      let marketBias = "Neutral";
+
+      if (
+        longCount > shortCount &&
+        directionalDifference >= 2
+      ) {
+        marketBias = "Bullish";
+      } else if (
+        shortCount > longCount &&
+        directionalDifference >= 2
+      ) {
+        marketBias = "Bearish";
+      }
+
+      let marketCondition = "Weak Signals";
+
+      if (
+        readyTrades > 0 &&
+        averageConfidence >= 60
+      ) {
+        marketCondition = "Active Opportunities";
+      } else if (averageConfidence >= 45) {
+        marketCondition = "Selective";
+      }
+
+      document.querySelector(
+        "#market-bias"
+      ).textContent = marketBias;
+      document.querySelector(
+        "#market-condition"
+      ).textContent = marketCondition;
+      document.querySelector(
+        "#market-details"
+      ).textContent =
+        `Confidence: ${averageConfidence}% | Ready Trades: ${readyTrades}`;
     }
 
     async function loadFullGlobalRanking() {
@@ -2816,6 +2820,7 @@ if (!data) {
      sortedResults;
 
   syncFavoriteCoinsWithRanking();
+  renderGlobalMarketSummary();
 
   const fullGlobalBestOpportunity =
   globalRankingResults[0] || null;
@@ -4321,7 +4326,6 @@ document.addEventListener(
   }
 );
     renderFavoriteCoins();
-    loadMarketSummary();
     loadFullGlobalRanking();
     loadStatisticsOverview();
 
