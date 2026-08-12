@@ -582,9 +582,20 @@
   text-transform: uppercase;
 }
 
-.scanner-table td {
-  color: #d7e0ea;
-}
+    .scanner-table td {
+      color: #d7e0ea;
+    }
+
+    .core-markets-note {
+      margin: 8px 0 0;
+      color: #75869a;
+      font-size: 12px;
+    }
+
+    .core-market-unavailable {
+      color: #75869a;
+      font-size: 12px;
+    }
 
     .scanner-table tbody tr:hover {
       background: rgba(79, 227, 177, 0.05);
@@ -1281,6 +1292,18 @@
   </div>
 </section>
 
+<section class="card" style="margin-top: 12px;">
+  <p class="card-label">
+    Основные монеты
+  </p>
+  <p class="core-markets-note">
+    BTC · ETH · BNB · XRP · SOL
+  </p>
+  <div id="core-markets-table">
+    Loading core markets...
+  </div>
+</section>
+
 <section class="card" style="margin-top: 18px;">
   <p class="card-label">
     Statistics & Analytics · 24H
@@ -1507,6 +1530,14 @@
 
     const CHAT_URL =
       "https://sergey-ai-trader-api.vercel.app/api/chat";
+
+    const CORE_MARKET_SYMBOLS = [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "XRPUSDT",
+      "SOLUSDT"
+    ];
     
     let scannerResults = [];
     let globalRankingResults = [];
@@ -1740,6 +1771,95 @@ function getScannerActionClass(action) {
 
   return "avoid";
 }
+
+    function renderCoreMarkets() {
+      const tableElement = document.querySelector(
+        "#core-markets-table"
+      );
+
+      if (!tableElement) return;
+
+      const rows = CORE_MARKET_SYMBOLS.map(
+        (symbol, index) => {
+          const coin = globalRankingResults.find(
+            item => item.symbol === symbol
+          );
+
+          if (!coin) {
+            return `
+              <tr
+                class="scanner-row"
+                data-symbol="${symbol}"
+              >
+                <td>${index + 1}</td>
+                <td>${symbol}</td>
+                <td colspan="5" class="core-market-unavailable">
+                  Данные обновляются
+                </td>
+              </tr>
+            `;
+          }
+
+          const grade =
+            coin.grade ||
+            coin.opportunityGrade ||
+            "D";
+          const action = getScannerAction(coin);
+
+          return `
+            <tr
+              class="scanner-row"
+              data-symbol="${coin.symbol}"
+            >
+              <td>${index + 1}</td>
+              <td>${coin.symbol}</td>
+              <td>${coin.opportunityScore ?? 0}</td>
+              <td>
+                <span class="grade grade-${grade
+                  .toLowerCase()
+                  .replace("+", "plus")}">
+                  ${grade}
+                </span>
+              </td>
+              <td>${coin.confidence ?? 0}%</td>
+              <td>
+                <span class="${
+                  coin.direction === "Long"
+                    ? "long"
+                    : coin.direction === "Short"
+                      ? "short"
+                      : "neutral"
+                }">
+                  ${coin.direction || "Neutral"}
+                </span>
+              </td>
+              <td>
+                <span class="${getScannerActionClass(action)}">
+                  ${action}
+                </span>
+              </td>
+            </tr>
+          `;
+        }
+      ).join("");
+
+      tableElement.innerHTML = `
+        <table class="scanner-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Symbol</th>
+              <th>Score</th>
+              <th>Grade</th>
+              <th>Confidence</th>
+              <th>Direction</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
     
     const searchInput =
       document.querySelector("#search-input");
@@ -2821,6 +2941,7 @@ function renderRankingFreshness() {
 
   syncFavoriteCoinsWithRanking();
   renderGlobalMarketSummary();
+  renderCoreMarkets();
 
   const fullGlobalBestOpportunity =
   globalRankingResults[0] || null;
@@ -4223,6 +4344,18 @@ document
     if (!favoriteCoin) return;
 
     openCoinModal(favoriteCoin.dataset.symbol);
+  });
+
+document
+  .querySelector("#core-markets-table")
+  ?.addEventListener("click", (event) => {
+    const coinRow = event.target.closest(
+      ".scanner-row"
+    );
+
+    if (!coinRow) return;
+
+    openCoinModal(coinRow.dataset.symbol);
   });
 
 document
