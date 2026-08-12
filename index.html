@@ -1122,6 +1122,78 @@
       </div>
     </header>
 
+    <section class="card" style="margin-top: 12px;">
+      <p class="card-label">
+        Основные монеты
+      </p>
+      <p class="core-markets-note">
+        BTC · ETH · BNB · XRP · SOL
+      </p>
+      <div id="core-markets-table">
+        Loading core markets...
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 12px;">
+      <p class="card-label">
+        Market Scanner
+      </p>
+      <p
+        id="scanner-count"
+        style="color:#8b98a9; font-size:13px; margin-bottom:12px;"
+      >
+        Showing 0 of 0 markets
+      </p>
+
+      <div class="scanner-controls">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search symbol..."
+        >
+
+        <select id="direction-filter">
+          <option value="all">All Directions</option>
+          <option value="Long">Long</option>
+          <option value="Short">Short</option>
+          <option value="Neutral">Neutral</option>
+        </select>
+
+        <select id="grade-filter">
+          <option value="all">All Grades</option>
+          <option>A+</option>
+          <option>A</option>
+          <option>B</option>
+          <option>C</option>
+          <option>D</option>
+        </select>
+
+        <select id="action-filter">
+          <option value="all">All Actions</option>
+          <option value="Strong Buy">Strong Buy</option>
+          <option value="Buy">Buy</option>
+          <option value="Wait">Wait</option>
+          <option value="Sell">Sell</option>
+          <option value="Strong Sell">Strong Sell</option>
+          <option value="Avoid">Avoid</option>
+        </select>
+      </div>
+
+      <div id="scanner-table">
+        Loading scanner...
+      </div>
+
+      <div id="scanner-pagination" style="margin-top:16px; display:flex; align-items:center; gap:12px;">
+        <button id="scanner-prev" type="button">
+          ← Previous
+        </button>
+        <span id="scanner-page-info">Page 1</span>
+        <button id="scanner-next" type="button">
+          Next →
+        </button>
+      </div>
+    </section>
+
     <section class="grid">
       <article class="card">
         <p class="card-label">
@@ -1222,86 +1294,6 @@
     </span>
   </div>
   <div class="favorites-list" id="favorites-list"></div>
-</section>
-
-<section class="card" style="margin-top: 12px;">
-  <p class="card-label">
-    Market Scanner
-  </p>
-  <p
-    id="scanner-count"
-    style="
-        color:#8b98a9;
-        font-size:13px;
-        margin-bottom:12px;
-    "
-  >
-    Showing 0 of 0 markets
-  </p>
-
-  <div class="scanner-controls">
-    <input
-      type="text"
-      id="search-input"
-      placeholder="Search symbol..."
-    >
-
-    <select id="direction-filter">
-      <option value="all">All Directions</option>
-      <option value="Long">Long</option>
-      <option value="Short">Short</option>
-      <option value="Neutral">Neutral</option>
-    </select>
-
-    <select id="grade-filter">
-      <option value="all">All Grades</option>
-      <option>A+</option>
-      <option>A</option>
-      <option>B</option>
-      <option>C</option>
-      <option>D</option>
-    </select>
-
-    <select id="action-filter">
-      <option value="all">All Actions</option>
-      <option value="Strong Buy">Strong Buy</option>
-      <option value="Buy">Buy</option>
-      <option value="Wait">Wait</option>
-      <option value="Sell">Sell</option>
-      <option value="Strong Sell">Strong Sell</option>
-      <option value="Avoid">Avoid</option>
-    </select>
-  </div>
-
-  <div id="scanner-table">
-    Loading scanner...
-  </div>
-
-  <div id="scanner-pagination" style="margin-top:16px; display:flex; align-items:center; gap:12px;">
-    <button id="scanner-prev" type="button">
-      ← Previous
-    </button>
-
-    <span id="scanner-page-info">
-      Page 1
-    </span>
-
-    <button id="scanner-next" type="button">
-      Next →
-    </button>
-  </div>
-</section>
-
-<section class="card" style="margin-top: 12px;">
-  <p class="card-label">
-    Основные монеты
-  </p>
-  <p class="core-markets-note">
-    BTC · ETH · BNB · XRP · SOL
-  </p>
-  <div id="core-markets-table">
-    Loading core markets...
-  </div>
 </section>
 
 <section class="card" style="margin-top: 18px;">
