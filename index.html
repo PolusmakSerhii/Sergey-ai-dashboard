@@ -517,6 +517,28 @@
       color: #a7b5c5;
       line-height: 1.55;
     }
+
+    .market-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .market-overview-card {
+      min-height: 0;
+      padding: 14px 16px;
+    }
+
+    .market-overview-card .card-value {
+      margin: 8px 0 4px;
+      font-size: 24px;
+    }
+
+    .market-overview-card .card-text {
+      font-size: 13px;
+      line-height: 1.4;
+    }
     .scanner-table {
   width: 100%;
   margin-top: 14px;
@@ -581,6 +603,10 @@
       }
 
       .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .market-overview-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1015,37 +1041,107 @@
      </section>
    
    
-      <section class="card" style="margin-top: 12px;">
-      <p class="card-label">
-        Market Summary
-      </p>
+<section class="market-overview-grid">
+  <article class="card market-overview-card">
+    <p class="card-label">
+      Market Summary
+    </p>
 
-      <div class="card-value" id="market-bias">
-        Loading...
-      </div>
+    <div class="card-value" id="market-bias">
+      Loading...
+    </div>
 
-      <p class="card-text" id="market-condition">
-        Загружаем рыночные данные
-      </p>
+    <p class="card-text" id="market-condition">
+      Загружаем рыночные данные
+    </p>
 
-      <p class="card-text" id="market-details">
-        Confidence: — | Ready Trades: —
-      </p>
-    </section>  
-    
-<section class="card" style="margin-top: 18px;">
+    <p class="card-text" id="market-details">
+      Confidence: — | Ready Trades: —
+    </p>
+  </article>
+
+  <article class="card market-overview-card">
+    <p class="card-label">
+      Global Best Opportunity
+    </p>
+
+    <div class="card-value" id="best-opportunity-symbol">
+      Loading...
+    </div>
+
+    <p class="card-text" id="best-opportunity-details">
+      Opportunity Score: — | Grade: — | Direction: —
+    </p>
+  </article>
+</section>
+
+<section class="card" style="margin-top: 12px;">
   <p class="card-label">
-    Global Best Opportunity
+    Market Scanner
+  </p>
+  <p
+    id="scanner-count"
+    style="
+        color:#8b98a9;
+        font-size:13px;
+        margin-bottom:12px;
+    "
+  >
+    Showing 0 of 0 markets
   </p>
 
-  <div class="card-value" id="best-opportunity-symbol">
-    Loading...
+  <div class="scanner-controls">
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Search symbol..."
+    >
+
+    <select id="direction-filter">
+      <option value="all">All Directions</option>
+      <option value="Long">Long</option>
+      <option value="Short">Short</option>
+      <option value="Neutral">Neutral</option>
+    </select>
+
+    <select id="grade-filter">
+      <option value="all">All Grades</option>
+      <option>A+</option>
+      <option>A</option>
+      <option>B</option>
+      <option>C</option>
+      <option>D</option>
+    </select>
+
+    <select id="action-filter">
+      <option value="all">All Actions</option>
+      <option value="Strong Buy">Strong Buy</option>
+      <option value="Buy">Buy</option>
+      <option value="Wait">Wait</option>
+      <option value="Sell">Sell</option>
+      <option value="Strong Sell">Strong Sell</option>
+      <option value="Avoid">Avoid</option>
+    </select>
   </div>
 
-  <p class="card-text" id="best-opportunity-details">
-    Opportunity Score: — | Grade: — | Direction: —
-  </p>
-</section>  
+  <div id="scanner-table">
+    Loading scanner...
+  </div>
+
+  <div id="scanner-pagination" style="margin-top:16px; display:flex; align-items:center; gap:12px;">
+    <button id="scanner-prev" type="button">
+      ← Previous
+    </button>
+
+    <span id="scanner-page-info">
+      Page 1
+    </span>
+
+    <button id="scanner-next" type="button">
+      Next →
+    </button>
+  </div>
+</section>
 
 <section class="card" style="margin-top: 18px;">
   <p class="card-label">
@@ -1232,77 +1328,6 @@
   <p class="ai-chat-note">
     AI отвечает по текущим данным Dashboard и не является торговым советом.
   </p>
-</section>
-    
-<section class="card" style="margin-top: 12px;">
-  <p class="card-label">
-    Market Scanner
-  </p>
-  <p
-    id="scanner-count"
-    style="
-        color:#8b98a9;
-        font-size:13px;
-        margin-bottom:12px;
-    "
->
-    Showing 0 of 0 markets
-</p>
-  
-  <div class="scanner-controls">
-
-<input
-type="text"
-id="search-input"
-placeholder="Search symbol..."
->
-
-<select id="direction-filter">
-<option value="all">All Directions</option>
-<option value="Long">Long</option>
-<option value="Short">Short</option>
-<option value="Neutral">Neutral</option>
-</select>
-
-<select id="grade-filter">
-<option value="all">All Grades</option>
-<option>A+</option>
-<option>A</option>
-<option>B</option>
-<option>C</option>
-<option>D</option>
-</select>
-
-  <select id="action-filter">
-  <option value="all">All Actions</option>
-  <option value="Strong Buy">Strong Buy</option>
-  <option value="Buy">Buy</option>
-  <option value="Wait">Wait</option>
-  <option value="Sell">Sell</option>
-  <option value="Strong Sell">Strong Sell</option>
-  <option value="Avoid">Avoid</option>
-</select>
-
-</div>
-  
-  <div id="scanner-table">
-    Loading scanner...
-  </div>
-
-  <div id="scanner-pagination" style="margin-top:16px; display:flex; align-items:center; gap:12px;">
-  <button id="scanner-prev" type="button">
-    ← Previous
-  </button>
-
-  <span id="scanner-page-info">
-    Page 1
-  </span>
-
-  <button id="scanner-next" type="button">
-    Next →
-  </button>
-</div>
-  
 </section>
     
     <section class="card" style="margin-top: 18px;">
