@@ -311,10 +311,31 @@
     }
 
     .active-trade-item {
+      width: 100%;
       padding: 14px;
       border: 1px solid rgba(78, 227, 178, 0.24);
       border-radius: 14px;
       background: rgba(78, 227, 178, 0.04);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color 160ms ease,
+        background 160ms ease,
+        transform 160ms ease;
+    }
+
+    .active-trade-item:hover,
+    .active-trade-item:focus-visible {
+      border-color: rgba(78, 227, 178, 0.56);
+      background: rgba(78, 227, 178, 0.09);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .active-trade-item:active {
+      transform: translateY(0);
     }
 
     .active-trade-levels {
@@ -2559,7 +2580,13 @@ if (!data) {
               : "";
 
           return `
-            <div class="active-trade-item">
+            <button
+              type="button"
+              class="active-trade-item"
+              data-symbol="${signal.symbol || ""}"
+              aria-label="Открыть полный анализ ${signal.symbol || "монеты"}"
+              title="Открыть полный анализ"
+            >
               <div class="statistics-history-item-head">
                 <span class="statistics-history-symbol">${signal.symbol || "—"}</span>
                 <span class="statistics-history-direction${directionClass}">${direction}</span>
@@ -2569,7 +2596,7 @@ if (!data) {
                 <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
                 <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
               </div>
-            </div>
+            </button>
           `;
         })
         .join("");
@@ -4569,6 +4596,20 @@ document
     if (!coinRow) return;
 
     openCoinModal(coinRow.dataset.symbol);
+  });
+
+document
+  .querySelector("#statistics-active-trades")
+  ?.addEventListener("click", (event) => {
+    const activeTrade = event.target.closest(
+      ".active-trade-item"
+    );
+
+    if (!activeTrade?.dataset.symbol) {
+      return;
+    }
+
+    openCoinModal(activeTrade.dataset.symbol);
   });
 
 document
