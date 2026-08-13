@@ -354,6 +354,12 @@
       font-size: 13px;
     }
 
+    .active-trade-age {
+      margin-top: 9px;
+      color: #75869a;
+      font-size: 11px;
+    }
+
     .ai-chat-preview {
       margin-top: 18px;
     }
@@ -2578,6 +2584,30 @@ if (!data) {
             : direction === "Short"
               ? " is-short"
               : "";
+          const activatedDate = new Date(
+            signal.outcome?.activatedAt || ""
+          );
+          const hasActivationTime =
+            !Number.isNaN(activatedDate.getTime());
+          const activeMinutes = hasActivationTime
+            ? Math.max(
+                0,
+                Math.floor(
+                  (Date.now() - activatedDate.getTime()) / 60000
+                )
+              )
+            : null;
+          const activeDuration = activeMinutes === null
+            ? "Время входа неизвестно"
+            : activeMinutes < 60
+              ? `Активна ${activeMinutes} мин`
+              : `Активна ${Math.floor(activeMinutes / 60)} ч ${activeMinutes % 60} мин`;
+          const activatedTime = hasActivationTime
+            ? activatedDate.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+              })
+            : "—";
 
           return `
             <button
@@ -2595,6 +2625,9 @@ if (!data) {
                 <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
                 <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
                 <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
+              </div>
+              <div class="active-trade-age">
+                Вход: ${activatedTime} · ${activeDuration}
               </div>
             </button>
           `;
