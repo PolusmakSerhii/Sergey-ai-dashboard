@@ -303,6 +303,36 @@
       font-size: 13px;
     }
 
+    .active-trades-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .active-trade-item {
+      padding: 14px;
+      border: 1px solid rgba(78, 227, 178, 0.24);
+      border-radius: 14px;
+      background: rgba(78, 227, 178, 0.04);
+    }
+
+    .active-trade-levels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      color: #a7b5c5;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .active-trade-levels strong {
+      display: block;
+      color: #f4f7fb;
+      font-size: 13px;
+    }
+
     .ai-chat-preview {
       margin-top: 18px;
     }
@@ -452,6 +482,10 @@
 
       .statistics-history-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .active-trades-list {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -1439,6 +1473,25 @@
       ></svg>
     </article>
   </div>
+
+  <article class="statistics-history-card">
+    <div class="statistics-chart-header">
+      <p class="statistics-metric-label" style="margin: 0;">
+        Active Trades
+      </p>
+      <span class="statistics-chart-period" id="statistics-active-count">
+        Ожидаем данные
+      </span>
+    </div>
+    <div
+      class="active-trades-list"
+      id="statistics-active-trades"
+    >
+      <p class="statistics-history-empty">
+        Загружаем активные сделки...
+      </p>
+    </div>
+  </article>
 
   <article class="statistics-history-card">
     <div class="statistics-chart-header">
@@ -2465,6 +2518,63 @@ if (!data) {
         .join("");
     }
 
+    function renderActiveTrades(latest) {
+      const container = document.querySelector(
+        "#statistics-active-trades"
+      );
+      const countElement = document.querySelector(
+        "#statistics-active-count"
+      );
+
+      if (!container || !countElement) {
+        return;
+      }
+
+      const activeTrades = Array.isArray(latest?.readySignals)
+        ? latest.readySignals.filter(
+            signal => signal?.outcome?.status === "Active"
+          )
+        : [];
+
+      countElement.textContent = activeTrades.length
+        ? `${activeTrades.length} активных`
+        : "Нет активных";
+
+      if (!activeTrades.length) {
+        container.innerHTML = `
+          <p class="statistics-history-empty">
+            Сейчас нет сделок внутри Entry Zone
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = activeTrades
+        .map(signal => {
+          const direction = signal.direction || "Neutral";
+          const directionClass = direction === "Long"
+            ? " is-long"
+            : direction === "Short"
+              ? " is-short"
+              : "";
+
+          return `
+            <div class="active-trade-item">
+              <div class="statistics-history-item-head">
+                <span class="statistics-history-symbol">${signal.symbol || "—"}</span>
+                <span class="statistics-history-direction${directionClass}">${direction}</span>
+              </div>
+              <div class="active-trade-levels">
+                <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
+                <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
+                <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
     function formatAiChatMessage(text) {
       const escapedText = String(text || "")
         .replace(/&/g, "&amp;")
@@ -2840,6 +2950,8 @@ if (!data) {
           : activeOutcomes > 0
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
+
+        renderActiveTrades(latest);
 
         renderStatisticsChart(
           "#statistics-confidence-chart",
