@@ -2823,6 +2823,8 @@ if (!data) {
         const outcomes = data.outcomes || {};
         const completedOutcomes =
           Number(outcomes.completed) || 0;
+        const activeOutcomes =
+          Number(outcomes.active) || 0;
 
         document.querySelector(
           "#statistics-win-rate"
@@ -2834,8 +2836,10 @@ if (!data) {
         document.querySelector(
           "#statistics-outcomes"
         ).textContent = completedOutcomes > 0
-          ? `TP1: ${Number(outcomes.wins) || 0} · Stop Loss: ${Number(outcomes.losses) || 0} · Всего: ${completedOutcomes}`
-          : "Нет завершённых сделок";
+          ? `Активных: ${activeOutcomes} · TP1: ${Number(outcomes.wins) || 0} · Stop Loss: ${Number(outcomes.losses) || 0}`
+          : activeOutcomes > 0
+            ? `Активных сделок: ${activeOutcomes} · Ждём результата`
+            : "Нет активных и завершённых сделок";
 
         renderStatisticsChart(
           "#statistics-confidence-chart",
