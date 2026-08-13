@@ -340,7 +340,7 @@
 
     .active-trade-levels {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
       color: #a7b5c5;
@@ -358,6 +358,24 @@
       margin-top: 9px;
       color: #75869a;
       font-size: 11px;
+    }
+
+    .active-trade-progress {
+      height: 5px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(124, 151, 180, 0.16);
+    }
+
+    .active-trade-progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #4fe3b1, #3ca8ff);
+    }
+
+    .active-trade-progress-fill.is-negative {
+      background: #ff5f75;
     }
 
     .ai-chat-preview {
@@ -2608,6 +2626,27 @@ if (!data) {
                 minute: "2-digit"
               })
             : "—";
+          const entryPrice = Number(signal.outcome?.entryPrice);
+          const currentPrice = Number(signal.price);
+          const takeProfit1 = Number(
+            signal.initialPlan?.takeProfit1 ?? signal.takeProfit1
+          );
+          const targetDistance = takeProfit1 - entryPrice;
+          const progress = Number.isFinite(entryPrice) &&
+            Number.isFinite(currentPrice) &&
+            Number.isFinite(takeProfit1) &&
+            targetDistance !== 0
+              ? Math.round(
+                  (currentPrice - entryPrice) /
+                  targetDistance * 100
+                )
+              : null;
+          const progressWidth = progress === null
+            ? 0
+            : Math.min(100, Math.max(0, Math.abs(progress)));
+          const progressText = progress === null
+            ? "Прогресс недоступен"
+            : `До TP1: ${progress > 0 ? "+" : ""}${progress}%`;
 
           return `
             <button
@@ -2623,11 +2662,18 @@ if (!data) {
               </div>
               <div class="active-trade-levels">
                 <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
+                <span>Current<strong>${signal.price ?? "—"}</strong></span>
                 <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
                 <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
               </div>
+              <div class="active-trade-progress" aria-label="${progressText}">
+                <div
+                  class="active-trade-progress-fill${progress !== null && progress < 0 ? " is-negative" : ""}"
+                  style="width:${progressWidth}%"
+                ></div>
+              </div>
               <div class="active-trade-age">
-                Вход: ${activatedTime} · ${activeDuration}
+                ${progressText} · Вход: ${activatedTime} · ${activeDuration}
               </div>
             </button>
           `;
