@@ -378,6 +378,15 @@
       background: #ff5f75;
     }
 
+    .completed-trade-item.is-win {
+      border-color: rgba(78, 227, 178, 0.4);
+    }
+
+    .completed-trade-item.is-loss {
+      border-color: rgba(255, 95, 117, 0.4);
+      background: rgba(255, 95, 117, 0.04);
+    }
+
     .ai-chat-preview {
       margin-top: 18px;
     }
@@ -1541,6 +1550,25 @@
   <article class="statistics-history-card">
     <div class="statistics-chart-header">
       <p class="statistics-metric-label" style="margin: 0;">
+        Completed Trades
+      </p>
+      <span class="statistics-chart-period" id="statistics-completed-count">
+        Ожидаем данные
+      </span>
+    </div>
+    <div
+      class="active-trades-list"
+      id="statistics-completed-trades"
+    >
+      <p class="statistics-history-empty">
+        Загружаем завершённые сделки...
+      </p>
+    </div>
+  </article>
+
+  <article class="statistics-history-card">
+    <div class="statistics-chart-header">
+      <p class="statistics-metric-label" style="margin: 0;">
         Best Opportunity History
       </p>
       <span class="statistics-chart-period" id="statistics-opportunity-count">
@@ -2681,6 +2709,97 @@ if (!data) {
         .join("");
     }
 
+    function renderCompletedTrades(history) {
+      const container = document.querySelector(
+        "#statistics-completed-trades"
+      );
+      const countElement = document.querySelector(
+        "#statistics-completed-count"
+      );
+
+      if (!container || !countElement) {
+        return;
+      }
+
+      const completedByTradeId = new Map();
+
+      history.forEach(snapshot => {
+        const signals = Array.isArray(snapshot?.readySignals)
+          ? snapshot.readySignals
+          : [];
+
+        signals.forEach(signal => {
+          const status = signal?.outcome?.status;
+
+          if (
+            !signal?.tradeId ||
+            completedByTradeId.has(signal.tradeId) ||
+            (status !== "TP1Hit" && status !== "Stopped")
+          ) {
+            return;
+          }
+
+          completedByTradeId.set(signal.tradeId, signal);
+        });
+      });
+
+      const completedTrades = [...completedByTradeId.values()];
+      countElement.textContent = completedTrades.length
+        ? `${completedTrades.length} завершено`
+        : "Нет результатов";
+
+      if (!completedTrades.length) {
+        container.innerHTML = `
+          <p class="statistics-history-empty">
+            Первые результаты появятся после TP1 или Stop Loss
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = completedTrades
+        .slice(0, 8)
+        .map(signal => {
+          const isWin = signal.outcome.status === "TP1Hit";
+          const resultLabel = isWin ? "TP1 HIT" : "STOP LOSS";
+          const checkedDate = new Date(
+            signal.outcome.checkedAt || ""
+          );
+          const checkedTime = Number.isNaN(checkedDate.getTime())
+            ? "—"
+            : checkedDate.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+          const resultR = Number(signal.outcome.resultR);
+          const resultRText = Number.isFinite(resultR)
+            ? `${resultR > 0 ? "+" : ""}${resultR}R`
+            : "—";
+
+          return `
+            <button
+              type="button"
+              class="active-trade-item completed-trade-item ${isWin ? "is-win" : "is-loss"}"
+              data-symbol="${signal.symbol || ""}"
+              aria-label="Открыть полный анализ ${signal.symbol || "монеты"}"
+              title="Открыть полный анализ"
+            >
+              <div class="statistics-history-item-head">
+                <span class="statistics-history-symbol">${signal.symbol || "—"}</span>
+                <span class="statistics-history-direction ${isWin ? "is-long" : "is-short"}">${resultLabel}</span>
+              </div>
+              <div class="active-trade-levels">
+                <span>Entry<strong>${signal.outcome.entryPrice ?? "—"}</strong></span>
+                <span>Exit<strong>${signal.outcome.exitPrice ?? "—"}</strong></span>
+                <span>Result<strong>${resultRText}</strong></span>
+                <span>Closed<strong>${checkedTime}</strong></span>
+              </div>
+            </button>
+          `;
+        })
+        .join("");
+    }
+
     function formatAiChatMessage(text) {
       const escapedText = String(text || "")
         .replace(/&/g, "&amp;")
@@ -3058,6 +3177,7 @@ if (!data) {
             : "Нет активных и завершённых сделок";
 
         renderActiveTrades(latest);
+        renderCompletedTrades(history);
 
         renderStatisticsChart(
           "#statistics-confidence-chart",
@@ -4689,6 +4809,20 @@ document
     }
 
     openCoinModal(activeTrade.dataset.symbol);
+  });
+
+document
+  .querySelector("#statistics-completed-trades")
+  ?.addEventListener("click", (event) => {
+    const completedTrade = event.target.closest(
+      ".completed-trade-item"
+    );
+
+    if (!completedTrade?.dataset.symbol) {
+      return;
+    }
+
+    openCoinModal(completedTrade.dataset.symbol);
   });
 
 document
