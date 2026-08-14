@@ -162,6 +162,21 @@
       color: #4ee3b2;
     }
 
+    .statistics-streak-note {
+      margin: 8px 0 0;
+      color: #a7b5c5;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .statistics-streak-note.is-win {
+      color: #4ee3b2;
+    }
+
+    .statistics-streak-note.is-loss {
+      color: #ff7474;
+    }
+
     .statistics-chart-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1565,6 +1580,10 @@
 
   <p class="statistics-sample-note" id="statistics-sample-note">
     Ожидаем завершённые сделки для оценки статистики
+  </p>
+
+  <p class="statistics-streak-note" id="statistics-streak-note">
+    Серия результатов появится после первой завершённой сделки
   </p>
 
   <div class="statistics-chart-grid">
@@ -3373,6 +3392,31 @@ if (!data) {
             : completedOutcomes > 0
               ? `Предварительная статистика: ${completedOutcomes} из 30 сделок · Для устойчивых выводов продолжаем накапливать результаты`
               : "Ожидаем завершённые сделки для оценки статистики";
+        }
+
+        const streakNote = document.querySelector(
+          "#statistics-streak-note"
+        );
+        const streakType = outcomes.currentStreak?.type;
+        const streakCount = Number(
+          outcomes.currentStreak?.count
+        ) || 0;
+        const maxConsecutiveLosses = Number(
+          outcomes.maxConsecutiveLosses
+        ) || 0;
+
+        if (streakNote) {
+          streakNote.classList.toggle(
+            "is-win",
+            streakType === "Win"
+          );
+          streakNote.classList.toggle(
+            "is-loss",
+            streakType === "Loss"
+          );
+          streakNote.textContent = streakType && streakCount > 0
+            ? `Текущая серия: ${streakCount} ${streakType} подряд · Максимум Stop Loss подряд: ${maxConsecutiveLosses}`
+            : "Серия результатов появится после первой завершённой сделки";
         }
 
         renderActiveTrades(latest);
