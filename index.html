@@ -1507,7 +1507,7 @@
         class="statistics-metric-detail"
         id="statistics-r-performance"
       >
-        Net R: — · Average R: —
+        Net R: — · Average R: — · Drawdown: —
       </p>
     </article>
   </div>
@@ -3287,6 +3287,10 @@ if (!data) {
           outcomes.averageR !== null &&
           outcomes.averageR !== undefined &&
           Number.isFinite(Number(outcomes.averageR));
+        const hasMaxDrawdownR =
+          outcomes.maxDrawdownR !== null &&
+          outcomes.maxDrawdownR !== undefined &&
+          Number.isFinite(Number(outcomes.maxDrawdownR));
 
         document.querySelector(
           "#statistics-profit-factor"
@@ -3297,7 +3301,7 @@ if (!data) {
         document.querySelector(
           "#statistics-r-performance"
         ).textContent = completedOutcomes > 0
-          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"}`
+          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
           : "Ожидаем завершённые сделки";
 
         renderActiveTrades(latest);
