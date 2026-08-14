@@ -145,6 +145,23 @@
       line-height: 1.45;
     }
 
+    .statistics-sample-note {
+      margin: 12px 0 0;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 209, 102, 0.28);
+      border-radius: 12px;
+      background: rgba(255, 209, 102, 0.06);
+      color: #ffd166;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .statistics-sample-note.is-reliable {
+      border-color: rgba(78, 227, 178, 0.28);
+      background: rgba(78, 227, 178, 0.06);
+      color: #4ee3b2;
+    }
+
     .statistics-chart-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1511,6 +1528,10 @@
       </p>
     </article>
   </div>
+
+  <p class="statistics-sample-note" id="statistics-sample-note">
+    Ожидаем завершённые сделки для оценки статистики
+  </p>
 
   <div class="statistics-chart-grid">
     <article class="statistics-chart-card">
@@ -3303,6 +3324,22 @@ if (!data) {
         ).textContent = completedOutcomes > 0
           ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
           : "Ожидаем завершённые сделки";
+
+        const sampleNote = document.querySelector(
+          "#statistics-sample-note"
+        );
+
+        if (sampleNote) {
+          sampleNote.classList.toggle(
+            "is-reliable",
+            completedOutcomes >= 30
+          );
+          sampleNote.textContent = completedOutcomes >= 30
+            ? `Выборка: ${completedOutcomes} сделок · Достаточно для предварительной оценки стратегии`
+            : completedOutcomes > 0
+              ? `Предварительная статистика: ${completedOutcomes} из 30 сделок · Для устойчивых выводов продолжаем накапливать результаты`
+              : "Ожидаем завершённые сделки для оценки статистики";
+        }
 
         renderActiveTrades(latest);
         renderCompletedTrades(history);
