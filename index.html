@@ -110,7 +110,7 @@
 
     .statistics-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
@@ -1486,6 +1486,24 @@
         id="statistics-outcomes"
       >
         Нет завершённых сделок
+      </p>
+    </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        Profit Factor
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-profit-factor"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-r-performance"
+      >
+        Net R: — · Average R: —
       </p>
     </article>
   </div>
@@ -3175,6 +3193,31 @@ if (!data) {
           : activeOutcomes > 0
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
+
+        const hasProfitFactor =
+          outcomes.profitFactor !== null &&
+          outcomes.profitFactor !== undefined &&
+          Number.isFinite(Number(outcomes.profitFactor));
+        const hasNetR =
+          outcomes.netR !== null &&
+          outcomes.netR !== undefined &&
+          Number.isFinite(Number(outcomes.netR));
+        const hasAverageR =
+          outcomes.averageR !== null &&
+          outcomes.averageR !== undefined &&
+          Number.isFinite(Number(outcomes.averageR));
+
+        document.querySelector(
+          "#statistics-profit-factor"
+        ).textContent = hasProfitFactor
+          ? Number(outcomes.profitFactor).toFixed(2)
+          : "—";
+
+        document.querySelector(
+          "#statistics-r-performance"
+        ).textContent = completedOutcomes > 0
+          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"}`
+          : "Ожидаем завершённые сделки";
 
         renderActiveTrades(latest);
         renderCompletedTrades(history);
