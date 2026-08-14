@@ -236,6 +236,40 @@
       background: rgba(9, 24, 39, 0.45);
     }
 
+    .statistics-collapsible > summary {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      list-style: none;
+      cursor: pointer;
+    }
+
+    .statistics-collapsible > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .statistics-collapsible > summary::after {
+      content: "▾";
+      color: #75869a;
+      font-size: 14px;
+      transition: transform 160ms ease;
+    }
+
+    .statistics-collapsible[open] > summary::after {
+      transform: rotate(180deg);
+    }
+
+    .statistics-collapsible > summary:focus-visible {
+      outline: 2px solid rgba(79, 227, 177, 0.55);
+      outline-offset: 6px;
+      border-radius: 6px;
+    }
+
+    .statistics-collapsible-count {
+      margin-left: auto;
+    }
+
     .statistics-history-list {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1589,15 +1623,15 @@
     </article>
   </div>
 
-  <article class="statistics-history-card">
-    <div class="statistics-chart-header">
+  <details class="statistics-history-card statistics-collapsible">
+    <summary>
       <p class="statistics-metric-label" style="margin: 0;">
         Active Trades
       </p>
-      <span class="statistics-chart-period" id="statistics-active-count">
+      <span class="statistics-chart-period statistics-collapsible-count" id="statistics-active-count">
         Ожидаем данные
       </span>
-    </div>
+    </summary>
     <div
       class="active-trades-list"
       id="statistics-active-trades"
@@ -1606,17 +1640,17 @@
         Загружаем активные сделки...
       </p>
     </div>
-  </article>
+  </details>
 
-  <article class="statistics-history-card">
-    <div class="statistics-chart-header">
+  <details class="statistics-history-card statistics-collapsible">
+    <summary>
       <p class="statistics-metric-label" style="margin: 0;">
         Completed Trades
       </p>
-      <span class="statistics-chart-period" id="statistics-completed-count">
+      <span class="statistics-chart-period statistics-collapsible-count" id="statistics-completed-count">
         Ожидаем данные
       </span>
-    </div>
+    </summary>
     <div
       class="active-trades-list"
       id="statistics-completed-trades"
@@ -1625,7 +1659,7 @@
         Загружаем завершённые сделки...
       </p>
     </div>
-  </article>
+  </details>
 
   <article class="statistics-history-card">
     <div class="statistics-chart-header">
