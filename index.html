@@ -147,7 +147,7 @@
 
     .statistics-chart-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       margin-top: 12px;
     }
@@ -539,6 +539,10 @@
       }
 
       .active-trades-list {
+        grid-template-columns: 1fr;
+      }
+
+      .statistics-chart-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1544,6 +1548,24 @@
         aria-label="График готовых сделок за 24 часа"
       ></svg>
     </article>
+
+    <article class="statistics-chart-card">
+      <div class="statistics-chart-header">
+        <p class="statistics-metric-label" style="margin: 0;">
+          Cumulative R
+        </p>
+        <span class="statistics-chart-period" id="statistics-r-range">
+          Ожидаем результаты
+        </span>
+      </div>
+      <svg
+        class="statistics-chart"
+        id="statistics-r-chart"
+        viewBox="0 0 500 96"
+        preserveAspectRatio="none"
+        aria-label="График накопленного результата в R"
+      ></svg>
+    </article>
   </div>
 
   <article class="statistics-history-card">
@@ -2485,6 +2507,65 @@ if (!data) {
       `;
     }
 
+    function renderCumulativeRChart(history) {
+      const rangeElement = document.querySelector(
+        "#statistics-r-range"
+      );
+      const completedByTradeId = new Map();
+
+      history.forEach(snapshot => {
+        const signals = Array.isArray(snapshot?.readySignals)
+          ? snapshot.readySignals
+          : [];
+
+        signals.forEach(signal => {
+          const status = signal?.outcome?.status;
+          const resultR = signal?.outcome?.resultR;
+
+          if (
+            !signal?.tradeId ||
+            completedByTradeId.has(signal.tradeId) ||
+            (status !== "TP1Hit" && status !== "Stopped") ||
+            resultR === null ||
+            resultR === undefined ||
+            !Number.isFinite(Number(resultR))
+          ) {
+            return;
+          }
+
+          completedByTradeId.set(signal.tradeId, signal);
+        });
+      });
+
+      const completedTrades = [...completedByTradeId.values()]
+        .sort((a, b) =>
+          new Date(a.outcome?.checkedAt || 0) -
+          new Date(b.outcome?.checkedAt || 0)
+        );
+      let cumulativeR = 0;
+      const cumulativeHistory = completedTrades
+        .map(signal => {
+          cumulativeR += Number(signal.outcome.resultR);
+
+          return {
+            cumulativeR: Math.round(cumulativeR * 100) / 100
+          };
+        })
+        .reverse();
+
+      renderStatisticsChart(
+        "#statistics-r-chart",
+        cumulativeHistory,
+        "cumulativeR"
+      );
+
+      if (rangeElement) {
+        rangeElement.textContent = completedTrades.length
+          ? `${completedTrades.length} сделок · ${formatSignedChange(cumulativeR)}R`
+          : "Ожидаем результаты";
+      }
+    }
+
     function formatStatisticsRange(history) {
       if (!history.length) {
         return "Ожидаем данные";
@@ -3233,6 +3314,7 @@ if (!data) {
           "readyTrades",
           true
         );
+        renderCumulativeRChart(history);
 
         const statisticsRange =
           formatStatisticsRange(history);
