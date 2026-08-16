@@ -2956,6 +2956,11 @@ if (!data) {
           const resultRText = Number.isFinite(resultR)
             ? `${resultR > 0 ? "+" : ""}${resultR}R`
             : "—";
+          const priceCheck = signal.outcome.priceCheck;
+          const priceCheckText =
+            priceCheck?.source === "OKX 1m candles"
+              ? `Проверено: OKX 1m · ${priceCheck.candles ?? 0} свеч. · Low ${priceCheck.low ?? "—"} / High ${priceCheck.high ?? "—"}`
+              : "Проверено по снимку рейтинга";
 
           return `
             <button
@@ -2975,6 +2980,7 @@ if (!data) {
                 <span>Result<strong>${resultRText}</strong></span>
                 <span>Closed<strong>${checkedTime}</strong></span>
               </div>
+              <div class="active-trade-age">${priceCheckText}</div>
             </button>
           `;
         })
