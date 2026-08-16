@@ -1816,6 +1816,7 @@
     let aiChatHistory = [];
     let lastGlobalRankingGeneratedAt = null;
     let globalRankingRefreshFailed = false;
+    let lastDashboardRefreshAt = 0;
 
     const FAVORITES_STORAGE_KEY =
       "sergey-ai-trader:favorites:v1";
@@ -2024,10 +2025,10 @@
     }
 
     const GLOBAL_RANKING_REFRESH_MS =
-      4 * 60 * 1000;
+      6 * 60 * 1000;
 
     const GLOBAL_RANKING_STALE_MS =
-      6 * 60 * 1000;
+      15 * 60 * 1000;
 
     let scannerCurrentPage = 1;
     const scannerPageLimit = 10;
@@ -3303,7 +3304,7 @@ if (!data) {
         document.querySelector(
           "#statistics-window"
         ).textContent =
-          `Окно ${data.historyWindowHours || 24} ч · шаг ${data.snapshotIntervalMinutes || 4} мин`;
+          `Окно ${data.historyWindowHours || 24} ч · шаг ${data.snapshotIntervalMinutes || 6} мин`;
 
         document.querySelector(
           "#statistics-confidence"
@@ -5190,17 +5191,35 @@ document.addEventListener(
     }
   }
 );
+
+    async function refreshDashboardData(force = false) {
+      if (document.visibilityState === "hidden") {
+        return;
+      }
+
+      const now = Date.now();
+
+      if (
+        !force &&
+        now - lastDashboardRefreshAt <
+          GLOBAL_RANKING_REFRESH_MS
+      ) {
+        return;
+      }
+
+      lastDashboardRefreshAt = now;
+
+      await Promise.all([
+        loadFullGlobalRanking(),
+        loadStatisticsOverview()
+      ]);
+    }
+
     renderFavoriteCoins();
-    loadFullGlobalRanking();
-    loadStatisticsOverview();
+    refreshDashboardData(true);
 
     window.setInterval(
-      loadFullGlobalRanking,
-      GLOBAL_RANKING_REFRESH_MS
-    );
-
-    window.setInterval(
-      loadStatisticsOverview,
+      refreshDashboardData,
       GLOBAL_RANKING_REFRESH_MS
     );
 
@@ -5213,8 +5232,7 @@ document.addEventListener(
       "visibilitychange",
       () => {
         if (document.visibilityState === "visible") {
-          loadFullGlobalRanking();
-          loadStatisticsOverview();
+          refreshDashboardData();
         }
       }
     );
