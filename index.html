@@ -1592,6 +1592,24 @@
         Net R: — · Average R: — · Drawdown: —
       </p>
     </article>
+
+    <article class="statistics-metric">
+      <p class="statistics-metric-label">
+        A+ Win Rate
+      </p>
+      <p
+        class="statistics-metric-value"
+        id="statistics-aplus-win-rate"
+      >
+        —
+      </p>
+      <p
+        class="statistics-metric-detail"
+        id="statistics-aplus-outcomes"
+      >
+        Ожидаем завершённые сделки A+
+      </p>
+    </article>
   </div>
 
   <p class="statistics-sample-note" id="statistics-sample-note">
@@ -3397,6 +3415,23 @@ if (!data) {
           : activeOutcomes > 0
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
+
+        const aPlusOutcomes = outcomes.aPlus || {};
+        const aPlusCompleted =
+          Number(aPlusOutcomes.completed) || 0;
+
+        document.querySelector(
+          "#statistics-aplus-win-rate"
+        ).textContent = aPlusCompleted > 0 &&
+          Number.isFinite(Number(aPlusOutcomes.winRate))
+            ? `${Number(aPlusOutcomes.winRate)}%`
+            : "—";
+
+        document.querySelector(
+          "#statistics-aplus-outcomes"
+        ).textContent = aPlusCompleted > 0
+          ? `Loss Rate: ${Number(aPlusOutcomes.lossRate) || 0}% · ${aPlusCompleted} завершено`
+          : "Ожидаем завершённые сделки A+";
 
         const hasProfitFactor =
           outcomes.profitFactor !== null &&
