@@ -4948,9 +4948,12 @@ directionFilter.addEventListener(
         gradeFilteredResults.filter(
           coin =>
            actionFilter.value === "all" ||
-           getScannerAction(coin) ===
+             getScannerAction(coin) ===
              actionFilter.value
       );
+
+ scannerResultTotal =
+   actionFilteredResults.length;
       
  scannerTotalPages =
   Math.max(
