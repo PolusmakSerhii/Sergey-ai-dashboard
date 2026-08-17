@@ -2911,7 +2911,11 @@ if (!data) {
         .join("");
     }
 
-    function renderCompletedTrades(history) {
+    function renderCompletedTrades(
+      history,
+      persistentTrades = [],
+      totalCompleted = null
+    ) {
       const container = document.querySelector(
         "#statistics-completed-trades"
       );
@@ -2945,9 +2949,19 @@ if (!data) {
         });
       });
 
-      const completedTrades = [...completedByTradeId.values()];
-      countElement.textContent = completedTrades.length
-        ? `${completedTrades.length} завершено`
+      const completedTrades = Array.isArray(persistentTrades) &&
+        persistentTrades.length
+          ? persistentTrades.slice(0, 20)
+          : [...completedByTradeId.values()].slice(0, 20);
+      const completedCount = Number.isFinite(
+        Number(totalCompleted)
+      )
+        ? Number(totalCompleted)
+        : completedTrades.length;
+      countElement.textContent = completedCount
+        ? completedCount > completedTrades.length
+          ? `Последние ${completedTrades.length} · всего ${completedCount}`
+          : `${completedCount} завершено`
         : "Нет результатов";
 
       if (!completedTrades.length) {
@@ -2960,7 +2974,7 @@ if (!data) {
       }
 
       container.innerHTML = completedTrades
-        .slice(0, 8)
+        .slice(0, 20)
         .map(signal => {
           const isWin = signal.outcome.status === "TP1Hit";
           const resultLabel = isWin ? "TP1 HIT" : "STOP LOSS";
@@ -3379,7 +3393,7 @@ if (!data) {
         document.querySelector(
           "#statistics-outcomes"
         ).textContent = completedOutcomes > 0
-          ? `Активных: ${activeOutcomes} · TP1: ${Number(outcomes.wins) || 0} · Stop Loss: ${Number(outcomes.losses) || 0}`
+          ? `Активных: ${activeOutcomes} · TP1: ${Number(outcomes.wins) || 0} (${Number(outcomes.winRate) || 0}%) · Stop Loss: ${Number(outcomes.losses) || 0} (${Number(outcomes.lossRate) || 0}%)`
           : activeOutcomes > 0
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
@@ -3455,7 +3469,11 @@ if (!data) {
         }
 
         renderActiveTrades(latest);
-        renderCompletedTrades(history);
+        renderCompletedTrades(
+          history,
+          data.completedTrades,
+          completedOutcomes
+        );
 
         renderStatisticsChart(
           "#statistics-confidence-chart",
