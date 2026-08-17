@@ -8,6 +8,21 @@ assert.match(html, /<html\b/i, "index.html must contain an html element");
 assert.match(html, /<body\b/i, "index.html must contain a body element");
 assert.match(html, /Completed Trades/i, "Completed Trades section is missing");
 assert.match(html, /AI CHAT ASSISTANT/i, "AI Assistant section is missing");
+assert.match(
+  html,
+  /Recommendation Confidence/,
+  "Recommendation Confidence column is missing"
+);
+assert.match(
+  html,
+  /Showing \$\{filteredResults\.length\} on this page · \$\{totalResults\} markets total/,
+  "Scanner total count is missing"
+);
+assert.match(
+  html,
+  /scannerResultTotal\s*=\s*actionFilteredResults\.length/,
+  "Global ranking refresh must retain the scanner total"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
