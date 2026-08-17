@@ -1837,6 +1837,7 @@
     ];
     
     let scannerResults = [];
+    let scannerResultTotal = 0;
     let globalRankingResults = [];
     let scoreSortDirection = "desc";
     let globalRankingRefreshInFlight = false;
@@ -2290,8 +2291,11 @@ const actionMatch =
       const scannerCount =
        document.querySelector("#scanner-count");
 
+    const totalResults =
+      scannerResultTotal || results.length;
+
     scannerCount.textContent =
-      `Showing ${filteredResults.length} of ${results.length} markets`;
+      `Showing ${filteredResults.length} on this page · ${totalResults} markets total`;
       
     const scannerElement =
       document.querySelector("#scanner-table");
@@ -2473,6 +2477,11 @@ if (!data) {
         
         scannerResults =
           data.results || [];
+
+        scannerResultTotal =
+          data.totalMatchedSymbols ??
+          data.totalAvailableSymbols ??
+          scannerResults.length;
 
         scannerCurrentPage =
           data.page || scannerCurrentPage;
