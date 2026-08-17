@@ -1,6 +1,6 @@
-# Sergey AI Trader PRO Dashboard
+# Crypto AI Trader PRO Dashboard
 
-Static production Dashboard for the Sergey AI Trader PRO market scanner. The
+Static production Dashboard for the Crypto AI Trader PRO market scanner. The
 application is implemented in `index.html` and consumes the separate Vercel API;
 it does not calculate or modify trading signals in the browser.
 
