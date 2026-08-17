@@ -2144,7 +2144,7 @@ function getScannerActionClass(action) {
               >
                 <td>${index + 1}</td>
                 <td>${symbol}</td>
-                <td colspan="5" class="core-market-unavailable">
+                <td colspan="6" class="core-market-unavailable">
                   Данные обновляются
                 </td>
               </tr>
@@ -2173,6 +2173,7 @@ function getScannerActionClass(action) {
                 </span>
               </td>
               <td>${coin.confidence ?? 0}%</td>
+              <td>${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</td>
               <td>
                 <span class="${
                   coin.direction === "Long"
@@ -2202,7 +2203,8 @@ function getScannerActionClass(action) {
               <th>Symbol</th>
               <th>Score</th>
               <th>Grade</th>
-              <th>Confidence</th>
+              <th title="Уверенность вероятностного сигнала">Signal Confidence</th>
+              <th title="Уверенность итоговой рекомендации; от 75% используется Strong Buy/Sell">Recommendation Confidence</th>
               <th>Direction</th>
               <th>Action</th>
             </tr>
@@ -2287,7 +2289,8 @@ const actionMatch =
               Score ${scoreSortDirection === "desc" ? "↓" : "↑"}
           </th>
           <th>Grade</th>
-          <th>Confidence</th>
+          <th title="Уверенность вероятностного сигнала">Signal Confidence</th>
+          <th title="Уверенность итоговой рекомендации; от 75% используется Strong Buy/Sell">Recommendation Confidence</th>
           <th>Direction</th>
           <th>Action</th>
         </tr>
@@ -2331,6 +2334,7 @@ const actionMatch =
                   </td>
 
                   <td>${coin.confidence ?? 0}%</td>
+                  <td>${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</td>
 
                   <td>
                     <span class="${
