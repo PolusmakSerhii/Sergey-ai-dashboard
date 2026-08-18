@@ -3480,8 +3480,10 @@ if (!data) {
             "is-reliable",
             completedOutcomes >= 30
           );
-          sampleNote.textContent = completedOutcomes >= 30
-            ? `Выборка: ${completedOutcomes} сделок · Достаточно для предварительной оценки стратегии`
+          sampleNote.textContent = completedOutcomes >= 100
+            ? `Расширенная выборка: ${completedOutcomes} сделок · Достаточно для контролируемого анализа калибровки`
+            : completedOutcomes >= 30
+              ? `Первая контрольная точка: ${completedOutcomes} сделок · Следующая цель: 100 сделок`
             : completedOutcomes > 0
               ? `Предварительная статистика: ${completedOutcomes} из 30 сделок · Для устойчивых выводов продолжаем накапливать результаты`
               : "Ожидаем завершённые сделки для оценки статистики";

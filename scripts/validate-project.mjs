@@ -23,6 +23,11 @@ assert.match(
   /scannerResultTotal\s*=\s*actionFilteredResults\.length/,
   "Global ranking refresh must retain the scanner total"
 );
+assert.match(
+  html,
+  /Следующая цель: 100 сделок/,
+  "Completed Trades must show the next statistics milestone"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
