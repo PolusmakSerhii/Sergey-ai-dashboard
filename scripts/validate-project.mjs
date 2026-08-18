@@ -43,6 +43,11 @@ assert.equal(
   1,
   "Global Best Setup must appear exactly once"
 );
+assert.match(
+  html,
+  /<details class="card ai-chat-preview statistics-collapsible" open>/,
+  "AI Chat must be collapsible and open by default"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])

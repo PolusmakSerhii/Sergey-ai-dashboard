@@ -462,6 +462,10 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .ai-chat-preview[open] > .ai-chat-header {
       margin-bottom: 14px;
     }
 
@@ -1748,15 +1752,15 @@
   </details>
 </section>
 
-<section class="card ai-chat-preview">
-  <div class="ai-chat-header">
+<details class="card ai-chat-preview statistics-collapsible" open>
+  <summary class="ai-chat-header">
     <p class="card-label" style="margin: 0;">
       AI Chat Assistant · Preview
     </p>
     <span class="ai-chat-mode" id="ai-chat-mode">
       AI Online
     </span>
-  </div>
+  </summary>
 
   <div
     class="ai-chat-messages"
@@ -1796,7 +1800,7 @@
   <p class="ai-chat-note">
     AI отвечает по текущим данным Dashboard и не является торговым советом.
   </p>
-</section>
+</details>
     
   </main> 
   
