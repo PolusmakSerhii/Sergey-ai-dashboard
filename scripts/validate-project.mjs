@@ -45,8 +45,13 @@ assert.equal(
 );
 assert.match(
   html,
+  /<details class="card ai-chat-preview statistics-collapsible">/,
+  "AI Chat must be collapsible and closed by default"
+);
+assert.doesNotMatch(
+  html,
   /<details class="card ai-chat-preview statistics-collapsible" open>/,
-  "AI Chat must be collapsible and open by default"
+  "AI Chat must not be open by default"
 );
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
