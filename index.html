@@ -103,6 +103,71 @@
       display: none;
     }
 
+    .news-background {
+      min-height: 0;
+      margin-top: 12px;
+      padding: 14px 16px;
+    }
+
+    .news-background-summary {
+      align-items: center !important;
+    }
+
+    .news-background-status {
+      margin-left: auto;
+      color: #9aa9bb;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .news-background-status.is-bullish {
+      color: #4fe3b1;
+    }
+
+    .news-background-status.is-bearish {
+      color: #ff5d73;
+    }
+
+    .news-background-body {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(124, 151, 180, 0.16);
+    }
+
+    .news-background-meta {
+      margin: 0;
+      color: #8fa0b3;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .news-background-list {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .news-background-link {
+      display: block;
+      padding: 9px 10px;
+      border: 1px solid rgba(124, 151, 180, 0.14);
+      border-radius: 10px;
+      color: #d7e0ea;
+      font-size: 12px;
+      line-height: 1.4;
+      text-decoration: none;
+    }
+
+    .news-background-link:hover,
+    .news-background-link:focus-visible {
+      border-color: rgba(79, 227, 177, 0.36);
+      color: #77f1c8;
+      outline: none;
+    }
+
    .header {
     display: flex;
     align-items: center;
@@ -1415,6 +1480,19 @@
       </article>
     </section>
 
+    <details class="card news-background statistics-collapsible" id="news-background">
+      <summary class="news-background-summary">
+        <p class="card-label" style="margin: 0;">News Background · Informational</p>
+        <span class="news-background-status" id="news-background-status">Загрузка...</span>
+      </summary>
+      <div class="news-background-body">
+        <p class="news-background-meta" id="news-background-meta">
+          Новости не влияют на торговый Score
+        </p>
+        <ul class="news-background-list" id="news-background-list"></ul>
+      </div>
+    </details>
+
     <div class="dashboard-tabs" role="tablist" aria-label="Рынки Dashboard">
       <button class="dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="global-ranking">
         Global Ranking
@@ -1846,6 +1924,9 @@
 
     const STATISTICS_URL =
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=statistics";
+
+    const NEWS_URL =
+      "https://sergey-ai-trader-api.vercel.app/api/news";
 
     const CHAT_URL =
       "https://sergey-ai-trader-api.vercel.app/api/chat";
@@ -5312,6 +5393,60 @@ document.addEventListener(
   }
 );
 
+    async function loadNewsBackground() {
+      const statusElement = document.querySelector("#news-background-status");
+      const metaElement = document.querySelector("#news-background-meta");
+      const listElement = document.querySelector("#news-background-list");
+
+      if (!statusElement || !metaElement || !listElement) return;
+
+      try {
+        const response = await fetch(NEWS_URL, { cache: "no-store" });
+        const data = await response.json();
+        const sentiment = ["Bullish", "Bearish", "Neutral"].includes(data?.sentiment)
+          ? data.sentiment
+          : "Neutral";
+        const score = Number.isFinite(Number(data?.score)) ? Number(data.score) : 0;
+        const articleCount = Number(data?.articleCount) || 0;
+        const highImpactCount = Number(data?.highImpactCount) || 0;
+
+        statusElement.classList.remove("is-bullish", "is-bearish");
+        if (sentiment === "Bullish") statusElement.classList.add("is-bullish");
+        if (sentiment === "Bearish") statusElement.classList.add("is-bearish");
+        statusElement.textContent = `${sentiment} · ${score > 0 ? "+" : ""}${score}`;
+        metaElement.textContent = data?.ok === true
+          ? `${articleCount} новостей · Важных: ${highImpactCount} · Не влияет на торговый Score`
+          : "Новостной источник временно недоступен · Neutral fallback · Торговая логика работает";
+
+        listElement.replaceChildren();
+        const articles = Array.isArray(data?.articles) ? data.articles.slice(0, 5) : [];
+
+        for (const article of articles) {
+          const item = document.createElement("li");
+          const link = document.createElement("a");
+          const url = String(article?.url || "");
+          link.className = "news-background-link";
+          link.textContent = `${article?.highImpact ? "⚠ " : ""}${article?.title || "Без заголовка"}`;
+
+          if (/^https:\/\//i.test(url)) {
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          }
+
+          item.append(link);
+          listElement.append(item);
+        }
+      } catch (error) {
+        console.error("News Background error:", error);
+        statusElement.classList.remove("is-bullish", "is-bearish");
+        statusElement.textContent = "Neutral · 0";
+        metaElement.textContent =
+          "Новостной источник временно недоступен · Торговая логика работает";
+        listElement.replaceChildren();
+      }
+    }
+
     async function refreshDashboardData(force = false) {
       if (document.visibilityState === "hidden") {
         return;
@@ -5331,7 +5466,8 @@ document.addEventListener(
 
       await Promise.all([
         loadFullGlobalRanking(),
-        loadStatisticsOverview()
+        loadStatisticsOverview(),
+        loadNewsBackground()
       ]);
     }
 
