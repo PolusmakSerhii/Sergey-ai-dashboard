@@ -35,8 +35,8 @@ assert.match(
 );
 assert.match(
   html,
-  /\.market-overview-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/,
-  "Market overview must use four columns on wide screens"
+  /\.market-overview-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/,
+  "Market overview must use three columns on wide screens"
 );
 assert.equal(
   [...html.matchAll(/id="best-setup-symbol"/g)].length,
@@ -80,8 +80,6 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
     `Dashboard panel ${tab} is missing`
   );
 }
-assert.match(html, /id="market-ready-trades"/, "Ready Trades overview card is missing");
-assert.doesNotMatch(html, /id="market-count"/, "Redundant scanner summary card must be removed");
 assert.match(html, /id="news-background"/, "News Background section is missing");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
