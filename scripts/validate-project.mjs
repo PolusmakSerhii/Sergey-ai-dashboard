@@ -53,6 +53,11 @@ assert.doesNotMatch(
   /<details class="card ai-chat-preview statistics-collapsible" open>/,
   "AI Chat must not be open by default"
 );
+assert.match(
+  html,
+  /\.ai-chat-preview:not\(\[open\]\)\s*\{[\s\S]*?min-height:\s*0/,
+  "Collapsed AI Chat must use compact height"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
