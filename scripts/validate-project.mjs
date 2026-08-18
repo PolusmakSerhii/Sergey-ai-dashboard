@@ -63,6 +63,18 @@ assert.doesNotMatch(
   /terminal-sidebar/,
   "Dashboard must not render a left sidebar"
 );
+for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
+  assert.match(
+    html,
+    new RegExp(`data-dashboard-tab="${tab}"`),
+    `Dashboard tab ${tab} is missing`
+  );
+  assert.match(
+    html,
+    new RegExp(`data-dashboard-panel="${tab}"`),
+    `Dashboard panel ${tab} is missing`
+  );
+}
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])

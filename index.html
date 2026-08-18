@@ -63,6 +63,46 @@
       text-transform: uppercase;
     }
 
+    .dashboard-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 8px;
+      overflow-x: auto;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 16px;
+      background: rgba(7, 18, 30, 0.78);
+    }
+
+    .dashboard-tab {
+      flex: 0 0 auto;
+      min-width: 170px;
+      padding: 10px 16px;
+      border: 1px solid rgba(124, 151, 180, 0.18);
+      border-radius: 10px;
+      background: rgba(9, 24, 39, 0.42);
+      color: #a7b5c5;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .dashboard-tab:hover,
+    .dashboard-tab:focus-visible,
+    .dashboard-tab.is-active {
+      border-color: rgba(60, 168, 255, 0.45);
+      background: rgba(25, 103, 166, 0.32);
+      color: #eef7ff;
+      outline: none;
+    }
+
+    .dashboard-tab-panel[hidden] {
+      display: none;
+    }
+
    .header {
     display: flex;
     align-items: center;
@@ -1342,7 +1382,19 @@
       </div>
     </header>
 
-    <section class="card" id="top-coins" style="margin-top: 12px;">
+    <div class="dashboard-tabs" role="tablist" aria-label="Рынки Dashboard">
+      <button class="dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="global-ranking">
+        Global Ranking
+      </button>
+      <button class="dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="top-coins">
+        Top Coins
+      </button>
+      <button class="dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="watchlist">
+        ★ Watchlist
+      </button>
+    </div>
+
+    <section class="card dashboard-tab-panel" id="top-coins" data-dashboard-panel="top-coins" style="margin-top: 12px;" hidden>
       <p class="card-label">
         TOP COINS
       </p>
@@ -1354,7 +1406,7 @@
       </div>
     </section>
 
-    <section class="card favorites-panel" id="favorites-panel" hidden>
+    <section class="card favorites-panel dashboard-tab-panel" id="favorites-panel" data-dashboard-panel="watchlist" hidden>
       <div class="favorites-header">
         <p class="card-label">
           ⭐ Избранные
@@ -1366,7 +1418,7 @@
       <div class="favorites-list" id="favorites-list"></div>
     </section>
 
-    <section class="card" id="market-scanner" style="margin-top: 12px;">
+    <section class="card dashboard-tab-panel" id="market-scanner" data-dashboard-panel="global-ranking" style="margin-top: 12px;">
       <p class="card-label">
         Market Scanner
       </p>
@@ -1959,10 +2011,8 @@
 
       if (!panel || !list) return;
 
-      panel.hidden = favoriteCoins.length === 0;
-
-      list.innerHTML = favoriteCoins
-        .map(coin => `
+      list.innerHTML = favoriteCoins.length > 0
+        ? favoriteCoins.map(coin => `
           <div class="favorite-item">
             <button
               class="favorite-coin"
@@ -1995,8 +2045,8 @@
               title="Удалить из избранного"
             >★</button>
           </div>
-        `)
-        .join("");
+        `).join("")
+        : `<p class="statistics-history-empty">Watchlist пока пуст. Добавьте монеты звездой из Global Ranking.</p>`;
     }
 
     function toggleFavoriteCoin(coin) {
@@ -5341,6 +5391,27 @@ document.addEventListener(
     }
 
     renderFavoriteCoins();
+
+    document
+      .querySelector(".dashboard-tabs")
+      ?.addEventListener("click", event => {
+        const button = event.target.closest("[data-dashboard-tab]");
+
+        if (!button) return;
+
+        const selectedTab = button.dataset.dashboardTab;
+
+        document.querySelectorAll("[data-dashboard-tab]").forEach(tab => {
+          const isActive = tab === button;
+          tab.classList.toggle("is-active", isActive);
+          tab.setAttribute("aria-selected", String(isActive));
+        });
+
+        document.querySelectorAll("[data-dashboard-panel]").forEach(panel => {
+          panel.hidden = panel.dataset.dashboardPanel !== selectedTab;
+        });
+      });
+
     refreshDashboardData(true);
 
     window.setInterval(
