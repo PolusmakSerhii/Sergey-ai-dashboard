@@ -779,7 +779,7 @@
 
     .market-overview-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin-top: 12px;
     }
@@ -988,6 +988,12 @@
 
       .market-overview-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 821px) and (max-width: 1050px) {
+      .market-overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -1382,6 +1388,33 @@
       </div>
     </header>
 
+    <section class="market-overview-grid" id="market-overview">
+      <article class="card market-overview-card">
+        <p class="card-label">Market Summary</p>
+        <div class="card-value" id="market-bias">Loading...</div>
+        <p class="card-text" id="market-condition">Загружаем рыночные данные</p>
+        <p class="card-text" id="market-details">Confidence: — | Ready Trades: —</p>
+      </article>
+
+      <article class="card market-overview-card">
+        <p class="card-label">Global Best Opportunity</p>
+        <div class="card-value" id="best-opportunity-symbol">Loading...</div>
+        <p class="card-text" id="best-opportunity-details">Opportunity Score: — | Grade: — | Direction: —</p>
+      </article>
+
+      <article class="card market-overview-card">
+        <p class="card-label">Global Best Setup</p>
+        <div class="card-value" id="best-setup-symbol">Loading...</div>
+        <p class="card-text" id="best-setup-details">Waiting...</p>
+      </article>
+
+      <article class="card market-overview-card">
+        <p class="card-label">Ready Trades</p>
+        <div class="card-value" id="market-ready-trades">—</div>
+        <p class="card-text" id="market-direction-balance">Long: — | Short: —</p>
+      </article>
+    </section>
+
     <div class="dashboard-tabs" role="tablist" aria-label="Рынки Dashboard">
       <button class="dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="global-ranking">
         Global Ranking
@@ -1486,110 +1519,6 @@
         </button>
       </div>
     </section>
-
-    <section class="grid">
-      <article class="card">
-        <p class="card-label">
-          Market Scanner
-        </p>
-
-       <div class="card-value" id="market-count">
-          Loading...
-        </div>
-        
-        <p class="card-text">
-          Opportunity Score, сортировки, фильтры и поиск
-          готовых торговых сетапов.
-        </p>
-
-        <div class="progress">
-          <span></span>
-        </div>
-      </article>
-
-      <article class="card">
-        <p class="card-label">
-          Probability AI
-        </p>
-
-        <div class="card-value">
-          100%
-        </div>
-
-        <p class="card-text">
-          Технический анализ, Smart Money,
-          деривативы и оценка качества сигнала.
-        </p>
-
-        <div class="progress">
-          <span></span>
-        </div>
-      </article>
-
-      <article class="card">
-        <p class="card-label">
-          Dashboard
-        </p>
-
-        <div class="card-value">
-          v0.9
-        </div>
-
-        <p class="card-text">
-         API подключён. Market Summary, Global TOP-10,
-         поиск, фильтры и торговые сетапы работают.
-       </p>
-      </article>
-     </section>
-   
-   
-<section class="market-overview-grid" id="market-overview">
-  <article class="card market-overview-card">
-    <p class="card-label">
-      Market Summary
-    </p>
-
-    <div class="card-value" id="market-bias">
-      Loading...
-    </div>
-
-    <p class="card-text" id="market-condition">
-      Загружаем рыночные данные
-    </p>
-
-    <p class="card-text" id="market-details">
-      Confidence: — | Ready Trades: —
-    </p>
-  </article>
-
-  <article class="card market-overview-card">
-    <p class="card-label">
-      Global Best Opportunity
-    </p>
-
-    <div class="card-value" id="best-opportunity-symbol">
-      Loading...
-    </div>
-
-    <p class="card-text" id="best-opportunity-details">
-      Opportunity Score: — | Grade: — | Direction: —
-    </p>
-  </article>
-
-  <article class="card market-overview-card">
-    <p class="card-label">
-      Global Best Setup
-    </p>
-
-    <div class="card-value" id="best-setup-symbol">
-      Loading...
-    </div>
-
-    <p class="card-text" id="best-setup-details">
-      Waiting...
-    </p>
-  </article>
-</section>
 
 <section class="card" id="statistics" style="margin-top: 18px;">
   <p class="card-label">
@@ -3761,6 +3690,22 @@ function renderRankingFreshness() {
         "#market-details"
       ).textContent =
         `Confidence: ${averageConfidence}% | Ready Trades: ${readyTrades}`;
+
+      const readyTradesElement = document.querySelector(
+        "#market-ready-trades"
+      );
+      const directionBalanceElement = document.querySelector(
+        "#market-direction-balance"
+      );
+
+      if (readyTradesElement) {
+        readyTradesElement.textContent = String(readyTrades);
+      }
+
+      if (directionBalanceElement) {
+        directionBalanceElement.textContent =
+          `Long: ${longCount} | Short: ${shortCount}`;
+      }
     }
 
     async function loadFullGlobalRanking() {
