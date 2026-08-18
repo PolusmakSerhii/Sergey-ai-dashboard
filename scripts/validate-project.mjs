@@ -28,6 +28,11 @@ assert.match(
   /Следующая цель: 100 сделок/,
   "Completed Trades must show the next statistics milestone"
 );
+assert.match(
+  html,
+  /\.statistics-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/,
+  "Statistics must use four columns on wide screens"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
