@@ -63,6 +63,11 @@ assert.doesNotMatch(
   /terminal-sidebar/,
   "Dashboard must not render a left sidebar"
 );
+assert.match(
+  html,
+  /width:\s*min\(1240px,\s*calc\(100% - 28px\)\)/,
+  "Dashboard must retain its compact desktop width"
+);
 for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
   assert.match(
     html,
