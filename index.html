@@ -553,6 +553,10 @@
       font-size: 13px;
     }
 
+    .completed-trade-levels {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
     .active-trade-age {
       margin-top: 9px;
       color: #75869a;
@@ -3184,6 +3188,15 @@ if (!data) {
           const checkedDate = new Date(
             signal.outcome.checkedAt || ""
           );
+          const openedDate = new Date(
+            signal.outcome.activatedAt || ""
+          );
+          const openedTime = Number.isNaN(openedDate.getTime())
+            ? "—"
+            : openedDate.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+              });
           const checkedTime = Number.isNaN(checkedDate.getTime())
             ? "—"
             : checkedDate.toLocaleTimeString("ru-RU", {
@@ -3212,10 +3225,11 @@ if (!data) {
                 <span class="statistics-history-symbol">${signal.symbol || "—"}</span>
                 <span class="statistics-history-direction ${isWin ? "is-long" : "is-short"}">${resultLabel}</span>
               </div>
-              <div class="active-trade-levels">
+              <div class="active-trade-levels completed-trade-levels">
                 <span>Entry<strong>${signal.outcome.entryPrice ?? "—"}</strong></span>
                 <span>Exit<strong>${signal.outcome.exitPrice ?? "—"}</strong></span>
                 <span>Result<strong>${resultRText}</strong></span>
+                <span>Opened<strong>${openedTime}</strong></span>
                 <span>Closed<strong>${checkedTime}</strong></span>
               </div>
               <div class="active-trade-age">${priceCheckText}</div>

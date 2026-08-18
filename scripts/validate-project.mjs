@@ -88,6 +88,11 @@ assert.match(
   /\.card\.news-background\s*\{[\s\S]*?min-height:\s*0/,
   "Collapsed News Background must use compact height"
 );
+assert.match(
+  html,
+  /<span>Opened<strong>\$\{openedTime\}<\/strong><\/span>/,
+  "Completed Trades must show the opening time"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
