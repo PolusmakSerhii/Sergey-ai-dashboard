@@ -701,7 +701,7 @@
 
     .market-overview-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       margin-top: 12px;
     }
@@ -1477,6 +1477,20 @@
       Opportunity Score: — | Grade: — | Direction: —
     </p>
   </article>
+
+  <article class="card market-overview-card">
+    <p class="card-label">
+      Global Best Setup
+    </p>
+
+    <div class="card-value" id="best-setup-symbol">
+      Loading...
+    </div>
+
+    <p class="card-text" id="best-setup-details">
+      Waiting...
+    </p>
+  </article>
 </section>
 
 <section class="card" style="margin-top: 18px;">
@@ -1783,21 +1797,6 @@
     AI отвечает по текущим данным Dashboard и не является торговым советом.
   </p>
 </section>
-    
-    <section class="card" style="margin-top: 18px;">
-  <p class="card-label">
-   Global Best Setup
-  </p>
-
-  <div class="card-value" id="best-setup-symbol">
-    Loading...
-  </div>
-
-  <p class="card-text" id="best-setup-details">
-    Waiting...
-  </p>
-      
-</section>  
     
   </main> 
   

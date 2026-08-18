@@ -33,6 +33,16 @@ assert.match(
   /\.statistics-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/,
   "Statistics must use four columns on wide screens"
 );
+assert.match(
+  html,
+  /\.market-overview-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/,
+  "Market overview must use three columns on wide screens"
+);
+assert.equal(
+  [...html.matchAll(/id="best-setup-symbol"/g)].length,
+  1,
+  "Global Best Setup must appear exactly once"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
