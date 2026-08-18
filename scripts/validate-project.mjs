@@ -83,6 +83,11 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
 assert.match(html, /id="news-background"/, "News Background section is missing");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
+assert.match(
+  html,
+  /\.card\.news-background\s*\{[\s\S]*?min-height:\s*0/,
+  "Collapsed News Background must use compact height"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
