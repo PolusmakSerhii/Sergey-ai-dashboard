@@ -45,12 +45,12 @@ assert.equal(
 );
 assert.match(
   html,
-  /<details class="card ai-chat-preview statistics-collapsible">/,
+  /<details class="card ai-chat-preview statistics-collapsible"(?:\s+id="[^"]+")?>/,
   "AI Chat must be collapsible and closed by default"
 );
 assert.doesNotMatch(
   html,
-  /<details class="card ai-chat-preview statistics-collapsible" open>/,
+  /<details class="card ai-chat-preview statistics-collapsible"[^>]*\sopen(?:\s|>)/,
   "AI Chat must not be open by default"
 );
 assert.match(
@@ -58,6 +58,22 @@ assert.match(
   /\.ai-chat-preview:not\(\[open\]\)\s*\{[\s\S]*?min-height:\s*0/,
   "Collapsed AI Chat must use compact height"
 );
+assert.match(
+  html,
+  /<aside class="terminal-sidebar"/,
+  "Terminal sidebar navigation is missing"
+);
+for (const anchor of [
+  "dashboard-top",
+  "market-overview",
+  "top-coins",
+  "market-scanner",
+  "statistics",
+  "ai-assistant"
+]) {
+  assert.match(html, new RegExp(`id="${anchor}"`), `Navigation target ${anchor} is missing`);
+  assert.match(html, new RegExp(`href="#${anchor}"`), `Navigation link ${anchor} is missing`);
+}
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])

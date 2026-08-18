@@ -21,9 +21,14 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
+      padding-left: 156px;
       background:
         radial-gradient(
           circle at top,
@@ -35,10 +40,109 @@
     }
 
    .page {
-     width: min(1240px, calc(100% - 28px));
+     width: min(1440px, calc(100% - 28px));
      margin: 0 auto;
      padding: 28px 0;
   }
+
+    .terminal-sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 30;
+      display: flex;
+      width: 156px;
+      flex-direction: column;
+      padding: 22px 12px;
+      border-right: 1px solid rgba(79, 227, 177, 0.14);
+      background: rgba(3, 10, 18, 0.96);
+      box-shadow: 18px 0 55px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(18px);
+    }
+
+    .terminal-sidebar-brand {
+      padding: 0 8px 20px;
+      color: #f4f7fb;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.35;
+      letter-spacing: 0.04em;
+    }
+
+    .terminal-sidebar-brand span {
+      display: block;
+      color: #4fe3b1;
+    }
+
+    .terminal-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .terminal-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      color: #8fa0b3;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .terminal-nav-link:hover,
+    .terminal-nav-link:focus-visible {
+      border-color: rgba(79, 227, 177, 0.24);
+      background: rgba(79, 227, 177, 0.07);
+      color: #77f1c8;
+      outline: none;
+    }
+
+    .terminal-nav-icon {
+      width: 20px;
+      color: #4fe3b1;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .terminal-sidebar-footer {
+      margin-top: auto;
+      padding: 14px 8px 0;
+      border-top: 1px solid rgba(124, 151, 180, 0.14);
+      color: #65778b;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .terminal-statuses {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .terminal-status-chip {
+      padding: 5px 8px;
+      border: 1px solid rgba(79, 227, 177, 0.2);
+      border-radius: 999px;
+      background: rgba(79, 227, 177, 0.06);
+      color: #77f1c8;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    main[id],
+    section[id],
+    details[id] {
+      scroll-margin-top: 64px;
+    }
     
    .header {
     display: flex;
@@ -922,6 +1026,37 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (max-width: 1100px) {
+      body {
+        padding-left: 0;
+      }
+
+      .terminal-sidebar {
+        position: sticky;
+        inset: 0;
+        width: 100%;
+        height: auto;
+        padding: 8px 14px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(79, 227, 177, 0.14);
+      }
+
+      .terminal-sidebar-brand,
+      .terminal-sidebar-footer {
+        display: none;
+      }
+
+      .terminal-nav {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .terminal-nav-link {
+        flex: 0 0 auto;
+        min-height: 38px;
+      }
+    }
 .long {
   color: #3ddc84;
   font-weight: 700;
@@ -1274,7 +1409,26 @@
 </head>
 
 <body>
-  <main class="page">
+  <aside class="terminal-sidebar" aria-label="Навигация Dashboard">
+    <div class="terminal-sidebar-brand">
+      CRYPTO AI TRADER
+      <span>PRO TERMINAL</span>
+    </div>
+    <nav class="terminal-nav">
+      <a class="terminal-nav-link" href="#dashboard-top"><span class="terminal-nav-icon">⌂</span>Главная</a>
+      <a class="terminal-nav-link" href="#market-overview"><span class="terminal-nav-icon">◈</span>Рынок</a>
+      <a class="terminal-nav-link" href="#top-coins"><span class="terminal-nav-icon">◆</span>Top Coins</a>
+      <a class="terminal-nav-link" href="#market-scanner"><span class="terminal-nav-icon">⌕</span>Scanner</a>
+      <a class="terminal-nav-link" href="#statistics"><span class="terminal-nav-icon">⌁</span>Статистика</a>
+      <a class="terminal-nav-link" href="#ai-assistant"><span class="terminal-nav-icon">◌</span>AI Chat</a>
+    </nav>
+    <div class="terminal-sidebar-footer">
+      OKX Market Data<br>
+      Автообновление · 6 мин
+    </div>
+  </aside>
+
+  <main class="page" id="dashboard-top">
     <header class="header">
       <div>
         <p class="eyebrow">
@@ -1293,6 +1447,11 @@
       </div>
 
       <div class="header-status-group">
+        <div class="terminal-statuses" aria-label="Статусы терминала">
+          <span class="terminal-status-chip">API</span>
+          <span class="terminal-status-chip">OKX Data</span>
+          <span class="terminal-status-chip">6 min</span>
+        </div>
         <div class="status">
           <span class="dot"></span>
           Dashboard online
@@ -1306,7 +1465,7 @@
       </div>
     </header>
 
-    <section class="card" style="margin-top: 12px;">
+    <section class="card" id="top-coins" style="margin-top: 12px;">
       <p class="card-label">
         TOP COINS
       </p>
@@ -1330,7 +1489,7 @@
       <div class="favorites-list" id="favorites-list"></div>
     </section>
 
-    <section class="card" style="margin-top: 12px;">
+    <section class="card" id="market-scanner" style="margin-top: 12px;">
       <p class="card-label">
         Market Scanner
       </p>
@@ -1455,7 +1614,7 @@
      </section>
    
    
-<section class="market-overview-grid">
+<section class="market-overview-grid" id="market-overview">
   <article class="card market-overview-card">
     <p class="card-label">
       Market Summary
@@ -1503,7 +1662,7 @@
   </article>
 </section>
 
-<section class="card" style="margin-top: 18px;">
+<section class="card" id="statistics" style="margin-top: 18px;">
   <p class="card-label">
     Statistics & Analytics · 24H
   </p>
@@ -1758,7 +1917,7 @@
   </details>
 </section>
 
-<details class="card ai-chat-preview statistics-collapsible">
+<details class="card ai-chat-preview statistics-collapsible" id="ai-assistant">
   <summary class="ai-chat-header">
     <p class="card-label" style="margin: 0;">
       AI Chat Assistant · Preview
