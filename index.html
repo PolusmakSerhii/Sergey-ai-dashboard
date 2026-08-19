@@ -63,15 +63,25 @@
       text-transform: uppercase;
     }
 
+    .dashboard-market-shell {
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(124, 151, 180, 0.2);
+      border-radius: 22px;
+      background: rgba(7, 18, 30, 0.78);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
     .dashboard-tabs {
       display: flex;
       gap: 8px;
-      margin-top: 12px;
+      margin: 0;
       padding: 8px;
       overflow-x: auto;
-      border: 1px solid rgba(124, 151, 180, 0.2);
-      border-radius: 16px 16px 0 0;
-      background: rgba(7, 18, 30, 0.78);
+      border: 0;
+      border-bottom: 1px solid rgba(124, 151, 180, 0.16);
+      border-radius: 0;
+      background: transparent;
     }
 
     .dashboard-tab {
@@ -105,8 +115,10 @@
 
     .dashboard-tab-panel {
       margin-top: 0 !important;
-      border-top: 0;
-      border-radius: 0 0 22px 22px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
     .card.news-background {
@@ -1426,6 +1438,7 @@
       </div>
     </header>
 
+    <div class="dashboard-market-shell">
     <div class="dashboard-tabs" role="tablist" aria-label="Рынки Dashboard">
       <button class="dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="global-ranking">
         Global Ranking
@@ -1530,6 +1543,7 @@
         </button>
       </div>
     </section>
+    </div>
 
     <section class="grid">
       <article class="card">
