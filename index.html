@@ -70,7 +70,7 @@
       padding: 8px;
       overflow-x: auto;
       border: 1px solid rgba(124, 151, 180, 0.2);
-      border-radius: 16px;
+      border-radius: 16px 16px 0 0;
       background: rgba(7, 18, 30, 0.78);
     }
 
@@ -101,6 +101,12 @@
 
     .dashboard-tab-panel[hidden] {
       display: none;
+    }
+
+    .dashboard-tab-panel {
+      margin-top: 0 !important;
+      border-top: 0;
+      border-radius: 0 0 22px 22px;
     }
 
     .card.news-background {
