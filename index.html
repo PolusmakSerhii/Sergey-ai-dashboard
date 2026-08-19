@@ -957,34 +957,12 @@
     }
 
     .favorites-list {
-      display: flex;
-      gap: 8px;
       margin-top: 10px;
       overflow-x: auto;
       padding-bottom: 2px;
     }
 
-    .favorite-coin {
-      min-width: 180px;
-      padding: 10px 42px 10px 12px;
-      border: 1px solid rgba(255, 209, 102, 0.2);
-      border-radius: 14px;
-      background: rgba(35, 31, 20, 0.42);
-      color: inherit;
-      font: inherit;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .favorite-item {
-      position: relative;
-      flex: 0 0 auto;
-    }
-
     .favorite-remove {
-      position: absolute;
-      top: 7px;
-      right: 7px;
       width: 28px;
       height: 28px;
       padding: 0;
@@ -996,25 +974,6 @@
       cursor: pointer;
     }
 
-    .favorite-coin:hover,
-    .favorite-coin:focus-visible {
-      border-color: rgba(255, 209, 102, 0.58);
-      outline: none;
-    }
-
-    .favorite-coin-symbol {
-      color: #f4f7fb;
-      font-size: 15px;
-      font-weight: 850;
-    }
-
-    .favorite-coin-details {
-      display: block;
-      margin-top: 4px;
-      color: #a7b5c5;
-      font-size: 11px;
-      white-space: nowrap;
-    }
     .scanner-row{
        cursor:pointer;
        transition:.2s;
@@ -1478,7 +1437,7 @@
     <section class="card favorites-panel dashboard-tab-panel" id="favorites-panel" data-dashboard-panel="watchlist" hidden>
       <div class="favorites-header">
         <p class="card-label">
-          ⭐ Избранные
+          WATCHLIST
         </p>
         <span class="favorites-note">
           Сохраняются в этом браузере
@@ -2051,10 +2010,13 @@
 
     function compactFavoriteCoin(coin) {
       return {
+        rank: coin.rank ?? null,
         symbol: coin.symbol,
         opportunityScore:
           coin.opportunityScore ?? 0,
         confidence: coin.confidence ?? 0,
+        recommendationConfidence:
+          coin.recommendationConfidence ?? null,
         grade:
           coin.grade ||
           coin.opportunityGrade ||
@@ -2080,40 +2042,54 @@
       if (!panel || !list) return;
 
       list.innerHTML = favoriteCoins.length > 0
-        ? favoriteCoins.map(coin => `
-          <div class="favorite-item">
-            <button
-              class="favorite-coin"
-              type="button"
-              data-symbol="${coin.symbol}"
-              aria-label="Открыть анализ ${coin.symbol}"
-            >
-              <span class="favorite-coin-symbol">
-                ${coin.symbol}
-              </span>
-              <span class="favorite-coin-details">
-                Score ${coin.opportunityScore ?? 0} · Confidence ${coin.confidence ?? 0}%
-              </span>
-              <span class="favorite-coin-details">
-                ${coin.direction || "Neutral"} · ${coin.action || "Wait"}
-              </span>
-              <span class="favorite-coin-details">
-                ${coin.updateStatus === "direct"
-                  ? "Анализ обновлён · Score из последнего рейтинга"
-                  : coin.updateStatus === "stale"
-                    ? "⚠ Обновление временно недоступно"
-                    : "Данные глобального рейтинга"}
-              </span>
-            </button>
-            <button
-              class="favorite-remove"
-              type="button"
-              data-symbol="${coin.symbol}"
-              aria-label="Удалить ${coin.symbol} из избранного"
-              title="Удалить из избранного"
-            >★</button>
-          </div>
-        `).join("")
+        ? `<table class="scanner-table">
+            <thead>
+              <tr>
+                <th aria-label="Избранное">⭐</th>
+                <th>#</th>
+                <th>Symbol</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>Signal Confidence</th>
+                <th>Recommendation Confidence</th>
+                <th>Direction</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${favoriteCoins.map((coin, index) => {
+                const grade = coin.grade || "D";
+                const action = coin.action || "Wait";
+                return `
+                  <tr class="scanner-row favorite-coin" data-symbol="${coin.symbol}">
+                    <td>
+                      <button
+                        class="favorite-remove"
+                        type="button"
+                        data-symbol="${coin.symbol}"
+                        aria-label="Удалить ${coin.symbol} из Watchlist"
+                        title="Удалить из Watchlist"
+                      >★</button>
+                    </td>
+                    <td>${coin.rank ?? index + 1}</td>
+                    <td>${coin.symbol}</td>
+                    <td>${coin.opportunityScore ?? 0}</td>
+                    <td>
+                      <span class="grade grade-${grade.toLowerCase().replace("+", "plus")}">${grade}</span>
+                    </td>
+                    <td>${coin.confidence ?? 0}%</td>
+                    <td>${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</td>
+                    <td>
+                      <span class="${coin.direction === "Long" ? "long" : coin.direction === "Short" ? "short" : "neutral"}">
+                        ${coin.direction || "Neutral"}
+                      </span>
+                    </td>
+                    <td><span class="${getScannerActionClass(action)}">${action}</span></td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>`
         : `<p class="statistics-history-empty">Watchlist пока пуст. Добавьте монеты звездой из Global Ranking.</p>`;
     }
 
@@ -4167,7 +4143,9 @@ document.querySelector(
      const previewCoin =
         scannerResults.find(
           (coin) => coin.symbol === symbol
-  ) || {};      
+        ) || globalRankingResults.find(
+          (coin) => coin.symbol === symbol
+        ) || {};
 
      coinDetails.innerHTML = `
       <h2>${symbol}</h2>
@@ -4238,8 +4216,10 @@ document.querySelector(
         `API request failed: ${response.status}`
       );
     }
-    const scannerCoin =
+const scannerCoin =
   scannerResults.find(
+    (coin) => coin.symbol === symbol
+  ) || globalRankingResults.find(
     (coin) => coin.symbol === symbol
   ) || {};
 
