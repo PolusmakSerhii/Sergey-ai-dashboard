@@ -1753,7 +1753,7 @@
 
     <article class="statistics-metric">
       <p class="statistics-metric-label">
-        Win Rate
+        Confirmed A+ Win Rate
       </p>
       <p
         class="statistics-metric-value"
@@ -1787,23 +1787,6 @@
       </p>
     </article>
 
-    <article class="statistics-metric">
-      <p class="statistics-metric-label">
-        A+ Win Rate
-      </p>
-      <p
-        class="statistics-metric-value"
-        id="statistics-aplus-win-rate"
-      >
-        —
-      </p>
-      <p
-        class="statistics-metric-detail"
-        id="statistics-aplus-outcomes"
-      >
-        Ожидаем завершённые сделки A+
-      </p>
-    </article>
   </div>
 
   <p class="statistics-sample-note" id="statistics-sample-note">
@@ -3276,12 +3259,27 @@ if (!data) {
       messages.scrollTop = messages.scrollHeight;
     }
 
+    function isConfirmedAPlusSetup(coin) {
+      const action = String(
+        coin?.action || getScannerAction(coin) || ""
+      );
+
+      return coin?.tradeAllowed === true &&
+        coin?.tradeReadiness?.ready === true &&
+        (coin?.opportunityGrade || coin?.grade) === "A+" &&
+        Number(coin?.opportunityScore) >= 85 &&
+        Number(coin?.confidence) >= 85 &&
+        Number(coin?.riskReward) >= 2 &&
+        (action === "Strong Buy" || action === "Strong Sell") &&
+        Number(coin?.entryZone?.from) > 0 &&
+        Number(coin?.entryZone?.to) > 0 &&
+        Number(coin?.stopLoss) > 0 &&
+        Number(coin?.takeProfit1) > 0;
+    }
+
     function getBestReadySetup() {
       return [...globalRankingResults]
-        .filter((coin) =>
-          coin.tradeAllowed === true &&
-          coin.tradeReadiness?.ready === true
-        )
+        .filter(isConfirmedAPlusSetup)
         .sort((a, b) =>
           (b.opportunityScore || 0) -
           (a.opportunityScore || 0)
@@ -3615,23 +3613,6 @@ if (!data) {
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
 
-        const aPlusOutcomes = outcomes.aPlus || {};
-        const aPlusCompleted =
-          Number(aPlusOutcomes.completed) || 0;
-
-        document.querySelector(
-          "#statistics-aplus-win-rate"
-        ).textContent = aPlusCompleted > 0 &&
-          Number.isFinite(Number(aPlusOutcomes.winRate))
-            ? `${Number(aPlusOutcomes.winRate)}%`
-            : "—";
-
-        document.querySelector(
-          "#statistics-aplus-outcomes"
-        ).textContent = aPlusCompleted > 0
-          ? `Loss Rate: ${Number(aPlusOutcomes.lossRate) || 0}% · ${aPlusCompleted} завершено`
-          : "Ожидаем завершённые сделки A+";
-
         const hasProfitFactor =
           outcomes.profitFactor !== null &&
           outcomes.profitFactor !== undefined &&
@@ -3802,9 +3783,7 @@ function renderRankingFreshness() {
         coin => coin.direction === "Short"
       ).length;
       const readyTrades = globalRankingResults.filter(
-        coin =>
-          coin.tradeAllowed === true &&
-          coin.tradeReadiness?.ready === true
+        isConfirmedAPlusSetup
       ).length;
       const confidenceValues = globalRankingResults
         .map(coin => Number(coin.confidence))
@@ -3966,11 +3945,7 @@ if (bestOpportunityDetailsElement) {
 
    const fullGlobalBestSetup =
   [...globalRankingResults]
-    .filter(
-      coin =>
-        coin.tradeAllowed === true &&
-        coin.tradeReadiness?.ready === true
-    )
+    .filter(isConfirmedAPlusSetup)
     .sort((a, b) => {
       const opportunityDifference =
         (b.opportunityScore || 0) -
@@ -4287,11 +4262,14 @@ const tradePlan =
   data.technical?.tradePlan || {};
 
 const hasValidTrade =
-  tradePlan.validTrade === true;
+  tradePlan.validTrade === true &&
+  isConfirmedAPlusSetup(scannerCoin);
 
 const rejectionReason =
-  tradePlan.rejectionReason ||
-  "Current market conditions do not meet the minimum requirements for a confirmed trade.";
+  grade !== "A+"
+    ? "Trade Plan opens only for Confirmed A+ setups."
+    : tradePlan.rejectionReason ||
+      "Not all Confirmed A+ conditions are met: confidence, readiness, strong action, full levels and R:R ≥ 2 are required.";
 
 const probabilityData =
   data.technical?.probability || {}; 
