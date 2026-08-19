@@ -46,7 +46,7 @@
 
     .terminal-statuses {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       justify-content: flex-end;
       gap: 6px;
     }
@@ -1008,6 +1008,15 @@
       .header {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .terminal-statuses {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .header-status-group {
+        align-items: flex-start;
       }
 
       .grid {
