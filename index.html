@@ -953,6 +953,55 @@
       outline: none;
     }
 
+    .mobile-symbol-favorite {
+      display: none;
+    }
+
+    @media (max-width: 560px) {
+      #scanner-table {
+        position: relative;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+      }
+
+      #scanner-table .market-scanner-table {
+        min-width: 880px;
+      }
+
+      #scanner-table .market-scanner-table th,
+      #scanner-table .market-scanner-table td {
+        white-space: nowrap;
+      }
+
+      #scanner-table .scanner-favorite-column,
+      #scanner-table .scanner-rank-column {
+        display: none;
+      }
+
+      #scanner-table .scanner-symbol-column {
+        position: sticky;
+        left: 0;
+        z-index: 3;
+        min-width: 150px;
+        background: #091725;
+        box-shadow: 10px 0 14px -12px rgba(0, 0, 0, 0.95);
+      }
+
+      #scanner-table thead .scanner-symbol-column {
+        z-index: 5;
+        color: #c5d7e8;
+      }
+
+      #scanner-table .mobile-symbol-favorite {
+        display: inline-grid;
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+        place-items: center;
+        vertical-align: middle;
+      }
+    }
+
     .favorites-panel {
       margin-top: 12px;
       padding: 14px 16px;
@@ -2470,12 +2519,12 @@ const actionMatch =
       document.querySelector("#scanner-table");
  
   scannerElement.innerHTML = `
-    <table class="scanner-table">
+    <table class="scanner-table market-scanner-table">
       <thead>
         <tr>
-          <th aria-label="Избранное">⭐</th>
-          <th>#</th>
-          <th>Symbol</th>
+          <th class="scanner-favorite-column" aria-label="Избранное">⭐</th>
+          <th class="scanner-rank-column">#</th>
+          <th class="scanner-symbol-column">☆ Symbol</th>
           <th id="score-sort" style="cursor:pointer;">
               Score ${scoreSortDirection === "desc" ? "↓" : "↑"}
           </th>
@@ -2496,7 +2545,7 @@ const actionMatch =
             class="scanner-row"
             data-symbol="${coin.symbol}"
           > 
-                 <td>
+                 <td class="scanner-favorite-column">
                    <button
                      class="favorite-toggle ${isFavoriteCoin(coin.symbol) ? "is-active" : ""}"
                      type="button"
@@ -2507,13 +2556,21 @@ const actionMatch =
                      ${isFavoriteCoin(coin.symbol) ? "★" : "☆"}
                    </button>
                  </td>
-                 <td>${
+                 <td class="scanner-rank-column">${
                    (scannerCurrentPage - 1) *
                    scannerPageLimit +
                    localIndex +
                    1
                 }</td>
-                  <td>${coin.symbol}</td>
+                  <td class="scanner-symbol-column">
+                    <button
+                      class="favorite-toggle mobile-symbol-favorite ${isFavoriteCoin(coin.symbol) ? "is-active" : ""}"
+                      type="button"
+                      data-favorite-symbol="${coin.symbol}"
+                      aria-label="${isFavoriteCoin(coin.symbol) ? "Удалить из избранного" : "Добавить в избранное"} ${coin.symbol}"
+                      aria-pressed="${isFavoriteCoin(coin.symbol)}"
+                    >${isFavoriteCoin(coin.symbol) ? "★" : "☆"}</button>${coin.symbol}
+                  </td>
                   <td>${coin.opportunityScore ?? 0}</td>
 
                   <td>
