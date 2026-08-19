@@ -198,6 +198,26 @@
     background: rgba(7, 18, 30, 0.78);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
  }
+
+    .header-brand {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-logo {
+      flex: 0 0 auto;
+      width: 104px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 14px;
+      filter: drop-shadow(0 0 18px rgba(33, 211, 224, 0.13));
+    }
+
+    .header-copy {
+      min-width: 0;
+    }
     .eyebrow {
       margin: 0 0 8px;
       color: #4fe3b1;
@@ -1087,6 +1107,11 @@
         align-items: flex-start;
       }
 
+      .header-logo {
+        width: 82px;
+        height: 60px;
+      }
+
       .grid {
         grid-template-columns: 1fr;
       }
@@ -1414,6 +1439,19 @@
   border-top: 1px solid rgba(143, 161, 181, 0.2);
 }
 
+@media (max-width: 560px) {
+  .header-brand {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-logo {
+    width: 64px;
+    height: 48px;
+    border-radius: 10px;
+  }
+}
+
 .coin-modal-close-bottom {
   min-width: 140px;
   padding: 13px 24px;
@@ -1450,7 +1488,15 @@
 <body>
   <main class="page" id="dashboard-top">
     <header class="header">
-      <div>
+      <div class="header-brand">
+        <img
+          class="header-logo"
+          src="assets/sm1m-logo.png"
+          alt="SM1M Global Trading Analytics"
+          width="104"
+          height="76"
+        >
+        <div class="header-copy">
         <p class="eyebrow">
           Probability AI Terminal
         </p>
@@ -1464,6 +1510,7 @@
           рынка на базе OKX, CoinGlass, Smart Money,
           Probability AI и Market Scanner.
         </p>
+        </div>
       </div>
 
       <div class="header-status-group">
