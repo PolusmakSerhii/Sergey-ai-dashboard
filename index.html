@@ -227,6 +227,46 @@
       text-transform: uppercase;
     }
 
+    .phoenix-title {
+      display: flex;
+      gap: 0.2em;
+      align-items: baseline;
+      font-size: clamp(34px, 4.8vw, 56px);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .phoenix-title-main {
+      background: linear-gradient(180deg, #ffffff 0%, #dce4ec 42%, #788796 100%);
+      background-clip: text;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .phoenix-title-ai {
+      background: linear-gradient(180deg, #ffbf1c 0%, #ff6a00 52%, #cf1f0b 100%);
+      background-clip: text;
+      color: transparent;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .phoenix-terminal {
+      margin: 9px 0 0;
+      color: #ff7214;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+    }
+
+    .header-services {
+      margin-top: 9px;
+      font-size: 8px;
+      letter-spacing: 0.05em;
+    }
+
    h1 {
      margin: 0;
      font-size: clamp(28px, 4vw, 40px);
@@ -1452,6 +1492,20 @@
     height: 48px;
     border-radius: 0;
   }
+
+  .phoenix-title {
+    font-size: clamp(25px, 9vw, 36px);
+  }
+
+  .phoenix-terminal {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+  }
+
+  .header-services {
+    font-size: 7px;
+    line-height: 1.4;
+  }
 }
 
 .coin-modal-close-bottom {
@@ -1499,18 +1553,17 @@
           height="100"
         >
         <div class="header-copy">
-        <p class="eyebrow">
-          Probability AI Terminal
-        </p>
-
-        <h1>
-          Crypto AI Trader PRO
+        <h1 class="phoenix-title">
+          <span class="phoenix-title-main">PHOENIX</span>
+          <span class="phoenix-title-ai">AI</span>
         </h1>
 
-        <p class="subtitle">
-          Профессиональная панель анализа криптовалютного
-          рынка на базе OKX, CoinGlass, Smart Money,
-          Probability AI и Market Scanner.
+        <p class="phoenix-terminal">
+          Trading Terminal
+        </p>
+
+        <p class="subtitle header-services">
+          OKX, CoinGlass, Smart Money, Probability AI и Market Scanner
         </p>
         </div>
       </div>
