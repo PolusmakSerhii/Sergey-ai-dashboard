@@ -923,6 +923,7 @@
 }
 
 #core-markets-table,
+#favorites-list,
 #scanner-table {
   width: 100%;
   min-width: 0;
@@ -988,26 +989,39 @@
     }
 
     @media (max-width: 560px) {
+      #core-markets-table,
+      #favorites-list,
       #scanner-table {
         position: relative;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
       }
 
+      #core-markets-table .mobile-sticky-symbol-table,
+      #favorites-list .mobile-sticky-symbol-table,
       #scanner-table .market-scanner-table {
         min-width: 880px;
       }
 
+      #core-markets-table .mobile-sticky-symbol-table th,
+      #core-markets-table .mobile-sticky-symbol-table td,
+      #favorites-list .mobile-sticky-symbol-table th,
+      #favorites-list .mobile-sticky-symbol-table td,
       #scanner-table .market-scanner-table th,
       #scanner-table .market-scanner-table td {
         white-space: nowrap;
       }
 
+      #core-markets-table .scanner-rank-column,
+      #favorites-list .scanner-favorite-column,
+      #favorites-list .scanner-rank-column,
       #scanner-table .scanner-favorite-column,
       #scanner-table .scanner-rank-column {
         display: none;
       }
 
+      #core-markets-table .scanner-symbol-column,
+      #favorites-list .scanner-symbol-column,
       #scanner-table .scanner-symbol-column {
         position: sticky;
         left: 0;
@@ -1017,11 +1031,14 @@
         box-shadow: 10px 0 14px -12px rgba(0, 0, 0, 0.95);
       }
 
+      #core-markets-table thead .scanner-symbol-column,
+      #favorites-list thead .scanner-symbol-column,
       #scanner-table thead .scanner-symbol-column {
         z-index: 5;
         color: #c5d7e8;
       }
 
+      #favorites-list .mobile-symbol-favorite,
       #scanner-table .mobile-symbol-favorite {
         display: inline-grid;
         width: 30px;
@@ -2184,12 +2201,12 @@
       if (!panel || !list) return;
 
       list.innerHTML = favoriteCoins.length > 0
-        ? `<table class="scanner-table">
+        ? `<table class="scanner-table mobile-sticky-symbol-table">
             <thead>
               <tr>
-                <th aria-label="Избранное">⭐</th>
-                <th>#</th>
-                <th>Symbol</th>
+                <th class="scanner-favorite-column" aria-label="Избранное">⭐</th>
+                <th class="scanner-rank-column">#</th>
+                <th class="scanner-symbol-column">☆ Symbol</th>
                 <th>Score</th>
                 <th>Grade</th>
                 <th>Signal Confidence</th>
@@ -2204,7 +2221,7 @@
                 const action = coin.action || "Wait";
                 return `
                   <tr class="scanner-row favorite-coin" data-symbol="${coin.symbol}">
-                    <td>
+                    <td class="scanner-favorite-column">
                       <button
                         class="favorite-remove"
                         type="button"
@@ -2213,8 +2230,14 @@
                         title="Удалить из Watchlist"
                       >★</button>
                     </td>
-                    <td>${coin.rank ?? index + 1}</td>
-                    <td>${coin.symbol}</td>
+                    <td class="scanner-rank-column">${coin.rank ?? index + 1}</td>
+                    <td class="scanner-symbol-column"><button
+                        class="favorite-remove mobile-symbol-favorite"
+                        type="button"
+                        data-symbol="${coin.symbol}"
+                        aria-label="Удалить ${coin.symbol} из Watchlist"
+                        title="Удалить из Watchlist"
+                      >★</button>${coin.symbol}</td>
                     <td>${coin.opportunityScore ?? 0}</td>
                     <td>
                       <span class="grade grade-${grade.toLowerCase().replace("+", "plus")}">${grade}</span>
@@ -2442,8 +2465,8 @@ function getScannerActionClass(action) {
                 class="scanner-row"
                 data-symbol="${symbol}"
               >
-                <td>${index + 1}</td>
-                <td>${symbol}</td>
+                <td class="scanner-rank-column">${index + 1}</td>
+                <td class="scanner-symbol-column">${symbol}</td>
                 <td colspan="6" class="core-market-unavailable">
                   Данные обновляются
                 </td>
@@ -2462,8 +2485,8 @@ function getScannerActionClass(action) {
               class="scanner-row"
               data-symbol="${coin.symbol}"
             >
-              <td>${index + 1}</td>
-              <td>${coin.symbol}</td>
+              <td class="scanner-rank-column">${index + 1}</td>
+              <td class="scanner-symbol-column">${coin.symbol}</td>
               <td>${coin.opportunityScore ?? 0}</td>
               <td>
                 <span class="grade grade-${grade
@@ -2496,11 +2519,11 @@ function getScannerActionClass(action) {
       ).join("");
 
       tableElement.innerHTML = `
-        <table class="scanner-table">
+        <table class="scanner-table mobile-sticky-symbol-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Symbol</th>
+              <th class="scanner-rank-column">#</th>
+              <th class="scanner-symbol-column">Symbol</th>
               <th>Score</th>
               <th>Grade</th>
               <th title="Уверенность вероятностного сигнала">Signal Confidence</th>
