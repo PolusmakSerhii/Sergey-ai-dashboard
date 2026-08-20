@@ -1811,7 +1811,7 @@
 
 <details class="card news-background statistics-collapsible" id="news-background">
   <summary class="news-background-summary">
-    <p class="card-label" style="margin: 0;">News Background · Informational</p>
+    <p class="card-label" style="margin: 0;">Новостной фон · Информационно</p>
     <span class="news-background-status" id="news-background-status">Загрузка...</span>
   </summary>
   <div class="news-background-body">
@@ -5637,6 +5637,11 @@ document.addEventListener(
         const sentiment = ["Bullish", "Bearish", "Neutral"].includes(data?.sentiment)
           ? data.sentiment
           : "Neutral";
+        const sentimentLabels = {
+          Bullish: "Позитивный",
+          Bearish: "Негативный",
+          Neutral: "Нейтральный"
+        };
         const score = Number.isFinite(Number(data?.score)) ? Number(data.score) : 0;
         const articleCount = Number(data?.articleCount) || 0;
         const highImpactCount = Number(data?.highImpactCount) || 0;
@@ -5644,7 +5649,7 @@ document.addEventListener(
         statusElement.classList.remove("is-bullish", "is-bearish");
         if (sentiment === "Bullish") statusElement.classList.add("is-bullish");
         if (sentiment === "Bearish") statusElement.classList.add("is-bearish");
-        statusElement.textContent = `${sentiment} · ${score > 0 ? "+" : ""}${score}`;
+        statusElement.textContent = `${sentimentLabels[sentiment]} · ${score > 0 ? "+" : ""}${score}`;
         const generatedAt = Number.isFinite(Date.parse(data?.generatedAt))
           ? new Date(data.generatedAt).toLocaleTimeString("ru-RU", {
               hour: "2-digit",
@@ -5685,7 +5690,7 @@ document.addEventListener(
             ? article.sentiment
             : "Neutral";
           articleSentiment.className = `news-background-article-sentiment is-${articleTone.toLowerCase()}`;
-          articleSentiment.textContent = `${articleTone} · ${Number(article?.score) > 0 ? "+" : ""}${Number(article?.score) || 0}`;
+          articleSentiment.textContent = `${sentimentLabels[articleTone]} · ${Number(article?.score) > 0 ? "+" : ""}${Number(article?.score) || 0}`;
           articleMeta.append(articleSource, articleTime, articleSentiment);
           link.append(title, articleMeta);
 
@@ -5708,7 +5713,7 @@ document.addEventListener(
       } catch (error) {
         console.error("News Background error:", error);
         statusElement.classList.remove("is-bullish", "is-bearish");
-        statusElement.textContent = "Neutral · 0";
+        statusElement.textContent = "Нейтральный · 0";
         metaElement.textContent =
           "Новостной источник временно недоступен · Торговая логика работает";
         listElement.replaceChildren();
