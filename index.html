@@ -179,6 +179,37 @@
       text-decoration: none;
     }
 
+    .news-background-title {
+      display: block;
+      color: inherit;
+      font-weight: 750;
+    }
+
+    .news-background-article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 10px;
+      margin-top: 5px;
+      color: #75869a;
+      font-size: 10px;
+    }
+
+    .news-background-article-sentiment.is-bullish {
+      color: #4fe3b1;
+    }
+
+    .news-background-article-sentiment.is-bearish {
+      color: #ff5d73;
+    }
+
+    .news-background-empty {
+      padding: 10px;
+      border: 1px dashed rgba(124, 151, 180, 0.18);
+      border-radius: 10px;
+      color: #75869a;
+      font-size: 11px;
+    }
+
     .news-background-link:hover,
     .news-background-link:focus-visible {
       border-color: rgba(79, 227, 177, 0.36);
@@ -5614,8 +5645,15 @@ document.addEventListener(
         if (sentiment === "Bullish") statusElement.classList.add("is-bullish");
         if (sentiment === "Bearish") statusElement.classList.add("is-bearish");
         statusElement.textContent = `${sentiment} · ${score > 0 ? "+" : ""}${score}`;
+        const generatedAt = Number.isFinite(Date.parse(data?.generatedAt))
+          ? new Date(data.generatedAt).toLocaleTimeString("ru-RU", {
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+          : "—";
+        const source = String(data?.source || "Источник не указан");
         metaElement.textContent = data?.ok === true
-          ? `${articleCount} новостей · Важных: ${highImpactCount} · Не влияет на торговый Score`
+          ? `${source} · Обновлено ${generatedAt} · ${articleCount} новостей · Важных: ${highImpactCount} · Не влияет на торговый Score`
           : "Новостной источник временно недоступен · Neutral fallback · Торговая логика работает";
 
         listElement.replaceChildren();
@@ -5624,9 +5662,32 @@ document.addEventListener(
         for (const article of articles) {
           const item = document.createElement("li");
           const link = document.createElement("a");
+          const title = document.createElement("span");
+          const articleMeta = document.createElement("span");
+          const articleSource = document.createElement("span");
+          const articleTime = document.createElement("span");
+          const articleSentiment = document.createElement("span");
           const url = String(article?.url || "");
           link.className = "news-background-link";
-          link.textContent = `${article?.highImpact ? "⚠ " : ""}${article?.title || "Без заголовка"}`;
+          title.className = "news-background-title";
+          title.textContent = `${article?.highImpact ? "⚠ " : ""}${article?.title || "Без заголовка"}`;
+          articleMeta.className = "news-background-article-meta";
+          articleSource.textContent = String(article?.source || "Unknown");
+          articleTime.textContent = Number.isFinite(Date.parse(article?.publishedAt))
+            ? new Date(article.publishedAt).toLocaleString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+              })
+            : "Время не указано";
+          const articleTone = ["Bullish", "Bearish", "Neutral"].includes(article?.sentiment)
+            ? article.sentiment
+            : "Neutral";
+          articleSentiment.className = `news-background-article-sentiment is-${articleTone.toLowerCase()}`;
+          articleSentiment.textContent = `${articleTone} · ${Number(article?.score) > 0 ? "+" : ""}${Number(article?.score) || 0}`;
+          articleMeta.append(articleSource, articleTime, articleSentiment);
+          link.append(title, articleMeta);
 
           if (/^https:\/\//i.test(url)) {
             link.href = url;
@@ -5636,6 +5697,13 @@ document.addEventListener(
 
           item.append(link);
           listElement.append(item);
+        }
+
+        if (articles.length === 0) {
+          const emptyItem = document.createElement("li");
+          emptyItem.className = "news-background-empty";
+          emptyItem.textContent = "Свежие новости пока не получены. Используется Neutral fallback.";
+          listElement.append(emptyItem);
         }
       } catch (error) {
         console.error("News Background error:", error);
