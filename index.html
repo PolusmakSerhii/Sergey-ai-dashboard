@@ -227,38 +227,11 @@
       text-transform: uppercase;
     }
 
-    .phoenix-title {
-      display: flex;
-      gap: 0.2em;
-      align-items: baseline;
-      font-size: clamp(34px, 4.8vw, 56px);
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-
-    .phoenix-title-main {
-      background: linear-gradient(180deg, #ffffff 0%, #dce4ec 42%, #788796 100%);
-      background-clip: text;
-      color: transparent;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .phoenix-title-ai {
-      background: linear-gradient(180deg, #ffbf1c 0%, #ff6a00 52%, #cf1f0b 100%);
-      background-clip: text;
-      color: transparent;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .phoenix-terminal {
-      margin: 9px 0 0;
-      color: #ff7214;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.36em;
-      text-transform: uppercase;
+    .phoenix-wordmark {
+      display: block;
+      width: min(520px, 100%);
+      height: auto;
+      mix-blend-mode: screen;
     }
 
     .header-services {
@@ -1493,13 +1466,8 @@
     border-radius: 0;
   }
 
-  .phoenix-title {
-    font-size: clamp(25px, 9vw, 36px);
-  }
-
-  .phoenix-terminal {
-    font-size: 9px;
-    letter-spacing: 0.22em;
+  .phoenix-wordmark {
+    width: min(250px, 100%);
   }
 
   .header-services {
@@ -1553,14 +1521,15 @@
           height="100"
         >
         <div class="header-copy">
-        <h1 class="phoenix-title">
-          <span class="phoenix-title-main">PHOENIX</span>
-          <span class="phoenix-title-ai">AI</span>
+        <h1 style="margin: 0;">
+          <img
+            class="phoenix-wordmark"
+            src="assets/phoenix-wordmark.jpg"
+            alt="Phoenix AI Trading Terminal"
+            width="1024"
+            height="198"
+          >
         </h1>
-
-        <p class="phoenix-terminal">
-          Trading Terminal
-        </p>
 
         <p class="subtitle header-services">
           OKX, CoinGlass, Smart Money, Probability AI и Market Scanner
