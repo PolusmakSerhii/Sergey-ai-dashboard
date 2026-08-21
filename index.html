@@ -298,10 +298,10 @@
 
     .header-logo-wrap {
       position: absolute;
-      top: calc(50% + 8mm);
+      top: 50%;
       left: 50%;
       flex: 0 0 auto;
-      width: min(258px, 100%);
+      width: min(297px, 100%);
       transform: translate(-50%, -50%);
     }
 
@@ -311,7 +311,8 @@
       height: auto;
       object-fit: contain;
       border-radius: 0;
-      filter: drop-shadow(0 0 18px rgba(40, 205, 238, 0.14));
+      filter: none;
+      mix-blend-mode: lighten;
     }
 
     .header-copy {
@@ -1298,8 +1299,8 @@
         position: relative;
         top: auto;
         left: auto;
-        width: min(209px, 100%);
-        transform: translateY(8mm);
+        width: min(240px, 100%);
+        transform: none;
       }
 
       .header-star {
@@ -1649,7 +1650,7 @@
   }
 
   .header-logo-wrap {
-    width: min(148px, 100%);
+    width: min(170px, 100%);
   }
 
   .header-star {
@@ -1712,7 +1713,7 @@
         <div class="header-logo-wrap">
           <img
             class="header-logo"
-            src="assets/sm1m-logo-transparent-v3.png"
+            src="assets/sm1m-logo-v2.png"
             alt="SM1M Global Trading Analytics"
             width="1536"
             height="1024"
