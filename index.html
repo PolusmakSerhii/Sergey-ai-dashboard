@@ -1663,11 +1663,23 @@
 }
 
 @media (max-width: 560px) {
+  .page {
+    width: min(100% - 16px, 100%);
+    padding: 8px 0 18px;
+  }
+
+  .header {
+    gap: 12px;
+    margin-bottom: 6px;
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+
   .header-brand {
     width: 100%;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 4px;
   }
 
   .header-copy {
@@ -1675,17 +1687,205 @@
   }
 
   .header-logo-wrap {
-    width: min(170px, 100%);
+    width: min(190px, calc(100% - 82px));
   }
 
   .header-star {
-    width: 68px;
-    height: 68px;
-    transform: translateX(18px);
+    width: 76px;
+    height: 76px;
+    transform: none;
   }
 
   .phoenix-wordmark {
     width: min(250px, 100%);
+  }
+
+  .header-status-group {
+    width: 100%;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .terminal-statuses {
+    width: 100%;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .terminal-status-chip {
+    padding: 4px 7px;
+    font-size: 8px;
+  }
+
+  .status {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .ranking-updated-at {
+    font-size: 9px;
+  }
+
+  .card.news-background {
+    padding: 12px;
+  }
+
+  .news-background-heading {
+    font-size: 12px;
+  }
+
+  .news-background-body {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .news-background-meta {
+    font-size: 10px;
+  }
+
+  .news-background-link {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .dashboard-market-shell {
+    border-radius: 16px;
+  }
+
+  .dashboard-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding: 7px;
+    overflow: visible;
+  }
+
+  .dashboard-tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 4px;
+    font-size: 8px;
+    line-height: 1.2;
+  }
+
+  .card.dashboard-tab-panel {
+    padding: 12px 8px 14px;
+  }
+
+  .scanner-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .scanner-controls input,
+  .scanner-controls select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 10px;
+    border: 1px solid rgba(124, 151, 180, 0.22);
+    border-radius: 10px;
+    background: #091725;
+    color: #d7e0ea;
+    font-size: 16px;
+  }
+
+  #scanner-table,
+  #core-markets-table,
+  #favorites-list {
+    margin-top: 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  #scanner-pagination {
+    justify-content: space-between;
+    gap: 8px !important;
+    margin-top: 12px !important;
+  }
+
+  #scanner-pagination button {
+    min-height: 40px;
+    padding: 8px 10px;
+  }
+
+  #scanner-page-info {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .card.ai-market-core,
+  #statistics {
+    padding: 12px !important;
+    border-radius: 16px;
+  }
+
+  .grid,
+  .market-overview-grid,
+  .statistics-grid {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .grid > .card,
+  .market-overview-card,
+  .statistics-metric {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .grid > .card .card-value,
+  .market-overview-card .card-value,
+  .statistics-metric-value {
+    overflow-wrap: anywhere;
+    font-size: 23px;
+  }
+
+  .grid > .card .card-text,
+  .market-overview-card .card-text,
+  .statistics-metric-detail {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .statistics-history-card {
+    border-radius: 14px;
+  }
+
+  .statistics-history-card summary,
+  .ai-chat-header {
+    min-height: 50px;
+    padding: 12px;
+  }
+
+  .statistics-collapsible-count {
+    max-width: 46%;
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-chat-preview {
+    min-height: 0;
+    padding: 0;
+    border-radius: 16px;
+  }
+
+  .ai-chat-preview[open] {
+    padding-bottom: 12px;
+  }
+
+  .ai-chat-mode {
+    font-size: 10px;
+  }
+
+  .modal-content {
+    width: calc(100% - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 16px;
+    border-radius: 16px;
   }
 
 }
