@@ -113,6 +113,9 @@ assert.match(html, /\.ai-market-core \.grid > \.card \.card-value\s*\{[\s\S]*?fo
 assert.match(html, /\.ai-market-core \.market-overview-card \.card-value\s*\{[\s\S]*?font-size:\s*13px/, "AI Market overview values must match the section heading size");
 assert.match(html, /\.statistics-grid \.statistics-metric-value\s*\{[\s\S]*?font-size:\s*13px/, "Statistics values must match the section heading size");
 assert.match(html, /\.statistics-chart-header \.statistics-metric-label\s*\{[\s\S]*?color:\s*#4fe3b1/i, "Statistics chart headings must match Active Trades color");
+assert.match(html, /<details class="statistics-history-card statistics-collapsible" id="advanced-analytics">/, "Advanced Analytics collapsible section is missing");
+assert.doesNotMatch(html, /<details class="statistics-history-card statistics-collapsible" id="advanced-analytics"\s+open/, "Advanced Analytics must be collapsed by default");
+assert.ok(html.indexOf('id="advanced-analytics"') < html.indexOf('id="statistics-active-count"'), "Advanced Analytics must remain above the trade history sections");
 assert.match(html, /\.ai-chat-preview\s*\{[\s\S]*?margin-top:\s*6px/, "AI Chat section spacing must be 6px");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
