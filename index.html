@@ -392,6 +392,26 @@
       font-weight: 700;
     }
 
+    .market-trend-visual {
+      display: grid;
+      width: 150px;
+      height: 76px;
+      margin-top: 2px;
+      place-items: center;
+    }
+
+    .market-trend-visual[hidden] {
+      display: none;
+    }
+
+    .market-trend-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(79, 227, 177, 0.12));
+    }
+
     .dot {
       width: 6px;
       height: 6px;
@@ -1726,6 +1746,12 @@
     font-size: 9px;
   }
 
+  .market-trend-visual {
+    width: 120px;
+    height: 62px;
+    margin-top: 0;
+  }
+
   .card.news-background {
     padding: 12px;
   }
@@ -1963,6 +1989,16 @@
           id="ranking-updated-at"
         >
           Рейтинг: загрузка...
+        </div>
+        <div class="market-trend-visual" id="market-trend-visual" hidden>
+          <img
+            class="market-trend-image"
+            id="market-trend-image"
+            src=""
+            alt=""
+            width="640"
+            height="427"
+          >
         </div>
       </div>
     </header>
@@ -4400,6 +4436,27 @@ function renderRankingFreshness() {
         "#market-details"
       ).textContent =
         `Confidence: ${averageConfidence}% | Ready Trades: ${readyTrades}`;
+
+      const trendVisual = document.querySelector("#market-trend-visual");
+      const trendImage = document.querySelector("#market-trend-image");
+
+      if (trendVisual && trendImage) {
+        const trendAssets = {
+          Bullish: {
+            src: "assets/market-bull-transparent.png",
+            alt: "Bullish market trend"
+          },
+          Bearish: {
+            src: "assets/market-bear-transparent.png",
+            alt: "Bearish market trend"
+          }
+        };
+        const trendAsset = trendAssets[marketBias];
+
+        trendVisual.hidden = !trendAsset;
+        trendImage.src = trendAsset?.src || "";
+        trendImage.alt = trendAsset?.alt || "";
+      }
     }
 
     async function loadFullGlobalRanking() {

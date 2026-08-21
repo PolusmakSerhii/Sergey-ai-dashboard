@@ -98,6 +98,10 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
   );
 }
 assert.match(html, /id="news-background"/, "News Background section is missing");
+assert.match(html, /id="market-trend-visual"/, "Header market trend visual is missing");
+assert.match(html, /Bullish:\s*\{[\s\S]*?market-bull-transparent\.png/, "Bullish trend must show the bull asset");
+assert.match(html, /Bearish:\s*\{[\s\S]*?market-bear-transparent\.png/, "Bearish trend must show the bear asset");
+assert.match(html, /trendVisual\.hidden = !trendAsset/, "Neutral trend must hide the trend visual");
 assert.match(html, /class="card ai-market-core"/, "AI Market Core wrapper is missing");
 assert.match(html, /id="ai-market-core-title">AI Market Core<\/p>/, "AI Market Core heading is missing");
 assert.match(html, /\.ai-market-core \.grid > \.card\s*\{[\s\S]*?padding:\s*12px 14px/, "AI Market Core cards must use compact sizing");
