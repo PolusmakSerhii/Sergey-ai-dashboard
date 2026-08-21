@@ -58,6 +58,13 @@ assert.match(
   /\.ai-chat-preview:not\(\[open\]\)\s*\{[\s\S]*?min-height:\s*0/,
   "Collapsed AI Chat must use compact height"
 );
+assert.match(html, />\s*AI Chat Assistant\s*<\/p>/, "AI Chat heading must not include Preview");
+assert.doesNotMatch(html, /AI Chat Assistant · Preview/i, "AI Chat Preview label must be removed");
+assert.ok(
+  html.indexOf('id="ai-assistant"') > html.indexOf('id="scanner-pagination"') &&
+  html.indexOf('id="ai-assistant"') < html.indexOf('class="card ai-market-core"'),
+  "AI Chat must appear immediately after the coin table"
+);
 assert.doesNotMatch(
   html,
   /terminal-sidebar/,

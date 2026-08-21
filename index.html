@@ -1883,6 +1883,56 @@
     </section>
     </div>
 
+    <details class="card ai-chat-preview statistics-collapsible" id="ai-assistant">
+      <summary class="ai-chat-header">
+        <p class="card-label" style="margin: 0;">
+          AI Chat Assistant
+        </p>
+        <span class="ai-chat-mode" id="ai-chat-mode">
+          AI Online
+        </span>
+      </summary>
+
+      <div
+        class="ai-chat-messages"
+        id="ai-chat-messages"
+        aria-live="polite"
+      >
+        <p class="ai-chat-message is-assistant">
+          Я помогу прочитать текущий рейтинг. Выберите быстрый вопрос или введите символ монеты, например KSMUSDT.
+        </p>
+      </div>
+
+      <div class="ai-chat-quick-actions">
+        <button type="button" class="ai-chat-quick-button" data-chat-question="leader">
+          Почему эта монета лидер?
+        </button>
+        <button type="button" class="ai-chat-quick-button" data-chat-question="market">
+          Что сейчас с рынком?
+        </button>
+        <button type="button" class="ai-chat-quick-button" data-chat-question="setup">
+          Какой лучший готовый сетап?
+        </button>
+      </div>
+
+      <form class="ai-chat-form" id="ai-chat-form">
+        <input
+          class="ai-chat-input"
+          id="ai-chat-input"
+          type="text"
+          autocomplete="off"
+          placeholder="Введите символ или вопрос о рынке..."
+        >
+        <button class="ai-chat-submit" type="submit">
+          Спросить
+        </button>
+      </form>
+
+      <p class="ai-chat-note">
+        AI отвечает по текущим данным Dashboard и не является торговым советом.
+      </p>
+    </details>
+
     <section class="card ai-market-core" aria-labelledby="ai-market-core-title">
       <p class="card-label" id="ai-market-core-title">AI Market Core</p>
 
@@ -2230,56 +2280,6 @@
   </details>
 </section>
 
-<details class="card ai-chat-preview statistics-collapsible" id="ai-assistant">
-  <summary class="ai-chat-header">
-    <p class="card-label" style="margin: 0;">
-      AI Chat Assistant · Preview
-    </p>
-    <span class="ai-chat-mode" id="ai-chat-mode">
-      AI Online
-    </span>
-  </summary>
-
-  <div
-    class="ai-chat-messages"
-    id="ai-chat-messages"
-    aria-live="polite"
-  >
-    <p class="ai-chat-message is-assistant">
-      Я помогу прочитать текущий рейтинг. Выберите быстрый вопрос или введите символ монеты, например KSMUSDT.
-    </p>
-  </div>
-
-  <div class="ai-chat-quick-actions">
-    <button type="button" class="ai-chat-quick-button" data-chat-question="leader">
-      Почему эта монета лидер?
-    </button>
-    <button type="button" class="ai-chat-quick-button" data-chat-question="market">
-      Что сейчас с рынком?
-    </button>
-    <button type="button" class="ai-chat-quick-button" data-chat-question="setup">
-      Какой лучший готовый сетап?
-    </button>
-  </div>
-
-  <form class="ai-chat-form" id="ai-chat-form">
-    <input
-      class="ai-chat-input"
-      id="ai-chat-input"
-      type="text"
-      autocomplete="off"
-      placeholder="Введите символ или вопрос о рынке..."
-    >
-    <button class="ai-chat-submit" type="submit">
-      Спросить
-    </button>
-  </form>
-
-  <p class="ai-chat-note">
-    AI отвечает по текущим данным Dashboard и не является торговым советом.
-  </p>
-</details>
-    
   </main> 
   
   <div id="coin-modal" class="modal hidden">
