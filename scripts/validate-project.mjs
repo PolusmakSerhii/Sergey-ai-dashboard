@@ -167,6 +167,11 @@ assert.match(
 );
 assert.match(
   html,
+  /@media \(max-width: 560px\)[\s\S]*?\.header-brand\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*142px;[\s\S]*?\.header-logo-wrap\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*50%;[\s\S]*?left:\s*50%;[\s\S]*?\.header-star\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?right:\s*4px;/,
+  "Mobile header must center the logo and place the Bitcoin artwork at the upper right"
+);
+assert.match(
+  html,
   /<span>Opened<strong>\$\{openedTime\}<\/strong><\/span>/,
   "Completed Trades must show the opening time"
 );

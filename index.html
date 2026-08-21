@@ -1787,17 +1787,18 @@
   }
 
   .header {
+    display: grid;
     gap: 12px;
     margin-bottom: 6px;
-    padding: 14px 12px;
+    padding: 14px 12px 18px;
     border-radius: 16px;
   }
 
   .header-brand {
+    position: relative;
     width: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+    height: 142px;
+    display: block;
   }
 
   .header-copy {
@@ -1805,12 +1806,20 @@
   }
 
   .header-logo-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
     width: min(190px, calc(100% - 82px));
+    transform: translate(-50%, -50%);
   }
 
   .header-star {
-    width: 76px;
-    height: 76px;
+    position: absolute;
+    top: 0;
+    right: 4px;
+    width: 62px;
+    height: 62px;
+    margin: 0;
     transform: none;
   }
 
@@ -1820,6 +1829,7 @@
 
   .header-status-group {
     width: 100%;
+    align-self: auto;
     align-items: center;
     gap: 7px;
   }
@@ -1847,7 +1857,7 @@
   .market-trend-visual {
     width: 102px;
     height: 53px;
-    margin-top: 0;
+    margin: 7px auto 0;
   }
 
   .card.news-background {
