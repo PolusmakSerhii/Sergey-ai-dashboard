@@ -239,11 +239,12 @@
 
     .header-logo {
       flex: 0 0 auto;
-      width: 210px;
-      height: 100px;
+      width: min(420px, 100%);
+      height: auto;
       object-fit: contain;
       border-radius: 0;
-      filter: drop-shadow(0 0 18px rgba(255, 92, 15, 0.2));
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 18px rgba(40, 205, 238, 0.14));
     }
 
     .header-copy {
@@ -1166,8 +1167,8 @@
       }
 
       .header-logo {
-        width: 150px;
-        height: 72px;
+        width: min(380px, 100%);
+        height: auto;
       }
 
       .grid {
@@ -1499,7 +1500,8 @@
 
 @media (max-width: 560px) {
   .header-brand {
-    align-items: flex-start;
+    width: 100%;
+    align-items: center;
     gap: 10px;
   }
 
@@ -1508,8 +1510,8 @@
   }
 
   .header-logo {
-    width: 100px;
-    height: 48px;
+    width: min(300px, 100%);
+    height: auto;
     border-radius: 0;
   }
 
@@ -1558,23 +1560,11 @@
       <div class="header-brand">
         <img
           class="header-logo"
-          src="assets/phoenix-ai-mark.png"
-          alt="Phoenix AI"
-          width="210"
-          height="100"
+          src="assets/sm1m-logo.jpeg"
+          alt="SM1M Global Trading Analytics"
+          width="540"
+          height="360"
         >
-        <div class="header-copy">
-        <h1 style="margin: 0;">
-          <img
-            class="phoenix-wordmark"
-            src="assets/phoenix-wordmark-transparent.png"
-            alt="Phoenix AI Trading Terminal"
-            width="1024"
-            height="341"
-          >
-        </h1>
-
-        </div>
       </div>
 
       <div class="header-status-group">
