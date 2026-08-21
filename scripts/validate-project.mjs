@@ -83,7 +83,7 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
 assert.match(html, /id="news-background"/, "News Background section is missing");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
-assert.match(html, /Market News & Upcoming Events · Informational/, "News heading must be in English");
+assert.match(html, />Market News<\/p>/, "News heading must be Market News");
 assert.match(html, /BullishNews:\s*"🟢 Bullish News"/, "Bullish news mode is missing");
 assert.match(html, /StopTrading:\s*"⚠️ Stop Trading"/, "Stop trading news mode is missing");
 assert.match(html, /\.card-label\.news-background-heading\s*\{[\s\S]*?color:\s*#00e676/i, "News heading must use neon green");
