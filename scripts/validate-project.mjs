@@ -4,6 +4,7 @@ import vm from "node:vm";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
+assert.equal((html.match(/\$\{data\.totalAvailableSymbols \?\? 0\} MARKETS/g) || []).length, 2, "Market count must use the English MARKETS label");
 assert.match(html, /src="assets\/sm1m-logo-transparent-v5\.png"/, "Lossless transparent SM1M logo asset is missing");
 assert.doesNotMatch(html, /sm1m-logo-desktop\.svg/, "Desktop logo must not depend on an externally masked SVG");
 assert.match(html, /src="assets\/bitcoin-star-transparent\.png"/, "Bitcoin star asset is missing");
