@@ -81,6 +81,8 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
   );
 }
 assert.match(html, /id="news-background"/, "News Background section is missing");
+assert.match(html, /class="card ai-market-core"/, "AI Market Core wrapper is missing");
+assert.match(html, /id="ai-market-core-title">AI Market Core<\/p>/, "AI Market Core heading is missing");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
 assert.match(html, />Market News<\/p>/, "News heading must be Market News");
