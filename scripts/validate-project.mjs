@@ -131,6 +131,16 @@ assert.match(
 );
 assert.match(
   html,
+  /@media \(max-width: 560px\)[\s\S]*?\.news-background-summary\s*\{[\s\S]*?align-items:\s*baseline !important;[\s\S]*?flex-direction:\s*row/,
+  "Mobile Market News summary must match the compact trade sections"
+);
+assert.match(
+  html,
+  /@media \(max-width: 560px\)[\s\S]*?\.news-background-status\s*\{[\s\S]*?margin-left:\s*auto;[\s\S]*?background:\s*transparent/,
+  "Mobile Market News status must remain compact and right aligned"
+);
+assert.match(
+  html,
   /<span>Opened<strong>\$\{openedTime\}<\/strong><\/span>/,
   "Completed Trades must show the opening time"
 );
