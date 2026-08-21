@@ -10,7 +10,7 @@ assert.doesNotMatch(html, /sm1m-logo-desktop\.svg/, "Desktop logo must not depen
 assert.match(html, /src="assets\/bitcoin-star-transparent\.png"/, "Bitcoin star asset is missing");
 assert.match(html, /\.header-star\s*\{[\s\S]*?width:\s*119px;[\s\S]*?height:\s*119px;/, "Bitcoin star must be 10% smaller");
 assert.doesNotMatch(html, /header-logo-infinity/, "Legacy infinity logo overlay must be removed");
-assert.match(html, /\.header-logo-wrap\s*\{[\s\S]*?top:\s*50%;[\s\S]*?width:\s*min\(297px, 100%\)/, "Header logo must be 15% larger and vertically centered");
+assert.match(html, /\.header-logo-wrap\s*\{[\s\S]*?top:\s*calc\(50% \+ 5mm\);[\s\S]*?width:\s*min\(297px, 100%\)/, "Desktop header logo must sit 5mm below center");
 assert.match(html, /\.header-logo\s*\{[\s\S]*?filter:\s*none;/, "Header logo must remain crisp without CSS blur");
 assert.match(html, /\.header\s*\{[\s\S]*?overflow:\s*hidden;/, "Header must clip logo artwork to the panel bounds");
 assert.match(html, /\.header-logo\s*\{[\s\S]*?mix-blend-mode:\s*normal;/, "Transparent logo must render without blend modes");
