@@ -91,6 +91,11 @@ assert.match(html, />Market News<\/p>/, "News heading must be Market News");
 assert.match(html, /BullishNews:\s*"🟢 Bullish News"/, "Bullish news mode is missing");
 assert.match(html, /StopTrading:\s*"⚠️ Stop Trading"/, "Stop trading news mode is missing");
 assert.match(html, /\.card-label\.news-background-heading\s*\{[\s\S]*?color:\s*#00e676/i, "News heading must use neon green");
+assert.match(
+  html,
+  /#market-scanner > \.card-label,[\s\S]*?#ai-assistant \.ai-chat-header > \.card-label\s*\{[\s\S]*?color:\s*#00e676/i,
+  "Primary dashboard section headings must use the Market News neon green"
+);
 assert.ok(
   html.indexOf('id="news-background"') < html.indexOf('class="dashboard-market-shell"') &&
   html.indexOf('id="news-background"') < html.indexOf('class="dashboard-tabs"'),
