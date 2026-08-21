@@ -23,6 +23,14 @@ assert.match(
   /Recommendation Confidence/,
   "Recommendation Confidence column is missing"
 );
+assert.match(html, /class="mobile-scanner-list"/, "Compact mobile scanner list is missing");
+assert.match(html, /mobile-scanner-signal">Signal /, "Mobile scanner must show Signal confidence");
+assert.match(html, /mobile-scanner-recommendation">Rec\. /, "Mobile scanner must show recommendation confidence");
+assert.match(
+  html,
+  /@media \(max-width: 560px\)[\s\S]*?#scanner-table \.market-scanner-table\s*\{[\s\S]*?display:\s*none;[\s\S]*?#scanner-table \.mobile-scanner-list\s*\{[\s\S]*?display:\s*block;/,
+  "Mobile scanner must replace the desktop table only on small screens"
+);
 assert.match(
   html,
   /Showing \$\{filteredResults\.length\} on this page · \$\{totalResults\} markets total/,

@@ -1188,6 +1188,10 @@
       display: none;
     }
 
+    .mobile-scanner-list {
+      display: none;
+    }
+
     @media (max-width: 560px) {
       #core-markets-table,
       #favorites-list,
@@ -1198,17 +1202,107 @@
       }
 
       #core-markets-table .mobile-sticky-symbol-table,
-      #favorites-list .mobile-sticky-symbol-table,
-      #scanner-table .market-scanner-table {
+      #favorites-list .mobile-sticky-symbol-table {
         min-width: 880px;
       }
 
       #core-markets-table .mobile-sticky-symbol-table th,
       #core-markets-table .mobile-sticky-symbol-table td,
       #favorites-list .mobile-sticky-symbol-table th,
-      #favorites-list .mobile-sticky-symbol-table td,
-      #scanner-table .market-scanner-table th,
-      #scanner-table .market-scanner-table td {
+      #favorites-list .mobile-sticky-symbol-table td {
+        white-space: nowrap;
+      }
+
+      #scanner-table {
+        overflow-x: visible;
+      }
+
+      #scanner-table .market-scanner-table {
+        display: none;
+      }
+
+      #scanner-table .mobile-scanner-list {
+        display: block;
+        margin-top: 14px;
+      }
+
+      .mobile-scanner-row {
+        display: grid;
+        grid-template-columns: 28px minmax(78px, 1fr) 38px 32px minmax(64px, auto);
+        grid-template-rows: auto auto;
+        column-gap: 7px;
+        row-gap: 5px;
+        align-items: center;
+        padding: 12px 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: #d7e0ea;
+        cursor: pointer;
+      }
+
+      .mobile-scanner-row:last-child {
+        border-bottom: 0;
+      }
+
+      .mobile-scanner-row .favorite-toggle {
+        grid-column: 1;
+        grid-row: 1 / 3;
+        width: 28px;
+        height: 28px;
+        border: 0;
+        background: transparent;
+        font-size: 18px;
+      }
+
+      .mobile-scanner-symbol {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        overflow: hidden;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .mobile-scanner-score {
+        grid-column: 3;
+        grid-row: 1;
+      }
+
+      .mobile-scanner-grade {
+        grid-column: 4;
+        grid-row: 1;
+      }
+
+      .mobile-scanner-direction {
+        grid-column: 5;
+        grid-row: 1;
+        text-align: right;
+        text-transform: uppercase;
+      }
+
+      .mobile-scanner-signal,
+      .mobile-scanner-recommendation {
+        color: #9aa9bb;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .mobile-scanner-signal {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .mobile-scanner-recommendation {
+        grid-column: 3 / 5;
+        grid-row: 2;
+      }
+
+      .mobile-scanner-action {
+        grid-column: 5;
+        grid-row: 2;
+        font-size: 11px;
+        text-align: right;
+        text-transform: uppercase;
         white-space: nowrap;
       }
 
@@ -3165,6 +3259,42 @@ const actionMatch =
         }
       </tbody>
     </table>
+    <div class="mobile-scanner-list" aria-label="Компактный список рынков">
+      ${sortedResults
+        .map((coin) => {
+          const action = getScannerAction(coin);
+          const actionClass = getScannerActionClass(action);
+          const directionClass =
+            coin.direction === "Long"
+              ? "long"
+              : coin.direction === "Short"
+                ? "short"
+                : "neutral";
+          const gradeClass = (coin.opportunityGrade || "D")
+            .toLowerCase()
+            .replace("+", "plus");
+
+          return `
+            <div class="mobile-scanner-row scanner-row" data-symbol="${coin.symbol}">
+              <button
+                class="favorite-toggle ${isFavoriteCoin(coin.symbol) ? "is-active" : ""}"
+                type="button"
+                data-favorite-symbol="${coin.symbol}"
+                aria-label="${isFavoriteCoin(coin.symbol) ? "Удалить из избранного" : "Добавить в избранное"} ${coin.symbol}"
+                aria-pressed="${isFavoriteCoin(coin.symbol)}"
+              >${isFavoriteCoin(coin.symbol) ? "★" : "☆"}</button>
+              <span class="mobile-scanner-symbol">${coin.symbol}</span>
+              <span class="mobile-scanner-score">${coin.opportunityScore ?? 0}</span>
+              <span class="mobile-scanner-grade grade grade-${gradeClass}">${coin.opportunityGrade || "D"}</span>
+              <span class="mobile-scanner-direction ${directionClass}">${coin.direction || "Neutral"}</span>
+              <span class="mobile-scanner-signal">Signal ${coin.confidence ?? 0}%</span>
+              <span class="mobile-scanner-recommendation">Rec. ${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</span>
+              <span class="mobile-scanner-action ${actionClass}">${action}</span>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
   `;
 }    
 
