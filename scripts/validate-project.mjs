@@ -150,6 +150,11 @@ assert.match(
   /<span>Opened<strong>\$\{openedTime\}<\/strong><\/span>/,
   "Completed Trades must show the opening time"
 );
+assert.match(
+  html,
+  /\.trade-plan-grid > \*\s*\{[\s\S]*?min-height:\s*84px;[\s\S]*?height:\s*84px;[\s\S]*?padding:\s*11px;/,
+  "Trade Plan cards must be 30% smaller and uniformly sized"
+);
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map((match) => match[1])
