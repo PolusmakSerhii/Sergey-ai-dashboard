@@ -109,6 +109,9 @@ assert.match(
 assert.match(html, /id="statistics" style="margin-top: 6px;"/, "Statistics section spacing must be 6px");
 assert.match(html, /\.statistics-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/, "Statistics metrics must use three columns");
 assert.match(html, /\.statistics-metric\s*\{[\s\S]*?padding:\s*12px 14px/, "Statistics metrics must match AI Market Core sizing");
+assert.match(html, /\.ai-market-core \.grid > \.card \.card-value\s*\{[\s\S]*?font-size:\s*13px/, "AI Market Core values must match the section heading size");
+assert.match(html, /\.ai-market-core \.market-overview-card \.card-value\s*\{[\s\S]*?font-size:\s*13px/, "AI Market overview values must match the section heading size");
+assert.match(html, /\.statistics-grid \.statistics-metric-value\s*\{[\s\S]*?font-size:\s*13px/, "Statistics values must match the section heading size");
 assert.match(html, /\.statistics-chart-header \.statistics-metric-label\s*\{[\s\S]*?color:\s*#4fe3b1/i, "Statistics chart headings must match Active Trades color");
 assert.match(html, /\.ai-chat-preview\s*\{[\s\S]*?margin-top:\s*6px/, "AI Chat section spacing must be 6px");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
