@@ -412,6 +412,10 @@
       filter: drop-shadow(0 0 10px rgba(79, 227, 177, 0.12));
     }
 
+    .market-trend-image.is-bullish {
+      transform: scale(0.85);
+    }
+
     .dot {
       width: 6px;
       height: 6px;
@@ -4456,6 +4460,7 @@ function renderRankingFreshness() {
         trendVisual.hidden = !trendAsset;
         trendImage.src = trendAsset?.src || "";
         trendImage.alt = trendAsset?.alt || "";
+        trendImage.classList.toggle("is-bullish", marketBias === "Bullish");
       }
     }
 
