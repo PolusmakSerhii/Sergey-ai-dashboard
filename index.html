@@ -237,13 +237,20 @@
       gap: 16px;
     }
 
+    .header-star {
+      flex: 0 0 auto;
+      width: 132px;
+      height: 132px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(255, 94, 20, 0.2));
+    }
+
     .header-logo {
       flex: 0 0 auto;
       width: min(420px, 100%);
       height: auto;
       object-fit: contain;
       border-radius: 0;
-      mix-blend-mode: screen;
       filter: drop-shadow(0 0 18px rgba(40, 205, 238, 0.14));
     }
 
@@ -1167,8 +1174,13 @@
       }
 
       .header-logo {
-        width: min(380px, 100%);
+        width: min(340px, 100%);
         height: auto;
+      }
+
+      .header-star {
+        width: 104px;
+        height: 104px;
       }
 
       .grid {
@@ -1510,9 +1522,14 @@
   }
 
   .header-logo {
-    width: min(300px, 100%);
+    width: min(240px, 100%);
     height: auto;
     border-radius: 0;
+  }
+
+  .header-star {
+    width: 76px;
+    height: 76px;
   }
 
   .phoenix-wordmark {
@@ -1559,11 +1576,19 @@
     <header class="header">
       <div class="header-brand">
         <img
+          class="header-star"
+          src="assets/orange-star-transparent.png"
+          alt=""
+          width="1254"
+          height="1254"
+          aria-hidden="true"
+        >
+        <img
           class="header-logo"
-          src="assets/sm1m-logo.jpeg"
+          src="assets/sm1m-logo-transparent.png"
           alt="SM1M Global Trading Analytics"
-          width="540"
-          height="360"
+          width="1536"
+          height="1024"
         >
       </div>
 
