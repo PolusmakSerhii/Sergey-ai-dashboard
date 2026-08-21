@@ -28,6 +28,11 @@ assert.match(html, /mobile-scanner-signal">Signal /, "Mobile scanner must show S
 assert.match(html, /mobile-scanner-recommendation">Rec\. /, "Mobile scanner must show recommendation confidence");
 assert.match(
   html,
+  /\.mobile-scanner-row\s*\{[\s\S]*?grid-template-columns:\s*28px minmax\(0, 1\.55fr\) minmax\(0, 0\.58fr\) minmax\(0, 0\.5fr\) minmax\(0, 1\.15fr\)/,
+  "Mobile scanner rows must use aligned vertical columns"
+);
+assert.match(
+  html,
   /@media \(max-width: 560px\)[\s\S]*?#scanner-table \.market-scanner-table\s*\{[\s\S]*?display:\s*none;[\s\S]*?#scanner-table \.mobile-scanner-list\s*\{[\s\S]*?display:\s*block;/,
   "Mobile scanner must replace the desktop table only on small screens"
 );
