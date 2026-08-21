@@ -83,6 +83,7 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
 assert.match(html, /id="news-background"/, "News Background section is missing");
 assert.match(html, /class="card ai-market-core"/, "AI Market Core wrapper is missing");
 assert.match(html, /id="ai-market-core-title">AI Market Core<\/p>/, "AI Market Core heading is missing");
+assert.match(html, /\.ai-market-core \.grid > \.card\s*\{[\s\S]*?padding:\s*12px 14px/, "AI Market Core cards must use compact sizing");
 assert.match(html, /id="statistics" style="margin-top: 6px;"/, "Statistics section spacing must be 6px");
 assert.match(html, /\.ai-chat-preview\s*\{[\s\S]*?margin-top:\s*6px/, "AI Chat section spacing must be 6px");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
