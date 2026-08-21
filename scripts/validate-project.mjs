@@ -5,6 +5,8 @@ import vm from "node:vm";
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
 assert.match(html, /src="assets\/sm1m-logo-transparent-v3\.png"/, "Transparent SM1M logo asset is missing");
+assert.match(html, /src="assets\/bitcoin-star-transparent\.png"/, "Bitcoin star asset is missing");
+assert.match(html, /\.header-star\s*\{[\s\S]*?width:\s*119px;[\s\S]*?height:\s*119px;/, "Bitcoin star must be 10% smaller");
 assert.doesNotMatch(html, /header-logo-infinity/, "Legacy infinity logo overlay must be removed");
 assert.match(html, /\.header-logo-wrap\s*\{[\s\S]*?top:\s*calc\(50% \+ 8mm\)[\s\S]*?width:\s*min\(258px, 100%\)/, "Header logo must be 20% larger and shifted down 8mm");
 assert.match(html, /<html\b/i, "index.html must contain an html element");
