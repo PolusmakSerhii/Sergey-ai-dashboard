@@ -131,6 +131,10 @@
       align-items: center !important;
     }
 
+    .card-label.news-background-heading {
+      color: #00e676;
+    }
+
     .news-background-status {
       display: inline-flex;
       align-items: center;
@@ -1706,6 +1710,19 @@
       </button>
     </div>
 
+    <details class="card news-background statistics-collapsible" id="news-background">
+      <summary class="news-background-summary">
+        <p class="card-label news-background-heading" style="margin: 0;">Market News & Upcoming Events · Informational</p>
+        <span class="news-background-status" id="news-background-status">Loading...</span>
+      </summary>
+      <div class="news-background-body">
+        <p class="news-background-meta" id="news-background-meta">
+          News analysis does not affect the Trading Score
+        </p>
+        <ul class="news-background-list" id="news-background-list"></ul>
+      </div>
+    </details>
+
     <section class="card dashboard-tab-panel" id="top-coins" data-dashboard-panel="top-coins" style="margin-top: 12px;" hidden>
       <p class="card-label">
         TOP COINS
@@ -1799,19 +1816,6 @@
       </div>
     </section>
     </div>
-
-    <details class="card news-background statistics-collapsible" id="news-background">
-      <summary class="news-background-summary">
-        <p class="card-label" style="margin: 0;">Market News & Upcoming Events · Informational</p>
-        <span class="news-background-status" id="news-background-status">Loading...</span>
-      </summary>
-      <div class="news-background-body">
-        <p class="news-background-meta" id="news-background-meta">
-          News analysis does not affect the Trading Score
-        </p>
-        <ul class="news-background-list" id="news-background-list"></ul>
-      </div>
-    </details>
 
     <section class="grid">
       <article class="card">
@@ -5733,10 +5737,10 @@ document.addEventListener(
           ? data.marketMode
           : "NormalTrading";
         const modeLabels = {
-          BullishNews: "🟢 Bullish News (Новости на рост)",
-          BearishNews: "🔴 Bearish News (Новости на падение)",
-          StopTrading: "⚠️ Stop Trading (Непонятная ситуация / Стоп торги)",
-          NormalTrading: "🔵 Normal Trading (Обычный режим)"
+          BullishNews: "🟢 Bullish News",
+          BearishNews: "🔴 Bearish News",
+          StopTrading: "⚠️ Stop Trading",
+          NormalTrading: "🔵 Normal Trading"
         };
         const sentimentLabels = {
           Bullish: "Позитивный",
@@ -5824,7 +5828,7 @@ document.addEventListener(
         console.error("News Background error:", error);
         statusElement.classList.remove("is-bullish", "is-bearish", "is-stop");
         statusElement.classList.add("is-normal");
-        statusElement.textContent = "🔵 Normal Trading (Обычный режим)";
+        statusElement.textContent = "🔵 Normal Trading";
         metaElement.textContent =
           "Новостной источник временно недоступен · Торговая логика работает";
         listElement.replaceChildren();
