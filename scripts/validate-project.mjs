@@ -4,6 +4,8 @@ import vm from "node:vm";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
+assert.match(html, /src="assets\/sm1m-logo-v2\.png"/, "Updated SM1M logo asset is missing");
+assert.doesNotMatch(html, /header-logo-infinity/, "Legacy infinity logo overlay must be removed");
 assert.match(html, /<html\b/i, "index.html must contain an html element");
 assert.match(html, /<body\b/i, "index.html must contain a body element");
 assert.match(html, /Completed Trades/i, "Completed Trades section is missing");
