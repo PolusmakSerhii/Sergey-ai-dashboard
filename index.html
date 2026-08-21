@@ -132,9 +132,15 @@
     }
 
     .news-background-status {
+      display: inline-flex;
+      align-items: center;
       margin-left: auto;
+      padding: 6px 10px;
+      border: 1px solid rgba(60, 168, 255, 0.28);
+      border-radius: 999px;
+      background: rgba(60, 168, 255, 0.08);
       color: #9aa9bb;
-      font-size: 11px;
+      font-size: 15px;
       font-weight: 800;
       white-space: nowrap;
     }
@@ -145,6 +151,35 @@
 
     .news-background-status.is-bearish {
       color: #ff5d73;
+    }
+
+    .news-background-status.is-stop {
+      border-color: rgba(255, 209, 102, 0.4);
+      background: rgba(255, 209, 102, 0.1);
+      color: #ffd166;
+    }
+
+    .news-background-status.is-normal {
+      border-color: rgba(60, 168, 255, 0.4);
+      background: rgba(60, 168, 255, 0.1);
+      color: #67d9ff;
+    }
+
+    .news-background-event-badge {
+      color: #ffd166;
+    }
+
+    @media (max-width: 560px) {
+      .news-background-summary {
+        align-items: flex-start !important;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .news-background-status {
+        margin-left: 0;
+        font-size: 13px;
+      }
     }
 
     .news-background-body {
@@ -1765,6 +1800,19 @@
     </section>
     </div>
 
+    <details class="card news-background statistics-collapsible" id="news-background">
+      <summary class="news-background-summary">
+        <p class="card-label" style="margin: 0;">Market News & Upcoming Events · Informational</p>
+        <span class="news-background-status" id="news-background-status">Loading...</span>
+      </summary>
+      <div class="news-background-body">
+        <p class="news-background-meta" id="news-background-meta">
+          News analysis does not affect the Trading Score
+        </p>
+        <ul class="news-background-list" id="news-background-list"></ul>
+      </div>
+    </details>
+
     <section class="grid">
       <article class="card">
         <p class="card-label">
@@ -1868,19 +1916,6 @@
     </p>
   </article>
 </section>
-
-<details class="card news-background statistics-collapsible" id="news-background">
-  <summary class="news-background-summary">
-    <p class="card-label" style="margin: 0;">Новостной фон · Информационно</p>
-    <span class="news-background-status" id="news-background-status">Загрузка...</span>
-  </summary>
-  <div class="news-background-body">
-    <p class="news-background-meta" id="news-background-meta">
-      Новости не влияют на торговый Score
-    </p>
-    <ul class="news-background-list" id="news-background-list"></ul>
-  </div>
-</details>
 
 <section class="card" id="statistics" style="margin-top: 18px;">
   <p class="card-label">
@@ -5694,9 +5729,15 @@ document.addEventListener(
       try {
         const response = await fetch(NEWS_URL, { cache: "no-store" });
         const data = await response.json();
-        const sentiment = ["Bullish", "Bearish", "Neutral"].includes(data?.sentiment)
-          ? data.sentiment
-          : "Neutral";
+        const marketMode = ["BullishNews", "BearishNews", "StopTrading", "NormalTrading"].includes(data?.marketMode)
+          ? data.marketMode
+          : "NormalTrading";
+        const modeLabels = {
+          BullishNews: "🟢 Bullish News (Новости на рост)",
+          BearishNews: "🔴 Bearish News (Новости на падение)",
+          StopTrading: "⚠️ Stop Trading (Непонятная ситуация / Стоп торги)",
+          NormalTrading: "🔵 Normal Trading (Обычный режим)"
+        };
         const sentimentLabels = {
           Bullish: "Позитивный",
           Bearish: "Негативный",
@@ -5704,12 +5745,15 @@ document.addEventListener(
         };
         const score = Number.isFinite(Number(data?.score)) ? Number(data.score) : 0;
         const articleCount = Number(data?.articleCount) || 0;
-        const highImpactCount = Number(data?.highImpactCount) || 0;
+        const strongArticleCount = Number(data?.strongArticleCount) || 0;
+        const plannedEventCount = Number(data?.plannedEventCount) || 0;
 
-        statusElement.classList.remove("is-bullish", "is-bearish");
-        if (sentiment === "Bullish") statusElement.classList.add("is-bullish");
-        if (sentiment === "Bearish") statusElement.classList.add("is-bearish");
-        statusElement.textContent = `${sentimentLabels[sentiment]} · ${score > 0 ? "+" : ""}${score}`;
+        statusElement.classList.remove("is-bullish", "is-bearish", "is-stop", "is-normal");
+        if (marketMode === "BullishNews") statusElement.classList.add("is-bullish");
+        if (marketMode === "BearishNews") statusElement.classList.add("is-bearish");
+        if (marketMode === "StopTrading") statusElement.classList.add("is-stop");
+        if (marketMode === "NormalTrading") statusElement.classList.add("is-normal");
+        statusElement.textContent = modeLabels[marketMode];
         const generatedAt = Number.isFinite(Date.parse(data?.generatedAt))
           ? new Date(data.generatedAt).toLocaleTimeString("ru-RU", {
               hour: "2-digit",
@@ -5718,7 +5762,7 @@ document.addEventListener(
           : "—";
         const source = String(data?.source || "Источник не указан");
         metaElement.textContent = data?.ok === true
-          ? `${source} · Обновлено ${generatedAt} · ${articleCount} новостей · Важных: ${highImpactCount} · Не влияет на торговый Score`
+          ? `${source} · Обновлено ${generatedAt} · Проанализировано: ${articleCount} · Сильных: ${strongArticleCount} · Запланированных событий: ${plannedEventCount} · Индекс фона: ${score > 0 ? "+" : ""}${score} · Не влияет на торговый Score`
           : "Новостной источник временно недоступен · Neutral fallback · Торговая логика работает";
 
         listElement.replaceChildren();
@@ -5735,7 +5779,7 @@ document.addEventListener(
           const url = String(article?.url || "");
           link.className = "news-background-link";
           title.className = "news-background-title";
-          title.textContent = `${article?.highImpact ? "⚠ " : ""}${article?.title || "Без заголовка"}`;
+          title.textContent = `${article?.plannedEvent ? "📅 " : article?.highImpact ? "⚠ " : ""}${article?.title || "Без заголовка"}`;
           articleMeta.className = "news-background-article-meta";
           articleSource.textContent = String(article?.source || "Unknown");
           articleTime.textContent = Number.isFinite(Date.parse(article?.publishedAt))
@@ -5751,6 +5795,12 @@ document.addEventListener(
             : "Neutral";
           articleSentiment.className = `news-background-article-sentiment is-${articleTone.toLowerCase()}`;
           articleSentiment.textContent = `${sentimentLabels[articleTone]} · ${Number(article?.score) > 0 ? "+" : ""}${Number(article?.score) || 0}`;
+          if (article?.plannedEvent) {
+            const eventBadge = document.createElement("span");
+            eventBadge.className = "news-background-event-badge";
+            eventBadge.textContent = "Запланированное событие";
+            articleMeta.append(eventBadge);
+          }
           articleMeta.append(articleSource, articleTime, articleSentiment);
           link.append(title, articleMeta);
 
@@ -5767,13 +5817,14 @@ document.addEventListener(
         if (articles.length === 0) {
           const emptyItem = document.createElement("li");
           emptyItem.className = "news-background-empty";
-          emptyItem.textContent = "Свежие новости пока не получены. Используется Neutral fallback.";
+          emptyItem.textContent = "Сильных новостей и запланированных событий сейчас нет. Обычный режим торговли.";
           listElement.append(emptyItem);
         }
       } catch (error) {
         console.error("News Background error:", error);
-        statusElement.classList.remove("is-bullish", "is-bearish");
-        statusElement.textContent = "Нейтральный · 0";
+        statusElement.classList.remove("is-bullish", "is-bearish", "is-stop");
+        statusElement.classList.add("is-normal");
+        statusElement.textContent = "🔵 Normal Trading (Обычный режим)";
         metaElement.textContent =
           "Новостной источник временно недоступен · Торговая логика работает";
         listElement.replaceChildren();

@@ -83,6 +83,14 @@ for (const tab of ["global-ranking", "top-coins", "watchlist"]) {
 assert.match(html, /id="news-background"/, "News Background section is missing");
 assert.match(html, /const NEWS_URL\s*=/, "News Background endpoint is missing");
 assert.match(html, /Не влияет на торговый Score/, "News Background safety label is missing");
+assert.match(html, /Market News & Upcoming Events · Informational/, "News heading must be in English");
+assert.match(html, /Bullish News \(Новости на рост\)/, "Bullish news mode is missing");
+assert.match(html, /Stop Trading \(Непонятная ситуация \/ Стоп торги\)/, "Stop trading news mode is missing");
+assert.ok(
+  html.indexOf('id="news-background"') > html.indexOf('id="scanner-pagination"') &&
+  html.indexOf('id="news-background"') < html.indexOf('<section class="grid">'),
+  "News Background must appear immediately after the coin table shell"
+);
 assert.match(
   html,
   /\.card\.news-background\s*\{[\s\S]*?min-height:\s*0/,
