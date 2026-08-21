@@ -245,13 +245,37 @@
       filter: drop-shadow(0 0 18px rgba(255, 94, 20, 0.2));
     }
 
-    .header-logo {
+    .header-logo-wrap {
+      position: relative;
       flex: 0 0 auto;
-      width: min(420px, 100%);
+      width: min(336px, 100%);
+    }
+
+    .header-logo {
+      display: block;
+      width: 100%;
       height: auto;
       object-fit: contain;
       border-radius: 0;
       filter: drop-shadow(0 0 18px rgba(40, 205, 238, 0.14));
+    }
+
+    .header-logo-infinity {
+      position: absolute;
+      top: 63.6%;
+      left: 60.8%;
+      display: grid;
+      width: 18px;
+      height: 13px;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      border-radius: 5px;
+      background: #07121e;
+      color: #16e4dd;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      text-shadow: 0 0 5px rgba(22, 228, 221, 0.7);
     }
 
     .header-copy {
@@ -1173,9 +1197,8 @@
         align-items: flex-start;
       }
 
-      .header-logo {
-        width: min(340px, 100%);
-        height: auto;
+      .header-logo-wrap {
+        width: min(272px, 100%);
       }
 
       .header-star {
@@ -1521,10 +1544,15 @@
     transform: translateY(0);
   }
 
-  .header-logo {
-    width: min(240px, 100%);
-    height: auto;
-    border-radius: 0;
+  .header-logo-wrap {
+    width: min(192px, 100%);
+  }
+
+  .header-logo-infinity {
+    width: 12px;
+    height: 9px;
+    border-radius: 3px;
+    font-size: 8px;
   }
 
   .header-star {
@@ -1583,13 +1611,16 @@
           height="1254"
           aria-hidden="true"
         >
-        <img
-          class="header-logo"
-          src="assets/sm1m-logo-transparent.png"
-          alt="SM1M Global Trading Analytics"
-          width="1536"
-          height="1024"
-        >
+        <div class="header-logo-wrap">
+          <img
+            class="header-logo"
+            src="assets/sm1m-logo-transparent.png"
+            alt="SM1M Global Trading Analytics"
+            width="1536"
+            height="1024"
+          >
+          <span class="header-logo-infinity" aria-hidden="true">∞</span>
+        </div>
       </div>
 
       <div class="header-status-group">
