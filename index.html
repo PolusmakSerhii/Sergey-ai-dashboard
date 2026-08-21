@@ -323,7 +323,7 @@
       object-fit: contain;
       border-radius: 0;
       filter: none;
-      mix-blend-mode: lighten;
+      mix-blend-mode: normal;
     }
 
     .header-copy {
@@ -1722,13 +1722,16 @@
           aria-hidden="true"
         >
         <div class="header-logo-wrap">
-          <img
-            class="header-logo"
-            src="assets/sm1m-logo-v2.png"
-            alt="SM1M Global Trading Analytics"
-            width="1536"
-            height="1024"
-          >
+          <picture>
+            <source media="(min-width: 821px)" srcset="assets/sm1m-logo-desktop.svg">
+            <img
+              class="header-logo"
+              src="assets/sm1m-logo-v2.png"
+              alt="SM1M Global Trading Analytics"
+              width="1536"
+              height="1024"
+            >
+          </picture>
         </div>
       </div>
 
