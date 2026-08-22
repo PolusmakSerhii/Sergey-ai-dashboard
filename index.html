@@ -147,6 +147,7 @@
     .news-background-status {
       display: inline-flex;
       align-items: center;
+      gap: 7px;
       margin-left: auto;
       padding: 6px 10px;
       border: 1px solid rgba(60, 168, 255, 0.28);
@@ -156,6 +157,13 @@
       font-size: 15px;
       font-weight: 800;
       white-space: nowrap;
+    }
+
+    .news-background-status::before {
+      content: "✓";
+      color: #ffffff;
+      font-weight: 900;
+      line-height: 1;
     }
 
     .news-background-status.is-bullish {
@@ -6303,10 +6311,10 @@ document.addEventListener(
           ? data.marketMode
           : "NormalTrading";
         const modeLabels = {
-          BullishNews: "🟢 Bullish News",
-          BearishNews: "🔴 Bearish News",
-          StopTrading: "⚠️ Stop Trading",
-          NormalTrading: "🔵 Normal Trading"
+          BullishNews: "Bullish News",
+          BearishNews: "Bearish News",
+          StopTrading: "Stop Trading",
+          NormalTrading: "Normal Trading"
         };
         const sentimentLabels = {
           Bullish: "Позитивный",
@@ -6394,7 +6402,7 @@ document.addEventListener(
         console.error("News Background error:", error);
         statusElement.classList.remove("is-bullish", "is-bearish", "is-stop");
         statusElement.classList.add("is-normal");
-        statusElement.textContent = "🔵 Normal Trading";
+        statusElement.textContent = "Normal Trading";
         metaElement.textContent =
           "Новостной источник временно недоступен · Торговая логика работает";
         listElement.replaceChildren();
