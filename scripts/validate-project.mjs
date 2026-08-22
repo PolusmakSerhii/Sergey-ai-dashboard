@@ -24,6 +24,9 @@ assert.match(
   "Recommendation Confidence column is missing"
 );
 assert.match(html, /class="mobile-scanner-list"/, "Compact mobile scanner list is missing");
+assert.match(html, /function renderMobileMarketList\(/, "Shared mobile market list renderer is missing");
+assert.match(html, /renderMobileMarketList\(favoriteCoins, \{ removeFavorites: true \}\)/, "Watchlist must use compact mobile market rows");
+assert.match(html, /renderMobileMarketList\(mobileCoins\)/, "Top Coins must use compact mobile market rows");
 assert.match(html, /mobile-scanner-signal">Signal /, "Mobile scanner must show Signal confidence");
 assert.match(html, /mobile-scanner-recommendation">Rec\. /, "Mobile scanner must show recommendation confidence");
 assert.match(

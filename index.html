@@ -1201,26 +1201,20 @@
         scrollbar-width: thin;
       }
 
-      #core-markets-table .mobile-sticky-symbol-table,
-      #favorites-list .mobile-sticky-symbol-table {
-        min-width: 880px;
-      }
-
-      #core-markets-table .mobile-sticky-symbol-table th,
-      #core-markets-table .mobile-sticky-symbol-table td,
-      #favorites-list .mobile-sticky-symbol-table th,
-      #favorites-list .mobile-sticky-symbol-table td {
-        white-space: nowrap;
-      }
-
+      #core-markets-table,
+      #favorites-list,
       #scanner-table {
         overflow-x: visible;
       }
 
+      #core-markets-table .mobile-sticky-symbol-table,
+      #favorites-list .mobile-sticky-symbol-table,
       #scanner-table .market-scanner-table {
         display: none;
       }
 
+      #core-markets-table .mobile-scanner-list,
+      #favorites-list .mobile-scanner-list,
       #scanner-table .mobile-scanner-list {
         display: block;
         margin-top: 14px;
@@ -1243,7 +1237,8 @@
         border-bottom: 0;
       }
 
-      .mobile-scanner-row .favorite-toggle {
+      .mobile-scanner-row .favorite-toggle,
+      .mobile-scanner-row .favorite-remove {
         grid-column: 1;
         grid-row: 1 / 3;
         width: 28px;
@@ -2829,7 +2824,7 @@
                 `;
               }).join("")}
             </tbody>
-          </table>`
+          </table>${renderMobileMarketList(favoriteCoins, { removeFavorites: true })}`
         : `<p class="statistics-history-empty">Watchlist пока пуст. Добавьте монеты звездой из Global Ranking.</p>`;
     }
 
@@ -3021,6 +3016,54 @@ function getScannerActionClass(action) {
   return "avoid";
 }
 
+    function renderMobileMarketList(coins, { removeFavorites = false } = {}) {
+      const rows = coins
+        .filter(Boolean)
+        .map((coin) => {
+          const action = coin.action || getScannerAction(coin);
+          const actionClass = getScannerActionClass(action);
+          const directionClass =
+            coin.direction === "Long"
+              ? "long"
+              : coin.direction === "Short"
+                ? "short"
+                : "neutral";
+          const grade = coin.grade || coin.opportunityGrade || "D";
+          const favorite = isFavoriteCoin(coin.symbol);
+          const favoriteButton = removeFavorites
+            ? `<button
+                class="favorite-remove"
+                type="button"
+                data-symbol="${coin.symbol}"
+                aria-label="Удалить ${coin.symbol} из Watchlist"
+                title="Удалить из Watchlist"
+              >★</button>`
+            : `<button
+                class="favorite-toggle ${favorite ? "is-active" : ""}"
+                type="button"
+                data-favorite-symbol="${coin.symbol}"
+                aria-label="${favorite ? "Удалить из избранного" : "Добавить в избранное"} ${coin.symbol}"
+                aria-pressed="${favorite}"
+              >${favorite ? "★" : "☆"}</button>`;
+
+          return `
+            <div class="mobile-scanner-row scanner-row ${removeFavorites ? "favorite-coin" : ""}" data-symbol="${coin.symbol}">
+              ${favoriteButton}
+              <span class="mobile-scanner-symbol">${coin.symbol}</span>
+              <span class="mobile-scanner-score">${coin.opportunityScore ?? 0}</span>
+              <span class="mobile-scanner-grade grade grade-${grade.toLowerCase().replace("+", "plus")}">${grade}</span>
+              <span class="mobile-scanner-direction ${directionClass}">${coin.direction || "Neutral"}</span>
+              <span class="mobile-scanner-signal">Signal ${coin.confidence ?? 0}%</span>
+              <span class="mobile-scanner-recommendation">Rec. ${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</span>
+              <span class="mobile-scanner-action ${actionClass}">${action}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      return `<div class="mobile-scanner-list">${rows}</div>`;
+    }
+
     function renderCoreMarkets() {
       const tableElement = document.querySelector(
         "#core-markets-table"
@@ -3093,6 +3136,10 @@ function getScannerActionClass(action) {
         }
       ).join("");
 
+      const mobileCoins = CORE_MARKET_SYMBOLS.map((symbol) =>
+        globalRankingResults.find((item) => item.symbol === symbol)
+      ).filter(Boolean);
+
       tableElement.innerHTML = `
         <table class="scanner-table mobile-sticky-symbol-table">
           <thead>
@@ -3109,6 +3156,7 @@ function getScannerActionClass(action) {
           </thead>
           <tbody>${rows}</tbody>
         </table>
+        ${renderMobileMarketList(mobileCoins)}
       `;
     }
     
@@ -6088,6 +6136,21 @@ document
 document
   .querySelector("#core-markets-table")
   ?.addEventListener("click", (event) => {
+    const favoriteButton = event.target.closest(
+      ".favorite-toggle"
+    );
+
+    if (favoriteButton) {
+      const symbol = favoriteButton.dataset.favoriteSymbol;
+      const coin = globalRankingResults.find(
+        item => item.symbol === symbol
+      );
+
+      toggleFavoriteCoin(coin);
+      renderCoreMarkets();
+      return;
+    }
+
     const coinRow = event.target.closest(
       ".scanner-row"
     );
