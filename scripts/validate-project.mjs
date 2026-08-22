@@ -172,6 +172,11 @@ assert.match(
 );
 assert.match(
   html,
+  /@media \(max-width: 560px\)[\s\S]*?\.header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\);[\s\S]*?\.header-status-group\s*\{[\s\S]*?justify-self:\s*stretch;/,
+  "Mobile header rows must align across the full panel width"
+);
+assert.match(
+  html,
   /<span>Opened<strong>\$\{openedTime\}<\/strong><\/span>/,
   "Completed Trades must show the opening time"
 );

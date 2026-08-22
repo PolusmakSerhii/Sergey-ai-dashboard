@@ -1788,6 +1788,7 @@
 
   .header {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
     margin-bottom: 6px;
     padding: 14px 12px 18px;
@@ -1796,9 +1797,11 @@
 
   .header-brand {
     position: relative;
-    width: 100%;
+    grid-column: 1;
+    width: auto;
     height: 142px;
     display: block;
+    justify-self: stretch;
   }
 
   .header-copy {
@@ -1828,16 +1831,24 @@
   }
 
   .header-status-group {
-    width: 100%;
+    grid-column: 1;
+    width: auto;
     align-self: auto;
     align-items: center;
     gap: 7px;
+    justify-self: stretch;
   }
 
   .terminal-statuses {
     width: 100%;
     justify-content: center;
     gap: 4px;
+  }
+
+  .status,
+  .ranking-updated-at,
+  .market-trend-visual {
+    align-self: center;
   }
 
   .terminal-status-chip {
