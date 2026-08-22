@@ -143,6 +143,8 @@ assert.match(html, />Market News<\/p>/, "News heading must be Market News");
 assert.match(html, /BullishNews:\s*"Bullish News"/, "Bullish news mode is missing");
 assert.match(html, /StopTrading:\s*"Stop Trading"/, "Stop trading news mode is missing");
 assert.match(html, /\.news-background-status::before\s*\{[\s\S]*?content:\s*"✓";[\s\S]*?color:\s*#ffffff/i, "News mode must use a white check mark");
+assert.match(html, /\.news-background-status\.is-bullish::before\s*\{[\s\S]*?content:\s*"↗";[\s\S]*?color:\s*#4fe3b1/i, "Bullish news mode must use a green upward arrow");
+assert.match(html, /\.news-background-status\.is-bearish::before\s*\{[\s\S]*?content:\s*"↘";[\s\S]*?color:\s*#ff5d73/i, "Bearish news mode must use a red downward arrow");
 assert.match(html, /\.card-label\.news-background-heading\s*\{[\s\S]*?color:\s*#00e676/i, "News heading must use neon green");
 assert.match(
   html,
