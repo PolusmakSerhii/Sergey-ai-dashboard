@@ -5382,7 +5382,13 @@ const hasExecutionData =
     executionEntryFrom > 0 &&
     executionEntryTo > 0;
        
-const tradeExecutionStatus = !hasExecutionData
+const tradeExecutionStatus = trackedStatus === "Active"
+    ? {
+          title: "ACTIVE TRADE",
+          color: "#35d07f",
+          message: "Entry was confirmed. The fixed Trade Plan is now tracking TP1 and Stop Loss."
+      }
+    : !hasExecutionData
     ? null
     : executionDirection === "LONG"
     ? executionPrice < executionEntryFrom
