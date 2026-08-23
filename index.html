@@ -2732,6 +2732,65 @@
     let lastDashboardRefreshAt = 0;
     let latestTrackedTradeSignals = new Map();
 
+    const OPEN_TRACKED_TRADE_STATUSES = new Set([
+      "WaitingEntry",
+      "Pending",
+      "Active"
+    ]);
+
+    function hasValidTrackedTradeGeometry(signal) {
+      const plan = signal?.initialPlan;
+      const direction = String(
+        signal?.direction || plan?.direction || ""
+      ).toLowerCase();
+      const entryZone = plan?.entryZone || signal?.entryZone;
+      const entryFrom = Number(
+        entryZone?.from ?? plan?.entryPrice
+      );
+      const entryTo = Number(
+        entryZone?.to ?? plan?.entryPrice
+      );
+      const entryLow = Math.min(entryFrom, entryTo);
+      const entryHigh = Math.max(entryFrom, entryTo);
+      const stopLoss = Number(plan?.stopLoss);
+      const takeProfit1 = Number(plan?.takeProfit1);
+      const takeProfit2 = Number(plan?.takeProfit2);
+      const takeProfit3 = Number(plan?.takeProfit3);
+
+      if (
+        ![
+          entryLow,
+          entryHigh,
+          stopLoss,
+          takeProfit1,
+          takeProfit2,
+          takeProfit3
+        ].every(Number.isFinite)
+      ) {
+        return false;
+      }
+
+      if (direction === "long") {
+        return (
+          stopLoss < entryLow &&
+          takeProfit1 > entryHigh &&
+          takeProfit2 > takeProfit1 &&
+          takeProfit3 > takeProfit2
+        );
+      }
+
+      if (direction === "short") {
+        return (
+          stopLoss > entryHigh &&
+          takeProfit1 < entryLow &&
+          takeProfit2 < takeProfit1 &&
+          takeProfit3 < takeProfit2
+        );
+      }
+
+      return false;
+    }
+
     function cacheTrackedTradeSignals(data) {
       const history = Array.isArray(data?.history)
         ? data.history
@@ -2739,15 +2798,15 @@
       const latest = history[0] || null;
 
       latestTrackedTradeSignals = new Map(
-        [
-          ...(Array.isArray(data?.completedTrades)
-            ? data.completedTrades
-            : []),
-          ...(Array.isArray(latest?.readySignals)
-            ? latest.readySignals
-            : [])
-        ]
-          .filter(signal => signal?.symbol)
+        (Array.isArray(latest?.readySignals)
+          ? latest.readySignals
+          : [])
+          .filter(signal =>
+            signal?.symbol &&
+            OPEN_TRACKED_TRADE_STATUSES.has(
+              signal?.outcome?.status
+            )
+          )
           .map(signal => [signal.symbol, signal])
       );
     }
@@ -5175,8 +5234,9 @@ const trackedStatus =
 const trackedPlan =
   trackedSignal?.initialPlan || null;
 const trackedPlanIsCurrent =
-  trackedPlan &&
-  trackedStatus !== "Expired";
+  Boolean(trackedPlan) &&
+  OPEN_TRACKED_TRADE_STATUSES.has(trackedStatus) &&
+  hasValidTrackedTradeGeometry(trackedSignal);
 const tradePlan = trackedPlanIsCurrent
   ? {
       ...liveTradePlan,
