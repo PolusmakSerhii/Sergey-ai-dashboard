@@ -2730,6 +2730,27 @@
     let lastGlobalRankingGeneratedAt = null;
     let globalRankingRefreshFailed = false;
     let lastDashboardRefreshAt = 0;
+    let latestTrackedTradeSignals = new Map();
+
+    function cacheTrackedTradeSignals(data) {
+      const history = Array.isArray(data?.history)
+        ? data.history
+        : [];
+      const latest = history[0] || null;
+
+      latestTrackedTradeSignals = new Map(
+        [
+          ...(Array.isArray(data?.completedTrades)
+            ? data.completedTrades
+            : []),
+          ...(Array.isArray(latest?.readySignals)
+            ? latest.readySignals
+            : [])
+        ]
+          .filter(signal => signal?.symbol)
+          .map(signal => [signal.symbol, signal])
+      );
+    }
 
     const FAVORITES_STORAGE_KEY =
       "sergey-ai-trader:favorites:v1";
@@ -4377,6 +4398,7 @@ if (!data) {
             : [];
         const latest = history[0] || null;
         const previous = history[1] || null;
+        cacheTrackedTradeSignals(data);
 
         document.querySelector(
           "#statistics-snapshots"
@@ -5086,6 +5108,25 @@ document.querySelector(
      coinModal.classList.remove("hidden");
  
      try {
+    if (!latestTrackedTradeSignals.size) {
+      try {
+        const statisticsResponse = await fetch(
+          STATISTICS_URL,
+          { cache: "no-store" }
+        );
+
+        if (statisticsResponse.ok) {
+          cacheTrackedTradeSignals(
+            await statisticsResponse.json()
+          );
+        }
+      } catch (statisticsError) {
+        console.warn(
+          "Tracked Trade Plan lookup failed:",
+          statisticsError
+        );
+      }
+    }
   
     const response = await fetch(
       `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${symbol}`
@@ -5124,17 +5165,64 @@ const grade =
 const opportunityScore =
   scannerCoin.opportunityScore ?? 0;
        
-const tradePlan = 
+const liveTradePlan =
   data.technical?.tradePlan || {};
 
+const trackedSignal =
+  latestTrackedTradeSignals.get(symbol) || null;
+const trackedStatus =
+  trackedSignal?.outcome?.status || null;
+const trackedPlan =
+  trackedSignal?.initialPlan || null;
+const trackedPlanIsCurrent =
+  trackedPlan &&
+  trackedStatus !== "Expired";
+const tradePlan = trackedPlanIsCurrent
+  ? {
+      ...liveTradePlan,
+      direction:
+        trackedSignal.direction ||
+        liveTradePlan.direction,
+      entryZone:
+        trackedPlan.entryZone ||
+        trackedSignal.entryZone ||
+        liveTradePlan.entryZone,
+      entry:
+        trackedSignal.outcome?.entryPrice ??
+        trackedPlan.entryPrice ??
+        liveTradePlan.entry,
+      stopLoss:
+        trackedPlan.stopLoss ??
+        liveTradePlan.stopLoss,
+      takeProfit1:
+        trackedPlan.takeProfit1 ??
+        liveTradePlan.takeProfit1,
+      takeProfit2:
+        trackedPlan.takeProfit2 ??
+        liveTradePlan.takeProfit2,
+      takeProfit3:
+        trackedPlan.takeProfit3 ??
+        liveTradePlan.takeProfit3,
+      riskReward:
+        trackedSignal.riskReward ??
+        liveTradePlan.riskReward,
+      validTrade: true
+    }
+  : liveTradePlan;
+
 const hasValidTrade =
-  tradePlan.validTrade === true &&
-  isConfirmedAPlusSetup(scannerCoin);
+  trackedStatus === "Expired"
+    ? false
+    : trackedPlanIsCurrent ||
+      (tradePlan.validTrade === true &&
+        isConfirmedAPlusSetup(scannerCoin));
 
 const rejectionReason =
-  grade !== "A+"
+  trackedStatus === "Expired"
+    ? "The fixed Confirmed A+ plan expired before price entered its Entry Zone. It is excluded from Win / Loss statistics."
+    : grade !== "A+"
     ? "Trade Plan opens only for Confirmed A+ setups."
-    : tradePlan.rejectionReason ||
+    : liveTradePlan.rejectionReason ||
       "Not all Confirmed A+ conditions are met: confidence, readiness, strong action, full levels and R:R ≥ 2 are required.";
 
 const probabilityData =
@@ -5663,6 +5751,13 @@ ${tradeStatistics.confidence !== null ? `
 >
 Trade Plan
 </h3>
+
+${trackedPlanIsCurrent ? `
+<div class="trade-plan-status">
+  <strong>Fixed Trade Plan · ${trackedStatus || "WaitingEntry"}</strong><br>
+  Entry Zone, Stop Loss and targets are locked for trade ${trackedSignal.tradeId || "—"}.
+</div>
+` : ""}
 
 ${!hasValidTrade ? `
 <div class="trade-plan-status">
