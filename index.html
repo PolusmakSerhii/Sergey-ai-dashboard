@@ -759,7 +759,19 @@
     }
 
     .completed-trade-levels {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns:
+        repeat(3, minmax(0, 0.72fr))
+        repeat(2, minmax(108px, 1.25fr));
+    }
+
+    .completed-trade-levels > span {
+      min-width: 0;
+    }
+
+    .completed-trade-date,
+    .completed-trade-time {
+      display: block;
+      white-space: nowrap;
     }
 
     .active-trade-age {
@@ -4170,26 +4182,19 @@ if (!data) {
           const openedDate = new Date(
             signal.outcome.activatedAt || ""
           );
-          const openedTime = Number.isNaN(openedDate.getTime())
-            ? "—"
-            : `${openedDate.toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric"
-              })} · ${openedDate.toLocaleTimeString("ru-RU", {
+          const formatCompletedTradeDateTime = date =>
+            Number.isNaN(date.getTime())
+              ? "—"
+              : `<span class="completed-trade-date">${date.toLocaleDateString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+              })}</span><span class="completed-trade-time">· ${date.toLocaleTimeString("ru-RU", {
                 hour: "2-digit",
                 minute: "2-digit"
-              })}`;
-          const checkedTime = Number.isNaN(checkedDate.getTime())
-            ? "—"
-            : `${checkedDate.toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric"
-              })} · ${checkedDate.toLocaleTimeString("ru-RU", {
-                hour: "2-digit",
-                minute: "2-digit"
-              })}`;
+              })}</span>`;
+          const openedTime = formatCompletedTradeDateTime(openedDate);
+          const checkedTime = formatCompletedTradeDateTime(checkedDate);
           const resultR = Number(signal.outcome.resultR);
           const resultRText = Number.isFinite(resultR)
             ? `${resultR > 0 ? "+" : ""}${resultR}R`
