@@ -769,21 +769,58 @@
     }
 
     .active-trade-progress {
+      position: relative;
       height: 5px;
       margin-top: 10px;
-      overflow: hidden;
       border-radius: 999px;
-      background: rgba(124, 151, 180, 0.16);
+      background: linear-gradient(
+        90deg,
+        rgba(255, 95, 117, 0.18) 0 50%,
+        rgba(78, 227, 178, 0.18) 50% 100%
+      );
     }
 
     .active-trade-progress-fill {
+      position: absolute;
+      top: 0;
+      left: 50%;
       height: 100%;
-      border-radius: inherit;
+      border-radius: 999px;
       background: linear-gradient(90deg, #4fe3b1, #3ca8ff);
     }
 
     .active-trade-progress-fill.is-negative {
+      right: 50%;
+      left: auto;
       background: #ff5f75;
+    }
+
+    .active-trade-progress-entry {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 11px;
+      border-radius: 999px;
+      background: #f4f7fb;
+      transform: translate(-50%, -50%);
+    }
+
+    .active-trade-progress-current {
+      position: absolute;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      border: 2px solid #08131f;
+      border-radius: 50%;
+      background: #4fe3b1;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 1px rgba(78, 227, 178, 0.5);
+    }
+
+    .active-trade-progress-current.is-negative {
+      background: #ff5f75;
+      box-shadow: 0 0 0 1px rgba(255, 95, 117, 0.5);
     }
 
     .completed-trade-item.is-win {
@@ -3981,9 +4018,30 @@ if (!data) {
               })
             : "—";
           const progress = getProgressToTp1(signal);
-          const progressWidth = progress === null
+          const entryPrice = Number(signal.outcome?.entryPrice);
+          const currentPrice = Number(signal.price);
+          const stopLoss = Number(
+            signal.initialPlan?.stopLoss ?? signal.stopLoss
+          );
+          const adverseDistance = stopLoss - entryPrice;
+          const adverseProgress = Number.isFinite(entryPrice) &&
+            Number.isFinite(currentPrice) &&
+            Number.isFinite(stopLoss) &&
+            adverseDistance !== 0
+              ? (currentPrice - entryPrice) / adverseDistance * 100
+              : null;
+          const isNegativeProgress = progress !== null && progress < 0;
+          const scaleProgress = isNegativeProgress
+            ? adverseProgress
+            : progress;
+          const progressWidth = scaleProgress === null
             ? 0
-            : Math.min(100, Math.max(0, Math.abs(progress)));
+            : Math.min(100, Math.max(0, Math.abs(scaleProgress))) / 2;
+          const currentPosition = scaleProgress === null
+            ? 50
+            : isNegativeProgress
+              ? 50 - progressWidth
+              : 50 + progressWidth;
           const progressText = progress === null
             ? "Прогресс недоступен"
             : `Прогресс к TP1: ${progress > 0 ? "+" : ""}${progress}%`;
@@ -4020,9 +4078,15 @@ if (!data) {
               </div>
               <div class="active-trade-progress" aria-label="${progressText}">
                 <div
-                  class="active-trade-progress-fill${progress !== null && progress < 0 ? " is-negative" : ""}"
+                  class="active-trade-progress-fill${isNegativeProgress ? " is-negative" : ""}"
                   style="width:${progressWidth}%"
                 ></div>
+                <span class="active-trade-progress-entry" aria-hidden="true"></span>
+                <span
+                  class="active-trade-progress-current${isNegativeProgress ? " is-negative" : ""}"
+                  style="left:${currentPosition}%"
+                  aria-hidden="true"
+                ></span>
               </div>
               <div class="active-trade-age">
                 ${progressText} · Вход: ${activatedTime} · ${activeDuration}
