@@ -760,12 +760,24 @@
 
     .completed-trade-levels {
       grid-template-columns:
-        repeat(3, minmax(0, 0.72fr))
-        repeat(2, minmax(108px, 1.25fr));
+        repeat(3, minmax(58px, 0.82fr))
+        repeat(2, minmax(112px, 1.25fr));
+      column-gap: 12px;
     }
 
     .completed-trade-levels > span {
       min-width: 0;
+    }
+
+    .completed-trade-levels > span:nth-child(4) {
+      margin-left: 8px;
+    }
+
+    .completed-trade-levels strong,
+    .completed-trade-date,
+    .completed-trade-time {
+      font-size: 11px;
+      line-height: 1.35;
     }
 
     .completed-trade-date,
