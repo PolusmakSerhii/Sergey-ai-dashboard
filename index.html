@@ -956,16 +956,16 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .active-trades-list {
-        grid-template-columns: 1fr;
-      }
-
       .statistics-chart-grid {
         grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 560px) {
+      .active-trades-list {
+        grid-template-columns: 1fr;
+      }
+
       .statistics-grid {
         grid-template-columns: 1fr;
       }
@@ -3987,6 +3987,21 @@ if (!data) {
           const progressText = progress === null
             ? "Прогресс недоступен"
             : `Прогресс к TP1: ${progress > 0 ? "+" : ""}${progress}%`;
+          const entryLevel = `
+            <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
+          `;
+          const currentLevel = `
+            <span>Current<strong>${signal.price ?? "—"}</strong></span>
+          `;
+          const tp1Level = `
+            <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
+          `;
+          const stopLossLevel = `
+            <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
+          `;
+          const orderedLevels = direction === "Short"
+            ? [tp1Level, currentLevel, entryLevel, stopLossLevel]
+            : [stopLossLevel, entryLevel, currentLevel, tp1Level];
 
           return `
             <button
@@ -4001,10 +4016,7 @@ if (!data) {
                 <span class="statistics-history-direction${directionClass}">${direction}</span>
               </div>
               <div class="active-trade-levels">
-                <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
-                <span>Current<strong>${signal.price ?? "—"}</strong></span>
-                <span>TP1<strong>${signal.initialPlan?.takeProfit1 ?? signal.takeProfit1 ?? "—"}</strong></span>
-                <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
+                ${orderedLevels.join("")}
               </div>
               <div class="active-trade-progress" aria-label="${progressText}">
                 <div
