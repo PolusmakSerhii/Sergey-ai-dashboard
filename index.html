@@ -4172,16 +4172,22 @@ if (!data) {
           );
           const openedTime = Number.isNaN(openedDate.getTime())
             ? "—"
-            : openedDate.toLocaleTimeString("ru-RU", {
+            : `${openedDate.toLocaleDateString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit"
+              })} · ${openedDate.toLocaleTimeString("ru-RU", {
                 hour: "2-digit",
                 minute: "2-digit"
-              });
+              })}`;
           const checkedTime = Number.isNaN(checkedDate.getTime())
             ? "—"
-            : checkedDate.toLocaleTimeString("ru-RU", {
+            : `${checkedDate.toLocaleDateString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit"
+              })} · ${checkedDate.toLocaleTimeString("ru-RU", {
                 hour: "2-digit",
                 minute: "2-digit"
-              });
+              })}`;
           const resultR = Number(signal.outcome.resultR);
           const resultRText = Number.isFinite(resultR)
             ? `${resultR > 0 ? "+" : ""}${resultR}R`
