@@ -795,6 +795,16 @@
       font-size: 11px;
     }
 
+    .trade-verification {
+      margin: 10px 0;
+      color: #a9b8c9;
+      font-size: 11px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      text-align: left;
+    }
+    .trade-verification.is-pending { color: #e7c584; }
+
     .active-trade-progress {
       position: relative;
       height: 5px;
@@ -3983,6 +3993,32 @@ if (!data) {
         .join("");
     }
 
+    function renderTradeVerification(outcome) {
+      const check = outcome?.priceCheck;
+      const messages = {
+        verified: "Проверка закрытых свечей выполнена",
+        awaiting_closed_candle: "Ожидается закрытая минутная свеча",
+        unavailable: "Данные свечей недоступны — проверка отложена",
+        incomplete_candles: "В истории свечей есть пропуск — проверка не завершена",
+        invalid_plan: "Уровни плана не прошли проверку — результат не определён",
+        ambiguous_start_candle: "Касание на границе создания плана — вход не подтверждён",
+        ambiguous_expiry_candle: "Касание на границе срока плана — исход не подтверждён",
+        ambiguous_checkpoint_candle: "Порядок касаний у границы прошлой проверки не определён",
+        ambiguous_entry_candle: "Вход и уровень выхода внутри одной свечи — порядок не определён"
+      };
+      const known = Object.prototype.hasOwnProperty.call(messages, check?.status);
+      const message = known ? messages[check.status] : "Подробности проверки свечей недоступны";
+      const time = typeof check?.toTime === "string" ? Date.parse(check.toTime) : NaN;
+      const boundary = Number.isFinite(time)
+        ? new Date(time).toISOString().slice(0,16).replace("T", " ") + " UTC" : "N/A";
+      const ambiguous = typeof check?.status === "string" && check.status.startsWith("ambiguous_");
+      return `<div class="trade-verification${!known || check.status !== "verified" ? " is-pending" : ""}">
+        <span>${message}</span><br>
+        <span>Граница проверки: ${boundary}</span>
+        ${ambiguous ? '<br><span>Нужны более подробные данные; повторный запрос той же свечи может не разрешить неоднозначность.</span>' : ''}
+      </div>`;
+    }
+
     function renderActiveTrades(latest) {
       const container = document.querySelector(
         "#statistics-active-trades"
@@ -4142,6 +4178,7 @@ if (!data) {
               <div class="active-trade-age">
                 ${progressText} · Вход: ${activatedTime} · ${activeDuration}
               </div>
+              ${renderTradeVerification(signal.outcome)}
             </button>
           `;
         })
@@ -6024,6 +6061,7 @@ ${trackedPlanIsCurrent ? `
   <strong>Fixed Trade Plan · ${trackedStatus || "WaitingEntry"}</strong><br>
   Entry Zone, Stop Loss and targets are locked for trade ${trackedSignal.tradeId || "—"}.
 </div>
+${renderTradeVerification(trackedSignal.outcome)}
 ` : ""}
 
 ${!hasValidTrade ? `
