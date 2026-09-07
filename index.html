@@ -864,6 +864,8 @@
       border-color: rgba(78, 227, 178, 0.4);
     }
 
+    .completed-trade-item.is-neutral { border-color: #71849b; }
+
     .completed-trade-item.is-loss {
       border-color: rgba(255, 95, 117, 0.4);
       background: rgba(255, 95, 117, 0.04);
@@ -4250,8 +4252,15 @@ if (!data) {
       container.innerHTML = completedTrades
         .slice(0, 20)
         .map(signal => {
-          const isWin = signal.outcome.status === "TP1Hit";
-          const resultLabel = isWin ? "TP1 HIT" : "STOP LOSS";
+          const resultR = signal.outcome?.resultR;
+          const hasResult = typeof resultR === "number" && Number.isFinite(resultR);
+          const isWin = hasResult && resultR > 0;
+          const isLoss = hasResult && resultR < 0;
+          const isBreakEven = hasResult && resultR === 0;
+          const eventLabel = signal.outcome.status === "TP1Hit" ? "TP1 HIT" : "STOP LOSS";
+          const resultLabel = isBreakEven ? "BREAK EVEN"
+            : hasResult ? `${isWin ? "WIN" : "LOSS"} · ${eventLabel}` : "RESULT N/A";
+          const resultClass = isWin ? "is-win" : isLoss ? "is-loss" : "is-neutral";
           const checkedDate = new Date(
             signal.outcome.checkedAt || ""
           );
@@ -4271,27 +4280,26 @@ if (!data) {
               })}</span>`;
           const openedTime = formatCompletedTradeDateTime(openedDate);
           const checkedTime = formatCompletedTradeDateTime(checkedDate);
-          const resultR = Number(signal.outcome.resultR);
-          const resultRText = Number.isFinite(resultR)
+          const resultRText = hasResult
             ? `${resultR > 0 ? "+" : ""}${resultR}R`
             : "—";
           const priceCheck = signal.outcome.priceCheck;
           const priceCheckText =
             priceCheck?.source === "OKX 1m candles"
               ? `Проверено: OKX 1m · ${priceCheck.candles ?? 0} свеч. · Low ${priceCheck.low ?? "—"} / High ${priceCheck.high ?? "—"}`
-              : "Проверено по снимку рейтинга";
+              : "Источник проверки не указан";
 
           return `
             <button
               type="button"
-              class="active-trade-item completed-trade-item ${isWin ? "is-win" : "is-loss"}"
+              class="active-trade-item completed-trade-item ${resultClass}"
               data-symbol="${signal.symbol || ""}"
               aria-label="Открыть полный анализ ${signal.symbol || "монеты"}"
               title="Открыть полный анализ"
             >
               <div class="statistics-history-item-head">
                 <span class="statistics-history-symbol">${signal.symbol || "—"}</span>
-                <span class="statistics-history-direction ${isWin ? "is-long" : "is-short"}">${resultLabel}</span>
+                <span class="statistics-history-direction ${isWin ? "is-long" : isLoss ? "is-short" : ""}">${resultLabel}</span>
               </div>
               <div class="active-trade-levels completed-trade-levels">
                 <span>Entry<strong>${signal.outcome.entryPrice ?? "—"}</strong></span>
@@ -4691,10 +4699,18 @@ if (!data) {
             ? `${Number(outcomes.winRate)}%`
             : "—";
 
+        const hasBreakEvenCount = typeof outcomes.breakEvens === "number" &&
+          Number.isInteger(outcomes.breakEvens) && outcomes.breakEvens >= 0;
+        const breakEvenSince = typeof outcomes.resultClassificationSince === "string"
+          ? Date.parse(outcomes.resultClassificationSince) : NaN;
+        const breakEvenText = `BREAK EVEN: ${hasBreakEvenCount ? outcomes.breakEvens : "N/A"}` +
+          (hasBreakEvenCount && Number.isFinite(breakEvenSince)
+            ? ` (учёт с ${new Date(breakEvenSince).toISOString().slice(0,10)} UTC)` : "");
+
         document.querySelector(
           "#statistics-outcomes"
         ).textContent = completedOutcomes > 0
-          ? `Активных: ${activeOutcomes} · TP1: ${Number(outcomes.wins) || 0} (${Number(outcomes.winRate) || 0}%) · Stop Loss: ${Number(outcomes.losses) || 0} (${Number(outcomes.lossRate) || 0}%)`
+          ? `Активных: ${activeOutcomes} · WIN: ${Number(outcomes.wins) || 0} (${Number(outcomes.winRate) || 0}%) · LOSS: ${Number(outcomes.losses) || 0} (${Number(outcomes.lossRate) || 0}%) · ${breakEvenText}`
           : activeOutcomes > 0
             ? `Активных сделок: ${activeOutcomes} · Ждём результата`
             : "Нет активных и завершённых сделок";
@@ -4767,7 +4783,7 @@ if (!data) {
             streakType === "Loss"
           );
           streakNote.textContent = streakType && streakCount > 0
-            ? `Текущая серия: ${streakCount} ${streakType} подряд · Максимум Stop Loss подряд: ${maxConsecutiveLosses}`
+            ? `Текущая серия: ${streakCount} ${streakType === "BreakEven" ? "BREAK EVEN" : streakType} подряд · Максимум LOSS подряд: ${maxConsecutiveLosses}`
             : "Серия результатов появится после первой завершённой сделки";
         }
 
