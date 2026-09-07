@@ -1782,6 +1782,30 @@
     color: #37d67a;
     font-weight: bold;
 }
+.liquidation-flow { margin-bottom: 24px; }
+.liquidation-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.liquidation-flow-grid > div { min-width: 0; }
+.liquidation-flow-grid dt, .liquidation-flow-note {
+  color: #a9b8c9;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.liquidation-flow-grid dd {
+  margin: 4px 0 0;
+  color: #f5f7fa;
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 400px) {
+  .liquidation-flow-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .trade-stat-row {
   margin-top: 14px;
 }
@@ -5204,6 +5228,40 @@ document.querySelector(
   }
 }
     
+    function renderLiquidationFlow(flow) {
+      const number = value => typeof value === "number" && Number.isFinite(value);
+      const money = value => number(value) && value >= 0
+        ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD",
+            notation: "compact", maximumFractionDigits: 2 }).format(value) : "N/A";
+      const percent = (value, signed = false) => number(value) &&
+        value >= (signed ? -100 : 0) && value <= 100
+        ? `${signed && value > 0 ? "+" : ""}${value.toFixed(2)}%` : "N/A";
+      const available = flow?.available === true;
+      const side = available && ["LONG", "SHORT", "Balanced"].includes(flow?.dominantSide)
+        ? flow.dominantSide : "N/A";
+      const rows = [
+        ["LONG liquidations", money(flow?.longUsd)],
+        ["SHORT liquidations", money(flow?.shortUsd)],
+        ["LONG share", percent(available ? flow.longSharePct : null)],
+        ["SHORT share", percent(available ? flow.shortSharePct : null)],
+        ["Imbalance (LONG − SHORT)", percent(available ? flow.imbalancePct : null, true)],
+        ["Larger liquidated side", side]
+      ];
+      const note = !available ? "Liquidation data is unavailable or incomplete."
+        : flow.sideTotalUsd === 0 ? "No liquidations in the reported window."
+        : "Positive imbalance means more LONG liquidations; it does not predict price direction.";
+      const mismatch = available && number(flow.totalDifferenceUsd) && flow.totalDifferenceUsd !== 0;
+      return `<section class="liquidation-flow trade-reasons" aria-label="Liquidations over 24 hours">
+        <div class="trade-reasons-title">Liquidations · 24H</div>
+        <p class="liquidation-flow-note">CoinGlass · All exchanges · Does not affect Trading Score</p>
+        <dl class="liquidation-flow-grid">${rows.map(([label, value]) =>
+          `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>
+        <p class="liquidation-flow-note">${note}</p>
+        ${mismatch ? '<p class="liquidation-flow-note">The reported total differs from LONG + SHORT. Shares use the sum of both sides.</p>' : ""}
+        <p class="liquidation-flow-note">Spikes: N/A · Price confirmation: N/A — historical data is unavailable.</p>
+      </section>`;
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -5793,6 +5851,8 @@ ${tradeExecutionStatus ? `
         background:rgba(255,255,255,.02);
     "
 >
+
+${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
 
 ${aiSummary ? `
 <div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
