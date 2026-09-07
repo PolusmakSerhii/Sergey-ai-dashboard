@@ -805,6 +805,29 @@
     }
     .trade-verification.is-pending { color: #e7c584; }
 
+    .partial-position-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+      text-align: left;
+    }
+    .partial-position-grid > div { min-width: 0; }
+    .partial-position-grid span { display: block; color: #a9b8c9; font-size: 10px; line-height: 1.5; }
+    .partial-position-grid strong { display: block; color: #f5f7fa; font-size: 13px; overflow-wrap: anywhere; }
+    .partial-r-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .partial-price-line { position: relative; height: 4px; margin: 32px 22px 35px; background: #284555; border-radius: 4px; }
+    .partial-price-marker { position: absolute; top: -3px; width: 3px; height: 10px; transform: translateX(-50%); background: #a9b8c9; }
+    .partial-price-marker > span { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 9px; white-space: nowrap; color: #c5d7e8; }
+    .partial-price-marker.partial-stop { background: #ff9d9d; }
+    .partial-stop > span { color: #ff9d9d; }
+    .partial-price-marker.partial-now { background: #4ee3b2; }
+    .partial-now > span { bottom: auto; top: 14px; color: #4ee3b2; }
+    @media (max-width: 560px) {
+      .partial-position-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .partial-r-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
     .active-trade-progress {
       position: relative;
       height: 5px;
@@ -3830,7 +3853,7 @@ if (!data) {
           if (
             !signal?.tradeId ||
             completedByTradeId.has(signal.tradeId) ||
-            (status !== "TP1Hit" && status !== "Stopped") ||
+            (status !== "TP1Hit" && status !== "TP3Hit" && status !== "Stopped") ||
             resultR === null ||
             resultR === undefined ||
             !Number.isFinite(Number(resultR))
@@ -4006,7 +4029,8 @@ if (!data) {
         ambiguous_start_candle: "Касание на границе создания плана — вход не подтверждён",
         ambiguous_expiry_candle: "Касание на границе срока плана — исход не подтверждён",
         ambiguous_checkpoint_candle: "Порядок касаний у границы прошлой проверки не определён",
-        ambiguous_entry_candle: "Вход и уровень выхода внутри одной свечи — порядок не определён"
+        ambiguous_entry_candle: "Вход и уровень выхода внутри одной свечи — порядок не определён",
+        ambiguous_management_candle: "TP1 подтверждён; порядок нового SL и следующих целей не определён. Показан последний подтверждённый остаток."
       };
       const known = Object.prototype.hasOwnProperty.call(messages, check?.status);
       const message = known ? messages[check.status] : "Подробности проверки свечей недоступны";
@@ -4019,6 +4043,64 @@ if (!data) {
         <span>Граница проверки: ${boundary}</span>
         ${ambiguous ? '<br><span>Нужны более подробные данные; повторный запрос той же свечи может не разрешить неоднозначность.</span>' : ''}
       </div>`;
+    }
+
+    function renderPartialPosition(signal, card = false) {
+      const plan = signal.initialPlan || {};
+      const outcome = signal.outcome || {};
+      const finite = x => typeof x === "number" && Number.isFinite(x);
+      const number = x => finite(x) ? String(Number(x.toPrecision(10))) : "N/A";
+      const r = x => finite(x) ? `${x > 0 ? "+" : ""}${Number(x.toFixed(4))}R` : "N/A";
+      const escape = value => String(value ?? "").replace(/[&<>"']/g, x =>
+        ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]));
+      const isShort = signal.direction === "Short";
+      const initialStop = plan.initialStopLoss;
+      const currentStop = outcome.currentStopLoss;
+      const entry = outcome.entryPrice;
+      const current = outcome.priceCheck?.status === "verified" ? outcome.markPrice : null;
+      const targets = [plan.takeProfit1, plan.takeProfit2, plan.takeProfit3];
+      const minimum = Math.min(initialStop, ...targets), maximum = Math.max(initialStop, ...targets);
+      const position = price => finite(price) && finite(minimum) && finite(maximum) && maximum > minimum
+        ? Math.max(0, Math.min(100, (price - minimum) / (maximum - minimum) * 100)) : null;
+      const marker = (price, label, className) => position(price) !== null
+        ? `<span class="partial-price-marker ${className}" style="left:${position(price)}%" title="${label}: ${number(price)}"><span>${label}</span></span>` : "";
+      const stopLabel = currentStop === entry ? "SL / Entry" : "SL";
+      const exits = Array.isArray(outcome.exits) ? outcome.exits : [];
+      const allocations = plan.exitStrategy?.allocations || {};
+      const targetRows = targets.map((price, i) => {
+        const target = `TP${i+1}`, hit = exits.some(exit => exit.target === target);
+        const fraction = allocations[target];
+        return `<div><span>${target} · ${finite(fraction) ? number(fraction*100)+"%" : "N/A"}${hit ? " · HIT" : ""}</span><strong>${number(price)}</strong></div>`;
+      }).join("");
+      const markedAt = typeof outcome.markPriceAt === "string" ? Date.parse(outcome.markPriceAt) : NaN;
+      const time = Number.isFinite(markedAt)
+        ? new Date(markedAt).toISOString().slice(0,16).replace("T"," ")+" UTC" : "N/A";
+      const body = `<div class="partial-position">
+        <div class="partial-position-grid">
+          <div><span>Initial SL</span><strong>${number(initialStop)}</strong></div>
+          <div><span>Current SL${currentStop === entry ? " · BE" : ""}</span><strong>${number(currentStop)}</strong></div>
+          <div><span>Actual Entry</span><strong>${number(entry)}</strong></div>
+          <div><span>Verified price</span><strong>${number(current)}</strong></div>
+          ${targetRows}
+          <div><span>Position remaining</span><strong>${finite(outcome.remainingPosition) ? number(outcome.remainingPosition*100)+"%" : "N/A"}</strong></div>
+        </div>
+        <div class="partial-price-line" role="img" aria-label="Current Stop Loss ${number(currentStop)}, Entry ${number(entry)}, TP1 ${number(targets[0])}, TP2 ${number(targets[1])}, TP3 ${number(targets[2])}">
+          ${marker(currentStop, stopLabel, "partial-stop")}
+          ${currentStop !== entry ? marker(entry, "Entry", "partial-entry") : ""}
+          ${targets.map((price,i)=>marker(price,`TP${i+1}`,"partial-target")).join("")}
+          ${marker(current,"Now","partial-now")}
+        </div>
+        <div class="partial-position-grid partial-r-metrics">
+          <div><span>Realized R</span><strong>${r(outcome.realizedR)}</strong></div>
+          <div><span>Unrealized R</span><strong>${r(outcome.unrealizedR)}</strong></div>
+          <div><span>Total R</span><strong>${r(outcome.totalR)}</strong></div>
+        </div>
+        <div class="active-trade-age">R price timestamp: ${time}. Fractions use initial position size.</div>
+        <div class="active-trade-age">After TP1: SL = actual Entry. After TP2: SL unchanged.</div>
+        ${renderTradeVerification(outcome)}
+      </div>`;
+      return card ? `<button type="button" class="active-trade-item partial-trade-item" data-symbol="${escape(signal.symbol)}" aria-label="Открыть полный анализ ${escape(signal.symbol)}">
+        <div class="statistics-history-item-head"><span class="statistics-history-symbol">${escape(signal.symbol)}</span><span class="statistics-history-direction ${isShort ? "is-short" : "is-long"}">${isShort ? "Short" : "Long"}</span></div>${body}</button>` : body;
     }
 
     function renderActiveTrades(latest) {
@@ -4076,6 +4158,9 @@ if (!data) {
 
       container.innerHTML = activeTrades
         .map(signal => {
+          if (signal.initialPlan?.exitStrategy?.version === "partial-25-25-50-be-v1") {
+            return renderPartialPosition(signal, true);
+          }
           const direction = signal.direction || "Neutral";
           const directionClass = direction === "Long"
             ? " is-long"
@@ -4216,7 +4301,7 @@ if (!data) {
           if (
             !signal?.tradeId ||
             completedByTradeId.has(signal.tradeId) ||
-            (status !== "TP1Hit" && status !== "Stopped")
+            (status !== "TP1Hit" && status !== "TP3Hit" && status !== "Stopped")
           ) {
             return;
           }
@@ -4257,7 +4342,8 @@ if (!data) {
           const isWin = hasResult && resultR > 0;
           const isLoss = hasResult && resultR < 0;
           const isBreakEven = hasResult && resultR === 0;
-          const eventLabel = signal.outcome.status === "TP1Hit" ? "TP1 HIT" : "STOP LOSS";
+          const eventLabel = signal.outcome.status === "TP1Hit" ? "TP1 HIT"
+            : signal.outcome.status === "TP3Hit" ? "TP3 HIT" : "STOP LOSS";
           const resultLabel = isBreakEven ? "BREAK EVEN"
             : hasResult ? `${isWin ? "WIN" : "LOSS"} · ${eventLabel}` : "RESULT N/A";
           const resultClass = isWin ? "is-win" : isLoss ? "is-loss" : "is-neutral";
@@ -5503,7 +5589,7 @@ const tradePlan = trackedPlanIsCurrent
         trackedPlan.entryPrice ??
         liveTradePlan.entry,
       stopLoss:
-        trackedPlan.stopLoss ??
+        trackedSignal.outcome?.currentStopLoss ?? trackedPlan.stopLoss ??
         liveTradePlan.stopLoss,
       takeProfit1:
         trackedPlan.takeProfit1 ??
@@ -5637,7 +5723,9 @@ const tradeExecutionStatus = trackedStatus === "Active"
     ? {
           title: "ACTIVE TRADE",
           color: "#35d07f",
-          message: "Entry was confirmed. The fixed Trade Plan is now tracking TP1 and Stop Loss."
+          message: trackedPlan?.exitStrategy
+            ? "Entry was confirmed. Partial exits and the current Stop Loss follow the frozen Trade Plan."
+            : "Entry was confirmed. The fixed Trade Plan is now tracking TP1 and Stop Loss."
       }
     : !hasExecutionData
     ? null
@@ -6075,9 +6163,9 @@ Trade Plan
 ${trackedPlanIsCurrent ? `
 <div class="trade-plan-status">
   <strong>Fixed Trade Plan · ${trackedStatus || "WaitingEntry"}</strong><br>
-  Entry Zone, Stop Loss and targets are locked for trade ${trackedSignal.tradeId || "—"}.
+  ${trackedPlan.exitStrategy ? "Entry Zone, initial Stop Loss, targets and exit policy are fixed; current SL follows that policy." : "Entry Zone, Stop Loss and targets are locked."}
 </div>
-${renderTradeVerification(trackedSignal.outcome)}
+${trackedPlan.exitStrategy ? renderPartialPosition(trackedSignal) : renderTradeVerification(trackedSignal.outcome)}
 ` : ""}
 
 ${!hasValidTrade ? `
