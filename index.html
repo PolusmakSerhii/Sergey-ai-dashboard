@@ -5262,6 +5262,42 @@ document.querySelector(
       </section>`;
     }
 
+    function renderOpenInterestPrice(context) {
+      const available = context?.available === true;
+      const percent = value => available && typeof value === "number" && Number.isFinite(value)
+        ? `${value > 0 ? "+" : ""}${value.toFixed(2)}%` : "N/A";
+      const timestamp = value => {
+        const time = typeof value === "string" ? Date.parse(value) : NaN;
+        return Number.isFinite(time) ? new Date(time).toISOString().slice(0, 16).replace("T", " ") + " UTC" : "N/A";
+      };
+      const states = {
+        PRICE_UP_OI_UP: "Price rose · OI increased",
+        PRICE_UP_OI_DOWN: "Price rose · OI decreased",
+        PRICE_DOWN_OI_UP: "Price fell · OI increased",
+        PRICE_DOWN_OI_DOWN: "Price fell · OI decreased",
+        PRICE_FLAT_OI_UP: "Price unchanged · OI increased",
+        PRICE_FLAT_OI_DOWN: "Price unchanged · OI decreased",
+        PRICE_UP_OI_FLAT: "Price rose · OI unchanged",
+        PRICE_DOWN_OI_FLAT: "Price fell · OI unchanged",
+        PRICE_FLAT_OI_FLAT: "Price and OI unchanged"
+      };
+      const state = available && Object.prototype.hasOwnProperty.call(states, context?.state)
+        ? states[context.state] : "N/A";
+      return `<section class="open-interest-price liquidation-flow trade-reasons" aria-label="Open Interest and price">
+        <div class="trade-reasons-title">Open Interest + Price</div>
+        <p class="liquidation-flow-note">Last closed day · Does not affect Trading Score</p>
+        <dl class="liquidation-flow-grid">
+          <div><dt>Price change · OKX Spot</dt><dd>${percent(context?.priceChangePct)}</dd></div>
+          <div><dt>OI change · CoinGlass · USD</dt><dd>${percent(context?.openInterestChangePct)}</dd></div>
+          <div><dt>Period start</dt><dd>${timestamp(context?.windowStart)}</dd></div>
+          <div><dt>Period end</dt><dd>${timestamp(context?.windowEnd)}</dd></div>
+        </dl>
+        <p class="liquidation-flow-note">${state}</p>
+        ${!available ? '<p class="liquidation-flow-note">Matching closed price and OI history is unavailable, incomplete or stale.</p>' : ''}
+        <p class="liquidation-flow-note">This is a closed daily period, not a rolling 24-hour change. USD open interest also changes with prices and does not prove that new LONG or SHORT positions were opened.</p>
+      </section>`;
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -5853,6 +5889,7 @@ ${tradeExecutionStatus ? `
 >
 
 ${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
+${renderOpenInterestPrice(data.derivativesHistory?.openInterest?.priceContext)}
 
 ${aiSummary ? `
 <div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
