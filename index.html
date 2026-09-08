@@ -2671,6 +2671,8 @@
 
   </div>
 
+  <p class="statistics-sample-note" id="statistics-trade-analytics">Новые показатели: N/A</p>
+
   <p class="statistics-sample-note" id="statistics-sample-note">
     Ожидаем завершённые сделки для оценки статистики
   </p>
@@ -4827,8 +4829,30 @@ if (!data) {
         document.querySelector(
           "#statistics-r-performance"
         ).textContent = completedOutcomes > 0
-          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
+          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Expectancy: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R/сделку` : "N/A"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
           : "Ожидаем завершённые сделки";
+
+        const analytics = outcomes.tradeAnalytics;
+        const analyticsElement = document.querySelector("#statistics-trade-analytics");
+        if (analyticsElement) {
+          const lines = [];
+          if (analytics && Number.isInteger(analytics.completed) && analytics.completed > 0) {
+            const since = Date.parse(analytics.since);
+            lines.push(`Дополнительный учёт с ${Number.isFinite(since) ? new Date(since).toISOString().slice(0,10) + " UTC" : "N/A"}: ${analytics.completed} завершённых сделок`);
+            for (const direction of ["Long", "Short"]) {
+              const side = analytics.directions?.[direction];
+              lines.push(side?.count > 0 && Number.isFinite(side.netR) && Number.isFinite(side.wins)
+                ? `${direction.toUpperCase()}: ${side.count} сделок · WR ${(100 * side.wins / side.count).toFixed(1)}% · Total ${side.netR.toFixed(2)}R · Expectancy ${(side.netR / side.count).toFixed(2)}R`
+                : `${direction.toUpperCase()}: N/A`);
+            }
+            const count = analytics.partialCompleted;
+            lines.push(`TP Hit Rate — только завершённые планы 25/25/50 (${Number.isInteger(count) ? count : 0}): ` +
+              ["TP1", "TP2", "TP3"].map(target => `${target} ${count > 0 && Number.isInteger(analytics.hits?.[target]) ? (100 * analytics.hits[target] / count).toFixed(1) + "%" : "N/A"}`).join(" · "));
+            lines.push("Старые итоги не пересчитываются. ACTIVE и EXPIRED не входят в эту выборку.");
+          } else lines.push("LONG/SHORT и TP Hit Rate: N/A — ожидаем новые завершённые сделки.");
+          analyticsElement.textContent = lines.join("\n");
+          analyticsElement.style.whiteSpace = "pre-line";
+        }
 
         const sampleNote = document.querySelector(
           "#statistics-sample-note"
@@ -5437,6 +5461,53 @@ document.querySelector(
       </section>`;
     }
 
+    const orderFlowCache = new Map();
+    async function loadOrderFlow(symbol, element) {
+      if (!element) return;
+      const key = symbol.toUpperCase();
+      let pending = orderFlowCache.get(key);
+      if (!pending || pending.expires <= Date.now()) {
+        const url = new URL(API_URL);
+        url.searchParams.set("mode", "order-flow");
+        url.searchParams.set("symbol", key);
+        pending = {expires:Date.now()+300000, promise:fetch(url, {signal:AbortSignal.timeout(10000)})
+          .then(r => r.ok ? r.json() : null).catch(() => null)};
+        orderFlowCache.set(key, pending);
+        if (orderFlowCache.size > 50) orderFlowCache.delete(orderFlowCache.keys().next().value);
+      }
+      const data = await pending.promise;
+      if (!element.isConnected) return;
+      const contextElement = element.parentElement?.querySelector("[data-context4h]");
+      if (contextElement) {
+        const context = data?.symbol === key ? data.context4h : null;
+        const l = context?.liquidations, o = context?.oiPrice;
+        const money = v => typeof v === "number" && Number.isFinite(v) ? "$" + v.toLocaleString("en-US",{maximumFractionDigits:0}) : "N/A";
+        const period = v => Number.isFinite(v?.startTime) && Number.isFinite(v?.endTime) ? `${new Date(v.startTime).toISOString()} → ${new Date(v.endTime).toISOString()}` : "N/A";
+        const lines = ["Ликвидации · OKX futures · закрытый 4h"];
+        if (l?.available) {
+          lines.push(`LONG ${money(l.longUsd)} · SHORT ${money(l.shortUsd)}`);
+          lines.push(`К среднему предыдущих 6 интервалов: ${typeof l.relativeToBaseline === "number" && Number.isFinite(l.relativeToBaseline) ? l.relativeToBaseline.toFixed(2) + "×" : "N/A (нулевая база)"}`);
+          lines.push(`Преобладающая сторона: ${l.dominantSide} · ${period(l)}`);
+        } else lines.push("N/A — недостаточная или устаревшая история");
+        lines.push("OI + Price · закрытый 4h");
+        if (o?.available && Number.isFinite(o.priceChangePct) && Number.isFinite(o.openInterestChangePct)) {
+          lines.push(`Цена ${o.priceChangePct.toFixed(2)}% · OI ${o.openInterestChangePct.toFixed(2)}% · ${period(o)}`);
+        } else lines.push("N/A — нет совпадающих актуальных интервалов");
+        lines.push("Цена: Binance futures. OI: агрегат CoinGlass в USD; включает влияние цены на оценку позиций. Ликвидации OKX не считаются подтверждением цены Binance. Показатели не влияют на Trading Score.");
+        contextElement.textContent = lines.join("\n");
+      }
+      const f = data?.symbol === key ? data.orderFlow : null;
+      if (!f?.available || !Number.isFinite(f.deltaUsd) || !Number.isFinite(f.cvdUsd) ||
+          !Number.isFinite(f.startTime) || !Number.isFinite(f.endTime)) {
+        element.textContent = "CVD / Delta: N/A — нет полной актуальной истории закрытых интервалов.";
+        return;
+      }
+      const amount = v => new Intl.NumberFormat("en-US", {style:"currency",currency:"USD",maximumFractionDigits:0,signDisplay:"always"}).format(v);
+      element.textContent = `Delta последнего закрытого 4h: ${amount(f.deltaUsd)}\nCVD за окно: ${amount(f.cvdUsd)}\n` +
+        `${new Date(f.startTime).toISOString()} → ${new Date(f.endTime).toISOString()}\n` +
+        "CoinGlass · OKX futures · CVD начинается с нуля в начале указанного окна. Не влияет на Trading Score.";
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -6029,6 +6100,7 @@ ${tradeExecutionStatus ? `
     "
 >
 
+<section class="liquidation-flow trade-reasons"><h3>CVD / Delta</h3><p data-order-flow style="white-space:pre-line">Загрузка CVD / Delta…</p><p data-context4h style="white-space:pre-line">История ликвидаций и OI + Price: N/A</p></section>
 ${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
 ${renderOpenInterestPrice(data.derivativesHistory?.openInterest?.priceContext)}
 
@@ -6363,6 +6435,9 @@ ${Object.keys(marketEnvironment).length > 0 ? `
   }
 `;
 
+  const orderFlowElement = coinDetails.querySelector("[data-order-flow]");
+  if (data.capabilities?.orderFlow === true) void loadOrderFlow(symbol, orderFlowElement);
+  else if (orderFlowElement) orderFlowElement.textContent = "CVD / Delta: N/A — требуется поддержка backend.";
   const analysisContent = document.getElementById("coin-analysis-content");
   const tradePlanSection = document.getElementById("coin-trade-plan-section");
   const chartSection = document.getElementById("coin-ai-chart-section");
