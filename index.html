@@ -4441,21 +4441,8 @@ if (!data) {
     }
 
     function isConfirmedAPlusSetup(coin) {
-      const action = String(
-        coin?.action || getScannerAction(coin) || ""
-      );
-
-      return coin?.tradeAllowed === true &&
-        coin?.tradeReadiness?.ready === true &&
-        (coin?.opportunityGrade || coin?.grade) === "A+" &&
-        Number(coin?.opportunityScore) >= 85 &&
-        Number(coin?.confidence) >= 85 &&
-        Number(coin?.riskReward) >= 2 &&
-        (action === "Strong Buy" || action === "Strong Sell") &&
-        Number(coin?.entryZone?.from) > 0 &&
-        Number(coin?.entryZone?.to) > 0 &&
-        Number(coin?.stopLoss) > 0 &&
-        Number(coin?.takeProfit1) > 0;
+      // Old responses without authoritative eligibility cannot authorize new entry.
+      return coin?.confirmedAPlus === true;
     }
 
     function getBestReadySetup() {
@@ -5731,9 +5718,9 @@ const tradePlan = trackedPlanIsCurrent
 const hasValidTrade =
   trackedStatus === "Expired"
     ? false
-    : trackedPlanIsCurrent ||
-      (tradePlan.validTrade === true &&
-        isConfirmedAPlusSetup(scannerCoin));
+    : (trackedStatus === "Active" && trackedPlanIsCurrent) ||
+      (tradePlan.validTrade === true && liveTradePlan.validTrade === true &&
+        isConfirmedAPlusSetup(data.technical));
 
 const rejectionReason =
   trackedStatus === "Expired"
