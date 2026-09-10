@@ -490,12 +490,6 @@
       line-height: 1.45;
     }
 
-    .statistics-sample-note.is-reliable {
-      border-color: rgba(78, 227, 178, 0.28);
-      background: rgba(78, 227, 178, 0.06);
-      color: #4ee3b2;
-    }
-
     .statistics-streak-note {
       margin: 8px 0 0;
       color: #a7b5c5;
@@ -2673,10 +2667,6 @@
 
   <p class="statistics-sample-note" id="statistics-trade-analytics">Новые показатели: N/A</p>
 
-  <p class="statistics-sample-note" id="statistics-sample-note">
-    Ожидаем завершённые сделки для оценки статистики
-  </p>
-
   <p class="statistics-streak-note" id="statistics-streak-note">
     Серия результатов появится после первой завершённой сделки
   </p>
@@ -4838,24 +4828,6 @@ if (!data) {
           } else lines.push("LONG/SHORT и TP Hit Rate: N/A — ожидаем новые завершённые сделки.");
           analyticsElement.textContent = lines.join("\n");
           analyticsElement.style.whiteSpace = "pre-line";
-        }
-
-        const sampleNote = document.querySelector(
-          "#statistics-sample-note"
-        );
-
-        if (sampleNote) {
-          sampleNote.classList.toggle(
-            "is-reliable",
-            completedOutcomes >= 30
-          );
-          sampleNote.textContent = completedOutcomes >= 100
-            ? `Расширенная выборка: ${completedOutcomes} сделок · Достаточно для контролируемого анализа калибровки`
-            : completedOutcomes >= 30
-              ? `Первая контрольная точка: ${completedOutcomes} сделок · Следующая цель: 100 сделок`
-            : completedOutcomes > 0
-              ? `Предварительная статистика: ${completedOutcomes} из 30 сделок · Для устойчивых выводов продолжаем накапливать результаты`
-              : "Ожидаем завершённые сделки для оценки статистики";
         }
 
         const streakNote = document.querySelector(
