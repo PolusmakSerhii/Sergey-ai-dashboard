@@ -4476,9 +4476,8 @@ if (!data) {
       const action = coin.action ||
         getScannerAction(coin) ||
         "Wait";
-      const readiness = coin.tradeReadiness?.ready
-        ? "READY TO ENTER"
-        : "ещё не готов к входу";
+      // Ranking readiness alone cannot establish lifecycle/entry-zone readiness.
+      const readiness = "проверьте статус входа в карточке монеты";
 
       return [
         `${coin.symbol}: Score ${coin.opportunityScore || 0}, Confidence ${coin.confidence || 0}%, Grade ${coin.grade || coin.opportunityGrade || "—"}.`,
@@ -5508,6 +5507,57 @@ document.querySelector(
         "CoinGlass · OKX futures · CVD начинается с нуля в начале указанного окна. Не влияет на Trading Score.";
     }
 
+    function getTradeExecutionStatus({ confirmedAPlus, liveTradePlan = {}, tradePlan = {},
+      hasValidTrade, trackedSignal, price, now = Date.now() }) {
+      const trackedStatus = trackedSignal?.outcome?.status;
+      // ACTIVE follows its frozen lifecycle, never current live eligibility.
+      if (trackedStatus === "Active") return {
+        title: "ACTIVE TRADE", color: "#35d07f",
+        message: trackedSignal?.initialPlan?.exitStrategy
+          ? "Entry was confirmed. Partial exits and the current Stop Loss follow the frozen Trade Plan."
+          : "Entry was confirmed. The fixed Trade Plan is now tracking TP1 and Stop Loss."
+      };
+      const waiting = {
+        title: "WAIT CONFIRMATION", color: "#f4b942",
+        message: "A valid Confirmed A+ plan is required before entry."
+      };
+      const expiresAt = trackedSignal?.initialPlan?.expiresAt ||
+        trackedSignal?.outcome?.expiresAt || tradePlan.expiresAt;
+      const expiryTime = expiresAt ? Date.parse(expiresAt) : null;
+      if (trackedStatus === "Expired" || (expiryTime !== null && expiryTime <= now)) {
+        return { title: "EXPIRED", color: "#f4b942", message: "This plan expired before entry." };
+      }
+      if ((expiryTime !== null && !Number.isFinite(expiryTime)) ||
+          (trackedStatus != null && !["Pending", "WaitingEntry"].includes(trackedStatus))) return waiting;
+      if (confirmedAPlus !== true || hasValidTrade !== true ||
+          liveTradePlan.validTrade !== true || tradePlan.validTrade !== true) return waiting;
+
+      // A fresh live gate cannot authorize different levels from an older snapshot.
+      if (tradePlan.direction !== liveTradePlan.direction ||
+          ["stopLoss", "takeProfit1", "takeProfit2", "takeProfit3"].some(
+            key => Number(tradePlan[key]) !== Number(liveTradePlan[key])) ||
+          ["from", "to"].some(key =>
+            Number(tradePlan.entryZone?.[key]) !== Number(liveTradePlan.entryZone?.[key]))) return waiting;
+
+      const currentPrice = Number(price);
+      const from = Number(tradePlan.entryZone?.from);
+      const to = Number(tradePlan.entryZone?.to);
+      const stopLoss = Number(tradePlan.stopLoss);
+      const direction = tradePlan.direction;
+      if (![currentPrice, from, to, stopLoss].every(value => Number.isFinite(value) && value > 0) ||
+          from > to || !["Long", "Short"].includes(direction)) return waiting;
+      if ((direction === "Long" && currentPrice <= stopLoss) ||
+          (direction === "Short" && currentPrice >= stopLoss)) return {
+        title: "INVALIDATED", color: "#ff5d5d", message: "Stop Loss has already been broken."
+      };
+      if (currentPrice >= from && currentPrice <= to) return {
+        title: "READY TO ENTER", color: "#35d07f", message: "Price is inside the confirmed entry zone."
+      };
+      return {
+        title: "WAIT FOR ENTRY", color: "#f4b942", message: "Wait for price to enter the confirmed entry zone."
+      };
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -5766,88 +5816,20 @@ const recommendation =
 const positionSize =
   recommendation.positionSize || {};
 
-const executionPrice = Number(data.price);
-
-const executionEntryFrom =
-    Number(tradePlan.entryZone?.from);
-
-const executionEntryTo =
-    Number(tradePlan.entryZone?.to);
-
-const executionStopLoss =
-    Number(tradePlan.stopLoss);
-
 const executionDirection = String(
     recommendation.direction ||
     tradePlan.direction ||
     ""
 ).toUpperCase();
 
-const hasExecutionData =
-    Number.isFinite(executionPrice) &&
-    Number.isFinite(executionEntryFrom) &&
-    Number.isFinite(executionEntryTo) &&
-    executionEntryFrom > 0 &&
-    executionEntryTo > 0;
-       
-const tradeExecutionStatus = trackedStatus === "Active"
-    ? {
-          title: "ACTIVE TRADE",
-          color: "#35d07f",
-          message: trackedPlan?.exitStrategy
-            ? "Entry was confirmed. Partial exits and the current Stop Loss follow the frozen Trade Plan."
-            : "Entry was confirmed. The fixed Trade Plan is now tracking TP1 and Stop Loss."
-      }
-    : !hasExecutionData
-    ? null
-    : executionDirection === "LONG"
-    ? executionPrice < executionEntryFrom
-        ? {
-              title: "WAIT FOR ENTRY",
-              color: "#f4b942",
-              message: "Price has not reached the entry zone yet."
-          }
-        : executionPrice <= executionEntryTo
-        ? {
-              title: "READY TO ENTER",
-              color: "#35d07f",
-              message: "Price is inside the entry zone."
-          }
-  
-       : executionPrice <= executionStopLoss
-  ? {
-              title: "INVALIDATED",
-              color: "#ff5d5d",
-              message: "Stop Loss has already been broken."
-          }
-        : {
-              title: "ENTRY MISSED",
-              color: "#5fb8ff",
-              message: "Price already left the entry zone."
-          }
-    : executionPrice > executionEntryTo
-    ? {
-          title: "WAIT FOR ENTRY",
-          color: "#f4b942",
-          message: "Price has not reached the entry zone yet."
-      }
-    : executionPrice >= executionEntryFrom
-    ? {
-          title: "READY TO ENTER",
-          color: "#35d07f",
-          message: "Price is inside the entry zone."
-      }
-    : executionPrice >= executionStopLoss
-  ? {
-          title: "INVALIDATED",
-          color: "#ff5d5d",
-          message: "Stop Loss has already been broken."
-      }
-    : {
-          title: "ENTRY MISSED",
-          color: "#5fb8ff",
-          message: "Price already left the entry zone."
-      };
+const tradeExecutionStatus = getTradeExecutionStatus({
+  confirmedAPlus: data.technical?.confirmedAPlus,
+  liveTradePlan,
+  tradePlan,
+  hasValidTrade,
+  trackedSignal,
+  price: data.price
+});
        const action =
          executionDirection === "SHORT"
            ? opportunityScore >= 90
