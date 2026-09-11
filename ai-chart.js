@@ -730,7 +730,8 @@ const {
   ema200Series,
   symbol,
   timeframe = "1H",
-  limit = 300
+  limit = 300,
+  isCurrentRequest = () => true
 } = options;
   
   if (
@@ -760,6 +761,12 @@ const {
       timeframe,
       limit
     });
+
+  // No chart mutation (including price formats) may precede this check.
+  // The remaining update is synchronous, so a newer request cannot interleave.
+  if (!isCurrentRequest()) {
+    return { ok: false, ignored: true };
+  }
 
   if (
     response.ok !== true ||
@@ -1154,6 +1161,29 @@ const chartLegend =
 
   let activeTimeframe = "1H";
 
+const candleError = document.createElement("div");
+candleError.setAttribute("role", "alert");
+candleError.style.cssText = `
+  position:absolute; left:16px; right:16px; bottom:36px;
+  z-index:40; padding:14px; border:1px solid #ff7474;
+  border-radius:10px; background:#08111c; color:#ffb4b4;
+  overflow-wrap:anywhere;
+`;
+candleError.hidden = true;
+const candleErrorText = document.createElement("div");
+const retryCandlesButton = document.createElement("button");
+retryCandlesButton.type = "button";
+retryCandlesButton.textContent = "Повторить";
+retryCandlesButton.style.cssText = `
+  margin-top:10px; padding:8px 14px; border:1px solid #67d9ff;
+  border-radius:7px; background:#142638; color:#67d9ff; cursor:pointer;
+`;
+candleError.appendChild(candleErrorText);
+candleError.appendChild(retryCandlesButton);
+chartContainer.appendChild(candleError);
+let failedTimeframe = "1H";
+retryCandlesButton.addEventListener("click", () => reloadTimeframe(failedTimeframe));
+
 let latestRequestId = 0;
 
 async function reloadTimeframe(
@@ -1162,8 +1192,11 @@ async function reloadTimeframe(
   const requestId =
     ++latestRequestId;
 
-  const result =
-    await loadCandlestickData({
+  candleError.hidden = true;
+  retryCandlesButton.disabled = true;
+  let result;
+  try {
+    result = await loadCandlestickData({
       chart,
       candlestickSeries,
       ema20Series,
@@ -1171,8 +1204,12 @@ async function reloadTimeframe(
       ema200Series,
       symbol,
       timeframe: nextTimeframe,
-      limit: 300
+      limit: 300,
+      isCurrentRequest: () => requestId === latestRequestId
     });
+  } catch (error) {
+    result = { ok: false, error: error?.message || "Не удалось загрузить свечи" };
+  }
 
   if (
     requestId !==
@@ -1184,13 +1221,19 @@ async function reloadTimeframe(
     };
   }
 
+  retryCandlesButton.disabled = false;
   if (result?.ok === true) {
+    timeframeToolbar?.setActiveTimeframe(nextTimeframe);
     activeTimeframe =
       nextTimeframe;
 
     chartLegend?.setTimeframe(
       nextTimeframe
     );
+  } else {
+    failedTimeframe = nextTimeframe;
+    candleErrorText.textContent = `Не удалось загрузить свечи ${symbol} · ${nextTimeframe}: ${result?.error || "Неизвестная ошибка"}`;
+    candleError.hidden = false;
   }
 
   return result;
