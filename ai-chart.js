@@ -487,7 +487,7 @@ function createTimeframeToolbar(options = {}) {
           timeframe
         );
 
-      if (result?.ok === false) {
+      if (result?.ok === false && result?.ignored !== true) {
         updateActiveButton(
           previousTimeframe
         );
