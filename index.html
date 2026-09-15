@@ -5605,7 +5605,7 @@ document.querySelector(
     }
   
     const response = await fetch(
-      `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${symbol}`
+      `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${symbol}&instrumentType=SWAP`
     );
 
     const data = await response.json();
