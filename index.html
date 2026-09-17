@@ -2214,6 +2214,7 @@
 }
     
   </style>
+<link rel="stylesheet" href="./coin-overview.css">
 </head>
 
 <body>
@@ -5808,6 +5809,15 @@ const tradeExecutionStatus = getTradeExecutionStatus({
        
   coinDetails.innerHTML = `
   <h2>${symbol}</h2>
+  ${(() => {
+    try {
+      return window.SergeyCoinOverview && typeof window.SergeyCoinOverview.render === "function"
+        ? window.SergeyCoinOverview.render({data, ranking: scannerCoin, plan: tradePlan, tracked: trackedPlanIsCurrent, execution: tradeExecutionStatus})
+        : "";
+    } catch {
+      return "";
+    }
+  })()}
 
   <div class="coin-details-grid">
 
@@ -7025,6 +7035,7 @@ document.addEventListener(
   src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"
 ></script>
 
+<script src="./coin-overview.js"></script>
 <script src="./market-data.js"></script>
   
 <script src="./ai-chart.js"></script>  
