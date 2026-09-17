@@ -5518,6 +5518,29 @@ document.querySelector(
       };
     }
 
+    function getAnalysisDiagnosticDisplay({ confirmedAPlus, execution = {}, direction,
+      recommendation = {}, summary = "" }) {
+      if (confirmedAPlus === true &&
+          ["READY TO ENTER", "WAIT FOR ENTRY"].includes(execution.title)) {
+        return { summary, recommendation };
+      }
+      const candidate = direction === "Long" ? "Bullish candidate"
+        : direction === "Short" ? "Bearish candidate" : "Directional analysis";
+      const active = execution.title === "ACTIVE TRADE";
+      const instruction = active
+        ? "Existing trade follows its frozen plan. Live analysis does not authorize a new entry."
+        : "Analysis only. No new entry permission; follow the Execution status.";
+      return {
+        summary: `${candidate}. ${instruction}`,
+        recommendation: { ...recommendation,
+          status: active ? "Active trade · live directional analysis" : `${candidate} · analysis only`,
+          entryTiming: { status: execution.title || "WAIT CONFIRMATION",
+            priority: active ? "Manage existing trade" : "Watch only", instruction },
+          risk: "Analytical estimate only; no new entry permission"
+        }
+      };
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -5790,6 +5813,13 @@ const tradeExecutionStatus = getTradeExecutionStatus({
   trackedSignal,
   price: data.price
 });
+const diagnosticDisplay = getAnalysisDiagnosticDisplay({
+  confirmedAPlus: data.technical?.confirmedAPlus,
+  execution: tradeExecutionStatus,
+  direction: liveTradePlan.direction,
+  recommendation,
+  summary: aiSummary
+});
        const action =
          executionDirection === "SHORT"
            ? opportunityScore >= 90
@@ -6055,7 +6085,7 @@ ${tradeExecutionStatus ? `
 ${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
 ${renderOpenInterestPrice(data.derivativesHistory?.openInterest?.priceContext)}
 
-${aiSummary ? `
+${diagnosticDisplay.summary ? `
 <div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
   <div class="trade-reasons-title">
     🧠 AI Summary
@@ -6066,36 +6096,36 @@ ${aiSummary ? `
     font-size:16px;
     line-height:1.65;
   ">
-    ${aiSummary}
+    ${diagnosticDisplay.summary}
   </div>
 </div>
 ` : ""}
 
-${recommendation.status ? `
+${diagnosticDisplay.recommendation.status ? `
 <div class="trade-reasons" data-analysis-summary style="margin-bottom:24px;">
     <div class="trade-reasons-title">
         🎯 Recommendation
     </div>
 
     <div class="trade-reason-item">
-        ✅ Status: ${recommendation.status}
+        ✅ Status: ${diagnosticDisplay.recommendation.status}
     </div>
 
     <div class="trade-reason-item">
-        ⏳ Entry Timing: ${recommendation.entryTiming?.status ?? "—"}
+        ⏳ Entry Timing: ${diagnosticDisplay.recommendation.entryTiming?.status ?? "—"}
     </div>
 
     <div class="trade-reason-item">
-        ⭐ Priority: ${recommendation.entryTiming?.priority ?? "—"}
+        ⭐ Priority: ${diagnosticDisplay.recommendation.entryTiming?.priority ?? "—"}
     </div>
 
     <div class="trade-reason-item">
         📋 Instruction:
-        ${recommendation.entryTiming?.instruction ?? "—"}
+        ${diagnosticDisplay.recommendation.entryTiming?.instruction ?? "—"}
     </div>
 
     <div class="trade-reason-item">
-        ⚠️ Risk: ${recommendation.risk ?? "—"}
+        ⚠️ Risk: ${diagnosticDisplay.recommendation.risk ?? "—"}
     </div>
 </div>
 ` : ""}
