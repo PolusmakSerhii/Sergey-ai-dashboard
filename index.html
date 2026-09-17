@@ -2594,7 +2594,7 @@
 
     <article class="statistics-metric">
       <p class="statistics-metric-label">
-        Ready Trades
+        Ready Trades — Ranking snapshot
       </p>
       <p
         class="statistics-metric-value"
@@ -5654,16 +5654,17 @@ const probabilitySignal =
   data.derivativesHistory?.probabilitySignal || {};
 
 const probability =
-  scannerCoin.confidence ?? 0;
+  data.technical?.probability?.confidence?.score ?? "—";
        
 const direction =
-   scannerCoin.direction || "Neutral";
+   data.technical?.probability?.aiAssessment?.direction ||
+   data.technical?.probability?.direction || "—";
        
 const grade =
-  scannerCoin.opportunityGrade || "—";
+  data.technical?.opportunityGrade || "—";
 
 const opportunityScore =
-  scannerCoin.opportunityScore ?? 0;
+  data.technical?.opportunityScore ?? "—";
        
 const liveTradePlan =
   data.technical?.tradePlan || {};
@@ -5820,22 +5821,8 @@ const diagnosticDisplay = getAnalysisDiagnosticDisplay({
   recommendation,
   summary: aiSummary
 });
-       const action =
-         executionDirection === "SHORT"
-           ? opportunityScore >= 90
-              ? "Strong Sell"
-             : opportunityScore >= 70
-             ? "Sell"
-             : opportunityScore >= 40
-             ? "Watch"
-             : "Avoid"
-        : opportunityScore >= 90
-        ? "Strong Buy"
-        : opportunityScore >= 70
-        ? "Buy"
-        : opportunityScore >= 40
-        ? "Watch"
-        : "Avoid";
+       const action = data.technical?.recommendation?.action || "—";
+       const recommendationConfidence = data.technical?.recommendation?.confidence ?? "—";
        
   coinDetails.innerHTML = `
   <h2>${symbol}</h2>
@@ -5877,8 +5864,13 @@ const diagnosticDisplay = getAnalysisDiagnosticDisplay({
       </div>
 
       <div class="coin-detail-value">
-        ${probability}%
+        ${probability === "—" ? "—" : `${probability}%`}
       </div>
+    </div>
+
+    <div class="coin-detail-card">
+      <div class="coin-detail-label">Recommendation Confidence</div>
+      <div class="coin-detail-value">${recommendationConfidence === "—" ? "—" : `${recommendationConfidence}%`}</div>
     </div>
 
    <div
@@ -5913,7 +5905,7 @@ const diagnosticDisplay = getAnalysisDiagnosticDisplay({
         ${
             String(direction).toUpperCase() === "LONG"
                 ? "🟢 Long"
-                : "🔴 Short"
+                : String(direction).toUpperCase() === "SHORT" ? "🔴 Short" : "—"
         }
     </div>
 </div>
