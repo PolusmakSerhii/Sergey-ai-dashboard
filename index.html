@@ -505,6 +505,47 @@
       color: #ff7474;
     }
 
+    .statistics-extra {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid rgba(124, 151, 180, .2);
+      border-radius: 16px;
+      background: rgba(9, 24, 39, .65);
+      color: #f4f7fb;
+    }
+    .statistics-extra-header, .statistics-extra-badges, .statistics-extra-side-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .statistics-extra-title { margin: 0; font-size: 11px; letter-spacing: .08em; }
+    .statistics-extra-subtitle, .statistics-extra-note { margin: 5px 0 0; color: #a7b5c5; font-size: 11px; line-height: 1.4; }
+    .statistics-extra-badges { flex-wrap: wrap; justify-content: flex-end; }
+    .statistics-extra-badge { padding: 4px 7px; border: 1px solid rgba(124,151,180,.2); border-radius: 7px; font-size: 10px; color: #c5d7e8; white-space: nowrap; }
+    .statistics-extra-metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin: 12px 0; }
+    .statistics-extra-metric { min-width: 0; }
+    .statistics-extra-label { display: block; color: #a7b5c5; font-size: 10px; letter-spacing: .04em; }
+    .statistics-extra-value { display: block; margin-top: 3px; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .statistics-extra-sides { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .statistics-extra-side { padding: 9px 10px; border: 1px solid rgba(124,151,180,.16); border-radius: 10px; }
+    .statistics-extra-side-head { font-size: 11px; }
+    .statistics-extra-side-head span { color: #a7b5c5; font-weight: 400; }
+    .statistics-extra-side.is-long strong { color: #4ee3b2; }
+    .statistics-extra-side.is-short strong { color: #ff7474; }
+    .statistics-extra-side-metrics { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 7px; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .statistics-extra-tp { margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(124,151,180,.16); }
+    .statistics-extra-tp-values { display: flex; gap: 24px; margin-top: 6px; font-size: 12px; color: #79d7ec; font-variant-numeric: tabular-nums; }
+    .statistics-extra .statistics-streak-note { padding: 7px 9px; border-radius: 8px; background: rgba(124,151,180,.06); border: 1px solid rgba(124,151,180,.14); font-size: 11px; }
+    .statistics-extra .statistics-streak-note.is-loss { background: rgba(151,42,64,.12); border-color: rgba(255,116,116,.18); }
+    .statistics-extra .statistics-streak-note.is-win { background: rgba(78,227,178,.06); border-color: rgba(78,227,178,.16); }
+    @media (max-width: 600px) {
+      .statistics-extra { padding: 11px; }
+      .statistics-extra-header { align-items: flex-start; flex-wrap: wrap; }
+      .statistics-extra-badges { justify-content: flex-start; }
+      .statistics-extra-value { font-size: 17px; }
+      .statistics-extra-label { font-size: 9px; }
+      .statistics-extra-side { padding: 8px; }
+      .statistics-extra-side-metrics { gap: 5px 10px; font-size: 11px; }
+    }
+
     .statistics-chart-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2666,11 +2707,12 @@
 
   </div>
 
-  <p class="statistics-sample-note" id="statistics-trade-analytics">Новые показатели: N/A</p>
-
-  <p class="statistics-streak-note" id="statistics-streak-note">
-    Серия результатов появится после первой завершённой сделки
-  </p>
+  <section class="statistics-extra" aria-label="Дополнительная статистика">
+    <div id="statistics-trade-analytics">Новые показатели: N/A</div>
+    <p class="statistics-streak-note" id="statistics-streak-note">
+      Серия результатов появится после первой завершённой сделки
+    </p>
+  </section>
 
   <details class="statistics-history-card statistics-collapsible" id="advanced-analytics">
     <summary>
@@ -4811,25 +4853,7 @@ if (!data) {
 
         const analytics = outcomes.tradeAnalytics;
         const analyticsElement = document.querySelector("#statistics-trade-analytics");
-        if (analyticsElement) {
-          const lines = [];
-          if (analytics && Number.isInteger(analytics.completed) && analytics.completed > 0) {
-            const since = Date.parse(analytics.since);
-            lines.push(`Дополнительный учёт с ${Number.isFinite(since) ? new Date(since).toISOString().slice(0,10) + " UTC" : "N/A"}: ${analytics.completed} завершённых сделок`);
-            for (const direction of ["Long", "Short"]) {
-              const side = analytics.directions?.[direction];
-              lines.push(side?.count > 0 && Number.isFinite(side.netR) && Number.isFinite(side.wins)
-                ? `${direction.toUpperCase()}: ${side.count} сделок · WR ${(100 * side.wins / side.count).toFixed(1)}% · Total ${side.netR.toFixed(2)}R · Expectancy ${(side.netR / side.count).toFixed(2)}R`
-                : `${direction.toUpperCase()}: N/A`);
-            }
-            const count = analytics.partialCompleted;
-            lines.push(`TP Hit Rate — только завершённые планы 25/25/50 (${Number.isInteger(count) ? count : 0}): ` +
-              ["TP1", "TP2", "TP3"].map(target => `${target} ${count > 0 && Number.isInteger(analytics.hits?.[target]) ? (100 * analytics.hits[target] / count).toFixed(1) + "%" : "N/A"}`).join(" · "));
-            lines.push("Старые итоги не пересчитываются. ACTIVE и EXPIRED не входят в эту выборку.");
-          } else lines.push("LONG/SHORT и TP Hit Rate: N/A — ожидаем новые завершённые сделки.");
-          analyticsElement.textContent = lines.join("\n");
-          analyticsElement.style.whiteSpace = "pre-line";
-        }
+        if (analyticsElement) renderTradeAnalytics(analyticsElement, analytics);
 
         const streakNote = document.querySelector(
           "#statistics-streak-note"
@@ -5465,6 +5489,74 @@ document.querySelector(
       element.textContent = `Delta последнего закрытого 4h: ${amount(f.deltaUsd)}\nCVD за окно: ${amount(f.cvdUsd)}\n` +
         `${new Date(f.startTime).toISOString()} → ${new Date(f.endTime).toISOString()}\n` +
         "CoinGlass · OKX futures · CVD начинается с нуля в начале указанного окна. Не влияет на Trading Score.";
+    }
+
+    function renderTradeAnalytics(element, analytics) {
+      const node = (tag, className, text) => {
+        const el = document.createElement(tag);
+        el.className = className;
+        if (text !== undefined) el.textContent = text;
+        return el;
+      };
+      element.replaceChildren();
+      const header = node("div", "statistics-extra-header");
+      const heading = node("div", "");
+      heading.append(node("h3", "statistics-extra-title", "ДОПОЛНИТЕЛЬНАЯ СТАТИСТИКА"),
+        node("p", "statistics-extra-subtitle", "Учёт только завершённых сделок"));
+      header.append(heading);
+      element.append(header);
+      if (!analytics || !Number.isInteger(analytics.completed) || analytics.completed <= 0) {
+        element.append(node("p", "statistics-extra-note", "LONG/SHORT и TP Hit Rate: N/A — ожидаем новые завершённые сделки."));
+        return;
+      }
+      const badges = node("div", "statistics-extra-badges");
+      const since = Date.parse(analytics.since);
+      badges.append(node("span", "statistics-extra-badge", Number.isFinite(since)
+        ? `с ${new Date(since).toISOString().slice(0,10)} UTC` : "с N/A"),
+        node("span", "statistics-extra-badge", `${analytics.completed} CLOSED`));
+      header.append(badges);
+      const sides = [analytics.directions?.Long, analytics.directions?.Short];
+      const valid = side => side && Number.isInteger(side.count) && side.count >= 0 &&
+        Number.isInteger(side.wins) && side.wins >= 0 && side.wins <= side.count && Number.isFinite(side.netR);
+      // Presentation aggregation only: no assumed aggregate wins/netR fields.
+      const complete = sides.every(valid);
+      const closed = complete ? sides.reduce((sum, side) => sum + side.count, 0) : null;
+      const wins = complete ? sides.reduce((sum, side) => sum + side.wins, 0) : null;
+      const totalR = complete ? sides.reduce((sum, side) => sum + side.netR, 0) : null;
+      const metrics = node("div", "statistics-extra-metrics");
+      for (const [label, value] of [["CLOSED", closed ?? "N/A"],
+        ["WIN RATE", closed > 0 ? `${(100 * wins / closed).toFixed(1)}%` : "N/A"],
+        ["TOTAL R", totalR !== null ? `${totalR.toFixed(2)}R` : "N/A"],
+        ["EXPECTANCY", closed > 0 ? `${(totalR / closed).toFixed(2)}R` : "N/A"]]) {
+        const metric = node("div", "statistics-extra-metric");
+        metric.append(node("span", "statistics-extra-label", label), node("strong", "statistics-extra-value", value));
+        metrics.append(metric);
+      }
+      element.append(metrics);
+      const directions = node("div", "statistics-extra-sides");
+      for (const [index, label] of ["LONG", "SHORT"].entries()) {
+        const side = sides[index], available = valid(side), hasTrades = available && side.count > 0;
+        const section = node("div", `statistics-extra-side ${index === 0 ? "is-long" : "is-short"}`);
+        const head = node("div", "statistics-extra-side-head");
+        head.append(node("strong", "", label), node("span", "", available ? `${side.count} ${side.count === 1 ? "trade" : "trades"}` : "N/A"));
+        const values = node("div", "statistics-extra-side-metrics");
+        for (const text of [hasTrades ? `WR ${(100 * side.wins / side.count).toFixed(1)}%` : "WR N/A",
+          hasTrades ? `Total ${side.netR.toFixed(2)}R` : "Total N/A",
+          hasTrades ? `Exp. ${(side.netR / side.count).toFixed(2)}R` : "Exp. N/A"]) values.append(node("span", "", text));
+        section.append(head, values); directions.append(section);
+      }
+      element.append(directions);
+      const count = analytics.partialCompleted;
+      const tp = node("div", "statistics-extra-tp");
+      tp.append(node("span", "statistics-extra-label", `TP HIT RATE · ${Number.isInteger(count) ? count : 0} completed plans · 25/25/50`));
+      const hits = node("div", "statistics-extra-tp-values");
+      for (const target of ["TP1", "TP2", "TP3"]) {
+        const value = count > 0 && Number.isInteger(analytics.hits?.[target])
+          ? `${(100 * analytics.hits[target] / count).toFixed(1)}%` : "N/A";
+        hits.append(node("span", "", `${target} ${value}`));
+      }
+      tp.append(hits); element.append(tp,
+        node("p", "statistics-extra-note", "Старые итоги не пересчитываются · ACTIVE и EXPIRED не учитываются"));
     }
 
     function getTradeExecutionStatus({ confirmedAPlus, liveTradePlan = {}, tradePlan = {},
