@@ -2256,6 +2256,7 @@
     
   </style>
 <link rel="stylesheet" href="./coin-overview.css">
+<link rel="stylesheet" href="./entry-setups.css">
 </head>
 
 <body>
@@ -2330,6 +2331,7 @@
       <button class="dashboard-tab is-active" type="button" role="tab" aria-selected="true" data-dashboard-tab="global-ranking">
         Global Ranking
       </button>
+      <button class="dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="entry-setups">Entry Setups</button>
       <button class="dashboard-tab" type="button" role="tab" aria-selected="false" data-dashboard-tab="top-coins">
         Top Coins
       </button>
@@ -2337,6 +2339,12 @@
         ★ Watchlist
       </button>
     </div>
+
+    <section class="card dashboard-tab-panel entry-setups-panel" data-dashboard-panel="entry-setups" hidden>
+      <p class="card-label">ENTRY SETUPS</p>
+      <div id="entry-setups-content" data-enabled="true">Open this tab to load verified setups.</div>
+    </section>
+    <dialog id="entry-setups-dialog" class="entry-setups-dialog" aria-label="Entry Setup Analysis"></dialog>
 
     <section class="card dashboard-tab-panel" id="top-coins" data-dashboard-panel="top-coins" style="margin-top: 12px;" hidden>
       <p class="card-label">
@@ -7150,6 +7158,7 @@ document.addEventListener(
 ></script>
 
 <script src="./coin-overview.js"></script>
+<script src="./entry-setups.js"></script>
 <script src="./market-data.js"></script>
   
 <script src="./ai-chart.js"></script>  

@@ -1,0 +1,15 @@
+.entry-setups-panel { margin-top: 12px; overflow-x: auto; }
+.entry-setups-panel table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.entry-setups-panel th, .entry-setups-panel td { padding: 10px; text-align: left; border-bottom: 1px solid #25374b; }
+.entry-setups-panel th, .entry-setups-panel small { color: #9cafc3; }
+.entry-setups-panel small { display: block; margin-top: 5px; font-size: 10px; }
+.entry-setups-panel button, .entry-setups-dialog button { background: #142d43; color: #78d8e9; border: 1px solid #345168; border-radius: 8px; padding: 7px 10px; cursor: pointer; }
+.entry-setups-dialog { color: #edf4fa; background: #0c1d2e; border: 1px solid #345168; border-radius: 16px; width: min(680px, 90vw); max-height: 85vh; padding: 20px; }
+.entry-setups-dialog::backdrop { background: #000a; }
+.entry-setups-dialog h2 { font-size: 18px; }
+.entry-setups-dialog h3 { color: #78d8e9; font-size: 13px; margin-top: 24px; }
+.entry-setups-dialog p, .entry-setups-panel p { color: #aabccd; font-size: 12px; }
+.entry-setups-dialog dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; font-size: 12px; }
+.entry-setups-dialog dt { color: #aabccd; }
+.entry-setups-dialog dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .entry-setups-panel th, .entry-setups-panel td { padding: 8px 5px; } .entry-setups-panel table { min-width: 480px; } }
