@@ -5657,6 +5657,7 @@ document.querySelector(
 
      coinDetails.innerHTML = `
       <h2>${symbol}</h2>
+      <p class="overview-note">Ranking snapshot · предварительные данные. Загружается свежий Live Analysis; его Grade может отличаться.</p>
 
       <div class="coin-details-grid">
 
@@ -5926,6 +5927,7 @@ const diagnosticDisplay = getAnalysisDiagnosticDisplay({
        
   coinDetails.innerHTML = `
   <h2>${symbol}</h2>
+  <p class="overview-note">Fresh Live Analysis · текущие Score и Grade. Сохранённый Trade Plan, если он есть, показан отдельно.</p>
   ${(() => {
     try {
       return window.SergeyCoinOverview && typeof window.SergeyCoinOverview.render === "function"
