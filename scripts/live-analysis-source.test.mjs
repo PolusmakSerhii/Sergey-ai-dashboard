@@ -76,3 +76,24 @@ test('actual modal template uses live bindings and syntax parses',()=>{
  assert.match(r.markup,/Сохранённый план сделки/);assert.match(r.markup,/Текущий Grade: A<\/span>/);
  assert.match(r.markup,/Уровни сохранённого плана/);assert.equal(JSON.stringify(frozen),before);
  });
+
+for (const tracked of [false, true]) test(`canonical confirmation badge is independent of saved plan: ${tracked}`, () => {
+ const frozen = structuredClone(plan);
+ const options = {tracked, plan:frozen, execution:{title:tracked ? 'ACTIVE TRADE' : 'READY TO ENTER'}};
+ const before = JSON.stringify(options);
+ const r = run({technical:{opportunityScore:88, opportunityGrade:'A+', confirmedAPlus:true}}, {}, options);
+ assert.match(r.markup, /<span class="overview-status">Confirmed A\+<\/span>/);
+ assert.equal(r.markup.includes('<span class="overview-status">Сохранённый план сделки</span>'), tracked);
+ assert.match(r.markup, tracked ? /Уровни сохранённого плана/ : /Уровни подтверждённого плана/);
+ assert.equal(JSON.stringify(options), before);
+});
+for (const flag of [false, undefined, null, 'true']) test(`saved Active plan cannot supply canonical confirmation: ${String(flag)}`, () => {
+ const frozen = structuredClone(plan);
+ const before = JSON.stringify(frozen);
+ const r = run({technical:{opportunityScore:88, opportunityGrade:'A', confirmedAPlus:flag}}, {},
+   {tracked:true, plan:frozen, execution:{title:'ACTIVE TRADE'}});
+ assert.doesNotMatch(r.markup, /Confirmed A\+/);
+ assert.match(r.markup, /<span class="overview-status">Сохранённый план сделки<\/span>/);
+ assert.match(r.markup, /Уровни сохранённого плана. Текущий статус: ACTIVE TRADE/);
+ assert.equal(JSON.stringify(frozen), before);
+});

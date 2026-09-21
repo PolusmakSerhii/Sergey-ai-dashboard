@@ -28,12 +28,12 @@
       const full = [live.entryZone?.from,live.entryZone?.to,live.stopLoss,live.takeProfit1,live.takeProfit2,live.takeProfit3].every(v => number(v) !== null && number(v) > 0);
       row('Вход, стоп и три цели', full ? 'Уровни переданы; их взаимное расположение проверяет общий статус подтверждения' : 'Полного набора уровней нет', full ? 'pass' : 'missing');
     }
-    const status = tracked ? 'Сохранённый план сделки' : confirmed === true ? 'Confirmed A+' : confirmed === false ? 'Ожидает подтверждения' : 'Live Analysis';
+    const status = confirmed === true ? 'Confirmed A+' : confirmed === false ? 'Ожидает подтверждения' : 'Live Analysis';
     const gap = score === null ? 'Числовой порог A+: Score недоступен' : score >= 85 ? '✓ Числовой порог A+ достигнут' : 'Числовой порог A+ не достигнут';
     const confirmation = confirmed === true ? '✓ Все условия A+ подтверждены' : confirmed === false ? '⚠ A+ не подтверждён' : 'Подтверждение A+ недоступно';
     const timestamp = data.time && Number.isFinite(Date.parse(data.time)) ? new Date(data.time).toLocaleString('ru-RU') : 'время не указано';
     return `<section class="coin-overview" aria-label="Понятный обзор монеты">
-      <div class="overview-heading"><h3>Opportunity Score · Live Analysis</h3><span class="overview-status">${status}</span></div>
+      <div class="overview-heading"><h3>Opportunity Score · Live Analysis</h3><span class="overview-status">${status}</span>${tracked ? '<span class="overview-status">Сохранённый план сделки</span>' : ''}</div>
       <div class="overview-score"><strong>${score ?? '—'}<small> / 100</small></strong><span>Текущий Grade: ${escape(grade)}${grade === 'A+' && confirmed === true ? ' ★' : ''}</span></div>
       <div class="overview-meter" ${score !== null ? `role="meter" aria-label="Opportunity Score live-анализа" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${score}"` : ''}><span style="width:${score ?? 0}%"></span></div>
       <div class="overview-scale"><span>D &lt;55</span><span>C ≥55</span><span>B ≥65</span><span>A ≥75</span><span>A+ ≥85*</span></div>
