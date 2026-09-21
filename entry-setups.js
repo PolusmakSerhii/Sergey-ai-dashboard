@@ -9,6 +9,15 @@
     if (value !== undefined) element.textContent = text(value);
     return element;
   }
+  const statusMeanings = {
+    'ENTRY COMPLETED': 'Post-entry diagnostics. Not a re-entry signal.',
+    'NO PULLBACK OBSERVED': 'No more favorable price than the Original A+ midpoint is currently observed. This does not block execution.',
+    'PULLBACK': 'Current price is more favorable than the frozen Original A+ midpoint, before the Original SL boundary. Recovery is not confirmed; this is not permission to trade.',
+    'ANALYTICALLY INVALIDATED': 'Current saved snapshot is at/beyond the Original SL boundary. This is not a lifecycle result or a proven historical candle touch.',
+    'UNKNOWN': 'Snapshot entry analysis is unavailable. No entry recommendation.'
+  };
+  const entryStatus = setup => setup.lifecycleStatus === 'Active' ? 'ENTRY COMPLETED' :
+    (Object.hasOwn(statusMeanings, setup.entryAnalysis?.status) ? setup.entryAnalysis.status : 'UNKNOWN');
   function details(setup, dialog) {
     dialog.replaceChildren();
     const close = node('button', 'Close'); close.type = 'button';
@@ -22,14 +31,19 @@
       box.append(list); dialog.append(box);
     };
     const p = setup.originalPlan || {}, o = setup.origin || {}, c = setup.current || {}, a = setup.entryAnalysis || {};
+    const status = entryStatus(setup);
+    dialog.append(node('p', statusMeanings[status]));
     section('ORIGINAL A+ PLAN', [['Original Grade', o.originalGrade], ['Original Score', o.originalScore],
       ['Original Confidence', o.originalConfidence], ['Direction', setup.direction], ['Detected At', o.detectedAt],
       ['Entry Zone', `${text(p.entryFrom)} – ${text(p.entryTo)}`], ['Planned midpoint', p.plannedEntry],
       ['Initial SL', p.initialSL], ['TP1', p.TP1], ['TP2', p.TP2], ['TP3', p.TP3], ['Original R:R', p.originalRR]]);
-    section('CURRENT ENTRY ANALYSIS', [['Saved Ranking as of', c.asOf], ['Current Price', c.price],
+    section('CURRENT ENTRY ANALYSIS', [['Snapshot As Of (saved Ranking)', c.asOf], ['Current Price', c.price],
       ['Current Grade', c.currentGrade], ['Current Score', c.currentScore], ['Current Confidence', c.currentConfidence],
       ['Pullback / frozen risk distance (not ATR)', a.pullbackR], ['Theoretical R:R to frozen TP2', a.currentRR],
-      ['Structure', 'N/A'], ['Entry Status', 'Analysis pending'], ['Entry Quality', 'N/A'], ['Projection updated', a.updatedAt]]);
+      ['Directional Support', ['SUPPORTED', 'UNSUPPORTED', 'UNKNOWN'].includes(a.directionalSupport) ? a.directionalSupport : 'UNKNOWN'],
+      ['Structure', 'N/A'], ['Entry Status', status], ['Lifecycle Status', setup.lifecycleStatus],
+      ['Reason', a.reasonCode], ['Snapshot diagnostic reason', a.snapshotReasonCode],
+      ['Entry Quality', 'N/A'], ['Projection updated', a.updatedAt]]);
     dialog.showModal();
   }
   function render(root, setups, dialog) {
@@ -45,7 +59,7 @@
       symbol.append(button, node('small', `Lifecycle: ${text(setup.lifecycleStatus)}`));
       const current = node('td', setup.current?.currentGrade);
       current.append(node('small', `Ranking: ${text(setup.current?.asOf)}`));
-      row.append(symbol, node('td', 'Verified A+'), current, node('td', 'Analysis pending'), node('td', 'N/A'));
+      row.append(symbol, node('td', 'Verified A+'), current, node('td', entryStatus(setup)), node('td', 'N/A'));
       body.append(row);
     }
     table.append(body); root.append(table);

@@ -6,7 +6,7 @@ const source=readFileSync(new URL('../entry-setups.js',import.meta.url),'utf8');
 class Element {constructor(){this.children=[];this.listeners={};this.dataset={};this.value='';}set textContent(v){this.value=String(v);}get textContent(){return this.value+this.children.map(x=>x.textContent).join('|');}set innerHTML(v){throw new Error('Unsafe HTML');}append(...xs){this.children.push(...xs);}replaceChildren(...xs){this.children=xs;this.value='';}addEventListener(k,f){this.listeners[k]=f;}showModal(){this.open=true;}close(){this.open=false;}}
 function runtime(enabled=false){const root=new Element(),dialog=new Element(),tabs=new Element();root.dataset.enabled=String(enabled);let calls=0;const c=vm.createContext({window:{fetch:()=>{calls++;throw Error('Unexpected request');}},document:{createElement:()=>new Element(),querySelector:s=>s==='#entry-setups-content'?root:s==='#entry-setups-dialog'?dialog:tabs}});vm.runInContext(source,c);return {api:c.window.Sm1mEntrySetups,root,dialog,tabs,calls:()=>calls};}
 const fixture={symbol:'<img src=x onerror=alert(1)>',tradeId:'original',lifecycleStatus:'Active',origin:{confirmedAPlus:true,originalGrade:'A+',detectedAt:'ORIGINAL-TIME'},current:{currentGrade:'C',asOf:'RANKING-TIME'},entryAnalysis:{status:null,structureValid:null},originalPlan:{}};
-test('safe rendering, original/current separation and no entry permission',()=>{const r=runtime();r.api.render(r.root,[fixture],r.dialog);assert.ok(r.root.textContent.includes(fixture.symbol));assert.ok(r.root.textContent.includes('Lifecycle: Active'));assert.ok(r.root.textContent.includes('Analysis pending'));r.api.details(fixture,r.dialog);for(const t of ['ORIGINAL A+ PLAN','CURRENT ENTRY ANALYSIS','ORIGINAL-TIME','RANKING-TIME','Does not change trade execution.','N/A'])assert.ok(r.dialog.textContent.includes(t));assert.equal(r.calls(),0);});
+test('safe rendering, original/current separation and no entry permission',()=>{const r=runtime();r.api.render(r.root,[fixture],r.dialog);assert.ok(r.root.textContent.includes(fixture.symbol));assert.ok(r.root.textContent.includes('Lifecycle: Active'));assert.ok(r.root.textContent.includes('ENTRY COMPLETED'));r.api.details(fixture,r.dialog);for(const t of ['ORIGINAL A+ PLAN','CURRENT ENTRY ANALYSIS','ORIGINAL-TIME','RANKING-TIME','Does not change trade execution.','N/A'])assert.ok(r.dialog.textContent.includes(t));assert.equal(r.calls(),0);});
 const response=(stamp,items=[fixture])=>({ok:true,json:async()=>({ok:true,generatedAt:stamp,setups:items})});
 test('out-of-order response cannot overwrite latest request',async()=>{const r=runtime(),pending=[],shown=[];const loader=r.api.createLoader(()=>new Promise(resolve=>pending.push(resolve)),s=>shown.push(s),()=>assert.fail());const a=loader.load(),b=loader.load();pending[1](response('2026-09-20T01:00:00Z'));await b;pending[0](response('2026-09-20T00:00:00Z'));await a;assert.equal(shown.length,1);});
 test('older server snapshot and cancelled response cannot overwrite state',async()=>{const r=runtime(),shown=[];let n=0;const loader=r.api.createLoader(async()=>response(n++?'2026-09-19T00:00:00Z':'2026-09-20T00:00:00Z'),s=>shown.push(s),()=>assert.fail());await loader.load();await loader.load();assert.equal(shown.length,1);let resolve;const second=r.api.createLoader(()=>new Promise(r=>resolve=r),()=>assert.fail(),()=>assert.fail());const p=second.load();second.cancel();resolve(response('2026-09-20T00:00:00Z'));await p;});
@@ -36,4 +36,33 @@ for (const state of ['success', 'empty', 'error']) test(`tab loading replaces in
   assert.ok(!root.textContent.includes('Loading Entry Setups...'));
   assert.ok(root.textContent.includes(state === 'error' ? 'Entry Setup data unavailable.' :
     state === 'empty' ? 'No verified open A+ setups.' : fixture.symbol));
+});
+
+for (const status of ['ENTRY COMPLETED', 'PULLBACK', 'NO PULLBACK OBSERVED', 'ANALYTICALLY INVALIDATED', 'UNKNOWN']) {
+  test(`snapshot status ${status} renders without trading requests`, () => {
+    const r = runtime();
+    const setup = { ...fixture, lifecycleStatus: status === 'ENTRY COMPLETED' ? 'Active' : 'WaitingEntry',
+      entryAnalysis: { status, reasonCode: 'QA_REASON', directionalSupport: 'SUPPORTED' } };
+    r.api.render(r.root, [setup], r.dialog);
+    assert.ok(r.root.textContent.includes(status));
+    r.api.details(setup, r.dialog);
+    for (const text of [status, 'Directional Support', 'SUPPORTED', 'Snapshot As Of', 'Lifecycle Status', 'QA_REASON', 'N/A']) {
+      assert.ok(r.dialog.textContent.includes(text));
+    }
+    if (status === 'ENTRY COMPLETED') assert.ok(r.dialog.textContent.includes('Post-entry diagnostics. Not a re-entry signal.'));
+    assert.equal(r.calls(), 0);
+  });
+}
+test('Active overrides stale analytical status; unsupported future labels never render', () => {
+  const r = runtime();
+  for (const status of ['PULLBACK', 'IMPROVED ENTRY', 'CONTINUATION']) {
+    r.api.render(r.root, [{ ...fixture, entryAnalysis: { status } }], r.dialog);
+    assert.ok(r.root.textContent.includes('ENTRY COMPLETED'));
+    assert.ok(!r.root.textContent.includes(status));
+  }
+  for (const status of ['IMPROVED ENTRY', 'CONTINUATION']) {
+    r.api.render(r.root, [{ ...fixture, lifecycleStatus: 'WaitingEntry', entryAnalysis: { status } }], r.dialog);
+    assert.ok(r.root.textContent.includes('UNKNOWN'));
+    assert.ok(!r.root.textContent.includes(status));
+  }
 });
