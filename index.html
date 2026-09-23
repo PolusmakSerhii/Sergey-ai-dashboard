@@ -5399,7 +5399,7 @@ document.querySelector(
         ["Imbalance (LONG − SHORT)", percent(available ? flow.imbalancePct : null, true)],
         ["Larger liquidated side", side]
       ];
-      const note = !available ? "Liquidation data is unavailable or incomplete."
+      const note = !available ? (window.SM1MRisk?.reasonText(flow?.reasonCode) || "Liquidation data is unavailable or incomplete.")
         : flow.sideTotalUsd === 0 ? "No liquidations in the reported window."
         : "Positive imbalance means more LONG liquidations; it does not predict price direction.";
       const mismatch = available && number(flow.totalDifferenceUsd) && flow.totalDifferenceUsd !== 0;
@@ -5439,13 +5439,13 @@ document.querySelector(
         <div class="trade-reasons-title">Open Interest + Price</div>
         <p class="liquidation-flow-note">Last closed day · Does not affect Trading Score</p>
         <dl class="liquidation-flow-grid">
-          <div><dt>Price change · OKX Spot</dt><dd>${percent(context?.priceChangePct)}</dd></div>
+          <div><dt>Price change · OKX closed candles</dt><dd>${percent(context?.priceChangePct)}</dd></div>
           <div><dt>OI change · CoinGlass · USD</dt><dd>${percent(context?.openInterestChangePct)}</dd></div>
           <div><dt>Period start</dt><dd>${timestamp(context?.windowStart)}</dd></div>
           <div><dt>Period end</dt><dd>${timestamp(context?.windowEnd)}</dd></div>
         </dl>
         <p class="liquidation-flow-note">${state}</p>
-        ${!available ? '<p class="liquidation-flow-note">Matching closed price and OI history is unavailable, incomplete or stale.</p>' : ''}
+        ${!available ? `<p class="liquidation-flow-note">${window.SM1MRisk?.reasonText(context?.reasonCode) || "Matching closed price and OI history is unavailable, incomplete or stale."}</p>` : ''}
         <p class="liquidation-flow-note">This is a closed daily period, not a rolling 24-hour change. USD open interest also changes with prices and does not prove that new LONG or SHORT positions were opened.</p>
       </section>`;
     }
@@ -5905,7 +5905,7 @@ const executionDirection = String(
     ""
 ).toUpperCase();
 
-const tradeExecutionStatus = getTradeExecutionStatus({
+const setupExecutionStatus = getTradeExecutionStatus({
   confirmedAPlus: data.technical?.confirmedAPlus,
   liveTradePlan,
   tradePlan,
@@ -5913,6 +5913,11 @@ const tradeExecutionStatus = getTradeExecutionStatus({
   trackedSignal,
   price: data.price
 });
+const tradeExecutionStatus = window.SM1MRisk
+  ? window.SM1MRisk.applySafety(setupExecutionStatus, data.dataSafety)
+  : ["READY TO ENTER", "WAIT FOR ENTRY"].includes(setupExecutionStatus.title)
+    ? { title: "RISK CHECK REQUIRED", color: "#f4b942", message: "Execution safety unavailable." }
+    : setupExecutionStatus;
 const diagnosticDisplay = getAnalysisDiagnosticDisplay({
   confirmedAPlus: data.technical?.confirmedAPlus,
   execution: tradeExecutionStatus,
@@ -6393,7 +6398,7 @@ ${!hasValidTrade ? `
 </div>
 
 <div class="coin-detail-card">
-<div class="coin-detail-label">Position Size</div>
+<div class="coin-detail-label">Suggested risk % / leverage · not calculated position size</div>
 <div class="coin-detail-value">
   ${
     positionSize.riskPercent > 0
@@ -6501,13 +6506,18 @@ ${Object.keys(marketEnvironment).length > 0 ? `
           margin-top: 20px;
           color: #ffd166;
         ">
-          CoinGlass temporarily unavailable: rate limit
+          CoinGlass unavailable — provider response missing or incomplete
         </p>
       `
       : ""
   }
 `;
 
+  const riskElement = document.createElement("section");
+  riskElement.className = "trade-reasons";
+  coinDetails.querySelector("#coin-trade-plan-section")?.append(riskElement);
+  window.SM1MRisk?.mount(riskElement, { apiUrl: API_URL,
+    tradeId: data.tradeRegistration?.tradeId || trackedSignal?.tradeId, safety: data.dataSafety });
   const orderFlowElement = coinDetails.querySelector("[data-order-flow]");
   if (data.capabilities?.orderFlow === true) void loadOrderFlow(symbol, orderFlowElement);
   else if (orderFlowElement) orderFlowElement.textContent = "CVD / Delta: N/A — требуется поддержка backend.";
@@ -7158,6 +7168,7 @@ document.addEventListener(
 ></script>
 
 <script src="./coin-overview.js"></script>
+<script src="./risk-manager.js"></script>
 <script src="./entry-setups.js"></script>
 <script src="./market-data.js"></script>
   
