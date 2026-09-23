@@ -1,6 +1,10 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-private-access="pending">
 <head>
+  <style>
+    html[data-private-access="pending"] body > :not(#private-access-status) { display: none !important; }
+    #private-access-status { padding: 32px; color: #e6eef8; background: #091321; font: 16px system-ui; }
+  </style>
   <script src="./private-access.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -2261,6 +2265,7 @@
 </head>
 
 <body>
+  <div id="private-access-status" role="status">Проверка Private Access…</div>
   <main class="page" id="dashboard-top">
     <header class="header">
       <div class="header-brand">
@@ -2860,7 +2865,7 @@
   </div>
 </div>
   
-  <script>
+  <script type="text/plain" data-private-dashboard>
     const API_URL =
       "https://sergey-ai-trader-api.vercel.app/api/market?mode=scanner";
     
@@ -7164,16 +7169,16 @@ document.addEventListener(
     );
   </script>
 
-<script
-  src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"
+<script type="text/plain" data-private-dashboard
+  data-private-src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"
 ></script>
 
-<script src="./coin-overview.js"></script>
-<script src="./risk-manager.js"></script>
-<script src="./entry-setups.js"></script>
-<script src="./market-data.js"></script>
+<script type="text/plain" data-private-dashboard data-private-src="./coin-overview.js"></script>
+<script type="text/plain" data-private-dashboard data-private-src="./risk-manager.js"></script>
+<script type="text/plain" data-private-dashboard data-private-src="./entry-setups.js"></script>
+<script type="text/plain" data-private-dashboard data-private-src="./market-data.js"></script>
   
-<script src="./ai-chart.js"></script>  
+<script type="text/plain" data-private-dashboard data-private-src="./ai-chart.js"></script>
   
 </body>
 </html>
