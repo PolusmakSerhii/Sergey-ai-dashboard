@@ -799,12 +799,7 @@
     }
 
     .completed-trade-levels {
-      grid-template-columns:
-        minmax(0, 0.78fr)
-        minmax(0, 0.78fr)
-        minmax(0, 0.72fr)
-        minmax(0, 1.3fr)
-        minmax(0, 1.3fr);
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 72px), 1fr));
       column-gap: 8px;
     }
 
@@ -813,6 +808,10 @@
       font-size: 10px;
       line-height: 1.3;
       letter-spacing: 0;
+    }
+
+    .completed-trade-levels strong {
+      overflow-wrap: anywhere;
     }
 
     .completed-trade-levels strong,
@@ -826,7 +825,8 @@
     .completed-trade-date,
     .completed-trade-time {
       display: block;
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     .active-trade-age {
@@ -4413,8 +4413,9 @@ if (!data) {
               })}</span>`;
           const openedTime = formatCompletedTradeDateTime(openedDate);
           const checkedTime = formatCompletedTradeDateTime(checkedDate);
+          const displayResultR = hasResult ? Number(resultR.toFixed(2)) : null;
           const resultRText = hasResult
-            ? `${resultR > 0 ? "+" : ""}${resultR}R`
+            ? `${displayResultR > 0 ? "+" : ""}${displayResultR}R`
             : "—";
           const priceCheck = signal.outcome.priceCheck;
           const priceCheckText =
