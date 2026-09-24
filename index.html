@@ -1881,6 +1881,24 @@
 @media (max-width: 400px) {
   .liquidation-flow-grid { grid-template-columns: minmax(0, 1fr); }
 }
+.market-context.trade-reasons{background:#0c1724;border:1px solid #2a4055;border-radius:16px;padding:14px 20px;margin:14px 0;min-width:0}
+.market-context .trade-reasons-title{color:#67d9ff;font-size:18px;margin:0 0 4px}
+.market-context .liquidation-flow-note{margin:4px 0 8px;line-height:1.4}
+.market-context .liquidation-flow-grid{gap:10px 20px;margin:12px 0}
+.market-context .liquidation-flow-grid dd{font-size:22px;line-height:1.25;font-variant-numeric:tabular-nums}
+.market-context .context-source{display:block;color:#a9b8c9;font-size:12px;margin-top:3px}
+.market-context .context-secondary{border-top:1px solid #273b4d;padding-top:10px}
+.market-context .context-period dd{font-size:14px;font-weight:500}
+.market-context .context-callout{border-left:2px solid #2a4055;padding:6px 10px;color:#a9b8c9;font-size:13px;line-height:1.4;margin:8px 0 0;overflow-wrap:anywhere}
+.market-context .context-positive{color:#35d07f}
+.market-context .context-negative{color:#ff5d73}
+.market-context .context-cvd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.market-context .context-window{grid-column:1/-1}
+.market-context details{border-top:1px solid #273b4d;margin-top:10px;padding-top:8px;color:#a9b8c9;font-size:13px;line-height:1.5}
+.market-context summary{color:#67d9ff;cursor:pointer}
+.market-context [data-context4h]{white-space:pre-line;overflow-wrap:anywhere;margin:8px 0 0}
+@media(min-width:1000px){.market-context .context-cvd-grid{grid-template-columns:1fr 1fr 1.5fr}.market-context .context-window{grid-column:auto}}
+@media(max-width:480px){.market-context.trade-reasons{padding:12px}.market-context .liquidation-flow-grid{grid-template-columns:minmax(0,1fr)}.market-context .context-window{grid-column:auto}}
 .trade-stat-row {
   margin-top: 14px;
 }
@@ -5408,14 +5426,18 @@ document.querySelector(
       ];
       const note = !available ? (window.SM1MRisk?.reasonText(flow?.reasonCode) || "Liquidation data is unavailable or incomplete.")
         : flow.sideTotalUsd === 0 ? "No liquidations in the reported window."
-        : "Positive imbalance means more LONG liquidations; it does not predict price direction.";
+        : side === "LONG" ? "Больше ликвидаций на стороне LONG. Это не предсказывает направление цены."
+        : side === "SHORT" ? "Больше ликвидаций на стороне SHORT. Это не предсказывает направление цены."
+        : "Ликвидации сбалансированы. Это не предсказывает направление цены.";
       const mismatch = available && number(flow.totalDifferenceUsd) && flow.totalDifferenceUsd !== 0;
-      return `<section class="liquidation-flow trade-reasons" aria-label="Liquidations over 24 hours">
+      return `<section class="market-context liquidation-flow trade-reasons" aria-label="Liquidations over 24 hours">
         <div class="trade-reasons-title">Liquidations · 24H</div>
         <p class="liquidation-flow-note">CoinGlass · All exchanges · Does not affect Trading Score</p>
-        <dl class="liquidation-flow-grid">${rows.map(([label, value]) =>
+        <dl class="liquidation-flow-grid">${rows.slice(0, 4).map(([label, value]) =>
           `<div><dt>${label}</dt><dd>${value}</dd></div>`).join("")}</dl>
-        <p class="liquidation-flow-note">${note}</p>
+        <dl class="liquidation-flow-grid context-secondary">${rows.slice(4).map(([label, value], index) =>
+          `<div><dt>${label}</dt><dd class="${index === 0 && available ? (flow.imbalancePct > 0 ? 'context-positive' : flow.imbalancePct < 0 ? 'context-negative' : '') : ''}">${value}</dd></div>`).join("")}</dl>
+        <p class="context-callout">ⓘ ${note}</p>
         ${mismatch ? '<p class="liquidation-flow-note">The reported total differs from LONG + SHORT. Shares use the sum of both sides.</p>' : ""}
         <p class="liquidation-flow-note">Spikes: N/A · Price confirmation: N/A — historical data is unavailable.</p>
       </section>`;
@@ -5442,18 +5464,20 @@ document.querySelector(
       };
       const state = available && Object.prototype.hasOwnProperty.call(states, context?.state)
         ? states[context.state] : "N/A";
-      return `<section class="open-interest-price liquidation-flow trade-reasons" aria-label="Open Interest and price">
+      return `<section class="market-context open-interest-price liquidation-flow trade-reasons" aria-label="Open Interest and price">
         <div class="trade-reasons-title">Open Interest + Price</div>
-        <p class="liquidation-flow-note">Last closed day · Does not affect Trading Score</p>
+        <p class="liquidation-flow-note">Last closed daily period · Does not affect Trading Score</p>
         <dl class="liquidation-flow-grid">
-          <div><dt>Price change · OKX closed candles</dt><dd>${percent(context?.priceChangePct)}</dd></div>
-          <div><dt>OI change · CoinGlass · USD</dt><dd>${percent(context?.openInterestChangePct)}</dd></div>
+          <div><dt>Price change (24h)</dt><dd class="${available ? context?.priceChangePct > 0 ? 'context-positive' : context?.priceChangePct < 0 ? 'context-negative' : '' : ''}">${percent(context?.priceChangePct)}</dd><small class="context-source">OKX closed candles</small></div>
+          <div><dt>OI change (24h)</dt><dd class="${available ? context?.openInterestChangePct > 0 ? 'context-positive' : context?.openInterestChangePct < 0 ? 'context-negative' : '' : ''}">${percent(context?.openInterestChangePct)}</dd><small class="context-source">CoinGlass · USD</small></div>
+        </dl>
+        <dl class="liquidation-flow-grid context-secondary context-period">
           <div><dt>Period start</dt><dd>${timestamp(context?.windowStart)}</dd></div>
           <div><dt>Period end</dt><dd>${timestamp(context?.windowEnd)}</dd></div>
         </dl>
         <p class="liquidation-flow-note">${state}</p>
         ${!available ? `<p class="liquidation-flow-note">${window.SM1MRisk?.reasonText(context?.reasonCode) || "Matching closed price and OI history is unavailable, incomplete or stale."}</p>` : ''}
-        <p class="liquidation-flow-note">This is a closed daily period, not a rolling 24-hour change. USD open interest also changes with prices and does not prove that new LONG or SHORT positions were opened.</p>
+        <p class="context-callout">ⓘ Это закрытый дневной период, не скользящие 24 часа. OI в USD также меняется с ценой и не подтверждает открытие новых LONG/SHORT.</p>
       </section>`;
     }
 
@@ -5499,9 +5523,24 @@ document.querySelector(
         return;
       }
       const amount = v => new Intl.NumberFormat("en-US", {style:"currency",currency:"USD",maximumFractionDigits:0,signDisplay:"always"}).format(v);
-      element.textContent = `Delta последнего закрытого 4h: ${amount(f.deltaUsd)}\nCVD за окно: ${amount(f.cvdUsd)}\n` +
-        `${new Date(f.startTime).toISOString()} → ${new Date(f.endTime).toISOString()}\n` +
-        "CoinGlass · OKX futures · CVD начинается с нуля в начале указанного окна. Не влияет на Trading Score.";
+      const grid = document.createElement("dl");
+      grid.className = "liquidation-flow-grid context-cvd-grid";
+      for (const [label, value, numeric] of [
+        ["Delta (last closed 4h)", amount(f.deltaUsd), f.deltaUsd],
+        ["CVD (selected window)", amount(f.cvdUsd), f.cvdUsd],
+        ["Window (UTC)", `${new Date(f.startTime).toISOString()} → ${new Date(f.endTime).toISOString()}`, null]
+      ]) {
+        const field = document.createElement("div");
+        if (numeric === null) field.className = "context-window context-period";
+        const title = document.createElement("dt");
+        title.textContent = label;
+        const valueElement = document.createElement("dd");
+        valueElement.textContent = value;
+        valueElement.className = numeric > 0 ? "context-positive" : numeric < 0 ? "context-negative" : "";
+        field.append(title, valueElement);
+        grid.append(field);
+      }
+      element.replaceChildren(grid);
     }
 
     function renderTradeAnalytics(element, analytics) {
@@ -6185,7 +6224,7 @@ ${tradeExecutionStatus ? `
     "
 >
 
-<section class="liquidation-flow trade-reasons"><h3>CVD / Delta</h3><p data-order-flow style="white-space:pre-line">Загрузка CVD / Delta…</p><p data-context4h style="white-space:pre-line">История ликвидаций и OI + Price: N/A</p></section>
+<section class="market-context liquidation-flow trade-reasons"><h3 class="trade-reasons-title">CVD / Delta</h3><p class="liquidation-flow-note">CoinGlass · OKX futures · Does not affect Trading Score</p><div data-order-flow>Загрузка CVD / Delta…</div><p class="context-callout">ⓘ CVD показывает накопительную разницу рыночных покупок и продаж. Начинается с нуля в начале выбранного окна. Не влияет на Trading Score.</p><details><summary>Дополнительные данные</summary><p data-context4h>История ликвидаций и OI + Price: N/A</p></details></section>
 ${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
 ${renderOpenInterestPrice(data.derivativesHistory?.openInterest?.priceContext)}
 
