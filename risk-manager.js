@@ -1,6 +1,7 @@
 (function (root) {
   'use strict';
   const messages = {
+    INVALID_FROZEN_PLAN: 'Frozen Entry Zone / midpoint / initial Stop Loss or targets are invalid. No live-plan fallback.',
     INVALID_BALANCE: 'Enter a positive account balance.', INVALID_RISK_CONFIGURATION: 'Enter valid risk limits and leverage.',
     MISSING_PORTFOLIO_STATE: 'Explicit current account exposure is required.', STALE_ACCOUNT_STATE: 'Account snapshot is stale.',
     INVALID_ENTRY: 'Invalid frozen entry.', INVALID_STOP: 'Invalid frozen Stop Loss.',
@@ -24,7 +25,7 @@
         ? 'Canonical setup quality passed. Check account risk separately; this is not an order authorization.'
         : 'Canonical setup quality is separate from execution safety. Critical data is unavailable, stale or incompatible.' };
   }
-  function mount(element, { apiUrl, tradeId, safety }) {
+  function mount(element, { apiUrl, tradeId, safety, trackedSignal }) {
     if (!element) return;
     element.replaceChildren();
     const node = (tag, text, cls = '') => { const n = document.createElement(tag); n.textContent = text; n.className = cls; return n; };
@@ -33,6 +34,32 @@
     const details = [safety?.price, safety?.candles];
     element.append(node('p', details.map((d, i) => `${i ? 'Candles' : 'Price'}: ${d?.source || 'N/A'} · ${d?.instrumentType || 'N/A'} · ${d?.asOf || d?.lastConfirmedAt || 'N/A'} · ${d?.fresh === true ? 'fresh' : 'unavailable/stale'}`).join('\n'), 'liquidation-flow-note'));
     if (!tradeId) { element.append(node('p', 'UNAVAILABLE — a registered frozen trade plan is required.')); return; }
+    const referencePanel = node('div', '');
+    const referenceValue = value => typeof value === 'number' && Number.isFinite(value) && value > 0 ? String(value) : 'N/A';
+    const showReference = (reference, active = false) => {
+      referencePanel.replaceChildren(
+        node('p', `Planned Entry · Frozen A+ plan: ${referenceValue(reference?.plannedEntry)}`),
+        node('p', `Initial Stop Loss · Frozen A+ plan: ${referenceValue(reference?.initialStopLoss)}`));
+      if (active) referencePanel.append(
+        node('p', `Actual Entry · lifecycle modelled fill: ${referenceValue(reference?.actualEntry)}`),
+        node('p', `Current SL · lifecycle: ${referenceValue(reference?.currentStopLoss)}`));
+    };
+    element.append(referencePanel);
+    const tracked = trackedSignal?.tradeId === tradeId ? trackedSignal : null;
+    const state = tracked?.outcome?.status;
+    if (state === 'Active') {
+      showReference({ plannedEntry: tracked.initialPlan?.entryPrice, initialStopLoss: tracked.initialPlan?.initialStopLoss,
+        actualEntry: tracked.outcome.entryPrice, currentStopLoss: tracked.outcome.currentStopLoss }, true);
+      element.append(node('strong', 'ACTIVE POSITION'),
+        node('p', 'Расчёт относится к уже активированной позиции. Read-only lifecycle reference; no new position sizing or account-risk approval.'));
+      return;
+    }
+    if (state && !['WaitingEntry', 'Pending'].includes(state)) {
+      element.append(node('p', 'CLOSED / EXPIRED — historical trade; new position sizing unavailable.'));
+      return;
+    }
+    showReference(tracked ? {plannedEntry: tracked.initialPlan?.entryPrice, initialStopLoss: tracked.initialPlan?.initialStopLoss} : null);
+    referencePanel.append(node('p', 'Planned sizing uses the server-verified frozen midpoint and initial SL, never the live market price.', 'liquidation-flow-note'));
     const form = document.createElement('form'); form.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px';
     const fields = [ ['balance','Account balance · USDT',''], ['riskPercent','Risk per trade %','0.25'],
       ['maxOpenRiskPercent','Max total open risk %','1'], ['maxTrades','Max simultaneous trades','2'],
@@ -63,6 +90,13 @@
         const body = await response.json(); const risk = body.risk;
         if (version !== revision) return;
         if (!response.ok || body.ok !== true || !risk) throw Error('Unavailable');
+        if (risk.reference) showReference(risk.reference, risk.mode === 'existing-position');
+        if (risk.mode === 'existing-position') {
+          form.remove();
+          output.replaceChildren(node('strong', 'ACTIVE POSITION'),
+            node('p', 'Расчёт относится к уже активированной позиции. No new position sizing or account-risk approval.'));
+          return;
+        }
         output.replaceChildren(node('strong', `${['READY','BLOCKED','UNAVAILABLE'].includes(risk.status) ? risk.status : 'UNAVAILABLE'} · gross-risk scenario only`));
         for (const code of risk.reasonCodes || []) output.append(node('p', reasonText(code)));
         const c = risk.calculation;

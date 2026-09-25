@@ -46,3 +46,19 @@ test('syntax checks inline scripts and isolated risk renderer',()=>{
  new vm.Script(source);
  for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi))if(!/\bsrc\s*=|application\/ld\+json/.test(match[1]))new vm.Script(match[2]);
 });
+
+test('tracked Active and completed modes never offer a new sizing form',()=>{
+ class Node {children=[];style={};append(...x){this.children.push(...x);}replaceChildren(...x){this.children=x;}}
+ const c={window:{},document:{createElement:tag=>Object.assign(new Node(),{tag})},fetch:()=>assert.fail('no request on mount')};
+ vm.runInNewContext(source,c);
+ const text=n=>[n.textContent||'',...n.children.map(text)].join(' ');
+ for(const status of ['Active','Stopped','TP3Hit','Expired']){
+ const root=new Node(),trackedSignal={tradeId:'id',initialPlan:{entryPrice:100,initialStopLoss:90},outcome:{status,entryPrice:99.5,currentStopLoss:99.5,exits:[{target:'TP1'}]}};
+ const before=JSON.stringify(trackedSignal);
+ c.window.SM1MRisk.mount(root,{tradeId:'id',trackedSignal});
+ assert.equal(root.children.some(n=>n.tag==='form'),false);
+ assert.match(text(root),status==='Active'?/ACTIVE POSITION/:/historical trade/);
+ if(status==='Active')for(const value of ['Planned Entry · Frozen A+ plan: 100','Actual Entry · lifecycle modelled fill: 99.5','Initial Stop Loss · Frozen A+ plan: 90','Current SL · lifecycle: 99.5'])assert.ok(text(root).includes(value));
+ assert.equal(JSON.stringify(trackedSignal),before);
+ }
+});
