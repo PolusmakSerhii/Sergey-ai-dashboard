@@ -1897,7 +1897,15 @@
 .market-context details{border-top:1px solid #273b4d;margin-top:10px;padding-top:8px;color:#a9b8c9;font-size:13px;line-height:1.5}
 .market-context summary{color:#67d9ff;cursor:pointer}
 .market-context [data-context4h]{white-space:pre-line;overflow-wrap:anywhere;margin:8px 0 0}
-@media(min-width:1000px){.market-context .context-cvd-grid{grid-template-columns:1fr 1fr 1.5fr}.market-context .context-window{grid-column:auto}}
+.market-context.cvd-context .context-cvd-grid{gap:8px 20px;margin:10px 0}
+.market-context.cvd-context .context-window{grid-column:1/-1;border-top:1px solid #273b4d;padding-top:7px}
+.market-context.cvd-context .context-window dd{font-size:13px;line-height:1.4;margin-top:2px}
+.market-context.cvd-context .context-callout{margin-top:6px;padding:4px 10px}
+.market-context.cvd-context details{margin-top:8px;padding-top:6px}
+.market-context.cvd-context summary{list-style:none}
+.market-context.cvd-context summary::-webkit-details-marker{display:none}
+.market-context.cvd-context summary::before{content:"▶";display:inline-block;width:1.3em;font-size:11px}
+.market-context.cvd-context details[open]>summary::before{content:"▼"}
 @media(max-width:480px){.market-context.trade-reasons{padding:12px}.market-context .liquidation-flow-grid{grid-template-columns:minmax(0,1fr)}.market-context .context-window{grid-column:auto}}
 .trade-stat-row {
   margin-top: 14px;
@@ -6224,7 +6232,7 @@ ${tradeExecutionStatus ? `
     "
 >
 
-<section class="market-context liquidation-flow trade-reasons"><h3 class="trade-reasons-title">CVD / Delta</h3><p class="liquidation-flow-note">CoinGlass · OKX futures · Does not affect Trading Score</p><div data-order-flow>Загрузка CVD / Delta…</div><p class="context-callout">ⓘ CVD показывает накопительную разницу рыночных покупок и продаж. Начинается с нуля в начале выбранного окна. Не влияет на Trading Score.</p><details><summary>Дополнительные данные</summary><p data-context4h>История ликвидаций и OI + Price: N/A</p></details></section>
+<section class="market-context cvd-context liquidation-flow trade-reasons"><h3 class="trade-reasons-title">CVD / Delta</h3><p class="liquidation-flow-note">CoinGlass · OKX futures · Does not affect Trading Score</p><div data-order-flow>Загрузка CVD / Delta…</div><p class="context-callout">ⓘ CVD показывает накопительную разницу рыночных покупок и продаж. Начинается с нуля в начале выбранного окна. Не влияет на Trading Score.</p><details><summary>Дополнительные данные</summary><p data-context4h>История ликвидаций и OI + Price: N/A</p></details></section>
 ${renderLiquidationFlow(data.derivativesHistory?.liquidations?.flow)}
 ${renderOpenInterestPrice(data.derivativesHistory?.openInterest?.priceContext)}
 

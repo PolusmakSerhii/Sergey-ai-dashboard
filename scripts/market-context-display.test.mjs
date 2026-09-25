@@ -43,3 +43,28 @@ test('missing order flow remains N/A; details closed by default and layout scope
  assert.match(html,/\.liquidation-flow-grid > div \{ min-width: 0; \}/);
  assert.match(html,/overflow-wrap: anywhere/);
 });
+
+ test('CVD disclosure retains diagnostics inside a closed native details element',()=>{
+ const card=html.match(/<section class="market-context cvd-context[\s\S]*?<\/section>/)?.[0];
+ assert.ok(card);
+ assert.match(card,/<details><summary>Дополнительные данные<\/summary><p data-context4h>/);
+ assert.doesNotMatch(card,/<details[^>]*\bopen\b/);
+ assert.match(card,/data-order-flow/);
+ assert.match(card,/Does not affect Trading Score/);
+ assert.match(html,/details\[open\]>summary::before\{content:"▼"/);
+ assert.match(html,/summary::before\{content:"▶"/);
+ assert.match(html,/\.market-context\.cvd-context \.context-window\{grid-column:1\/-1/);
+ });
+ test('CVD positive, negative and neutral display values retain existing color semantics',async()=>{
+ for(const value of [31242,-31242,0]){
+ const c=context({symbol:'TEST',orderFlow:{available:true,deltaUsd:value,cvdUsd:value,startTime:100000,endTime:200000}});
+ const el=new Element();el.isConnected=true;el.parentElement={querySelector:()=>null};
+ await c.loadOrderFlow('TEST',el);
+ const grid=el.children[0];
+ for(const field of grid.children.slice(0,2)){
+ assert.equal(field.children[1].className,value>0?'context-positive':value<0?'context-negative':'');
+ assert.equal(field.children[1].textContent,new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0,signDisplay:'always'}).format(value));
+ }
+ assert.equal(grid.children[2].children[1].textContent,'1970-01-01T00:01:40.000Z → 1970-01-01T00:03:20.000Z');
+ }
+ });
