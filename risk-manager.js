@@ -107,6 +107,21 @@
         const remaining = Date.parse(risk.validUntil) - Date.now();
         if (risk.status === 'READY' && !(remaining > 0)) { output.textContent = 'UNAVAILABLE — risk snapshot expired; recalculate.'; return; }
         if (remaining > 0) setTimeout(() => { if (revision === version) output.textContent = 'UNAVAILABLE — risk snapshot expired; recalculate.'; }, Math.min(remaining, 60000));
+        const potential = risk.targetPotential;
+        const targets = [potential?.tp1, potential?.tp2, potential?.tp3];
+        const positive = v => typeof v === 'number' && Number.isFinite(v) && v > 0;
+        if (risk.status === 'READY' && risk.mode === 'planned-entry' && potential?.mode === 'planned' &&
+            potential.currency === 'USDT' && potential.basis === 'linear-gross-before-costs' &&
+            targets.every(t => t && positive(t.fraction) && t.fraction <= 1 && positive(t.rMultiple) && positive(t.contribution)) &&
+            Math.abs(targets.reduce((sum, t) => sum + t.fraction, 0) - 1) < 1e-12 &&
+            positive(potential.weightedAmount) && positive(potential.weightedR)) {
+          output.append(node('div', 'PLANNED TARGET POTENTIAL', 'trade-reasons-title'),
+            node('p', 'Gross · before fees/funding/slippage', 'liquidation-flow-note'));
+          targets.forEach((target, i) => output.append(node('p',
+            `TP${i + 1} · ${Number((target.fraction * 100).toFixed(2))}% contribution: +${target.contribution.toFixed(2)} USDT`)));
+          output.append(node('p', `Weighted TP Potential: +${potential.weightedAmount.toFixed(2)} USDT · +${potential.weightedR.toFixed(2)}R`),
+            node('p', 'Frozen A+ plan · заданный Risk Amount. Условный gross-результат при достижении всех целей.', 'liquidation-flow-note'));
+        }
         output.append(node('p', 'Quantity / net risk: N/A. Contract metadata, fees, funding and slippage are not verified. This result does not authorize execution.', 'liquidation-flow-note'));
       } catch { output.textContent = 'UNAVAILABLE — risk data could not be verified.'; }
       finally { button.disabled = false; }

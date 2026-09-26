@@ -62,3 +62,21 @@ test('tracked Active and completed modes never offer a new sizing form',()=>{
  assert.equal(JSON.stringify(trackedSignal),before);
  }
 });
+
+const potential={mode:'planned',currency:'USDT',basis:'linear-gross-before-costs',
+ tp1:{fraction:.25,rMultiple:1,contribution:2.5},tp2:{fraction:.25,rMultiple:2,contribution:5},tp3:{fraction:.5,rMultiple:3,contribution:15},weightedR:2.25,weightedAmount:22.5};
+async function renderRisk(risk){
+ class Node {constructor(tag){this.tag=tag;this.children=[];this.events={};this.value='';}style={};append(...n){this.children.push(...n);}prepend(...n){this.children.unshift(...n);}replaceChildren(...n){this.children=n;}setAttribute(){}addEventListener(e,f){this.events[e]=f;}remove(){}}
+ const root=new Node('section');const c={window:{},document:{createElement:t=>new Node(t)},Date,URL,AbortSignal,setTimeout(){},fetch:async()=>({ok:true,json:async()=>({ok:true,risk:{status:'READY',mode:'planned-entry',validUntil:new Date(Date.now()+10000).toISOString(),...risk}})})};
+ vm.runInNewContext(source,c);c.window.SM1MRisk.mount(root,{apiUrl:'https://example.test/api/market',tradeId:'id'});
+ await root.children.find(n=>n.tag==='form').events.submit({preventDefault(){}});
+ const text=n=>[n.textContent||'',...n.children.map(text)].join('\n');return text(root);
+}
+test('planned backend contributions display fractions, weighted potential and gross disclaimer',async()=>{
+ const text=await renderRisk({targetPotential:potential});
+ for(const label of ['TP1 · 25% contribution: +2.50 USDT','TP2 · 25% contribution: +5.00 USDT','TP3 · 50% contribution: +15.00 USDT','Weighted TP Potential: +22.50 USDT · +2.25R','Gross · before fees/funding/slippage','Условный gross-результат при достижении всех целей.'])assert.ok(text.includes(label),label);
+});
+for(const [name,risk] of [['null',{targetPotential:null}],['missing',{}],['unsupported currency',{targetPotential:{...potential,currency:'BTC'}}],['invalid amount',{targetPotential:{...potential,weightedAmount:Infinity}}],['blocked',{status:'BLOCKED',targetPotential:potential}],['Active',{mode:'existing-position',targetPotential:potential}]])test('no fake planned potential: '+name,async()=>{
+ const text=await renderRisk(risk);assert.doesNotMatch(text,/PLANNED TARGET POTENTIAL|Weighted TP Potential|TP1 ·|\+0\.00 USDT/);
+ if(name==='Active')assert.match(text,/ACTIVE POSITION/);
+});
