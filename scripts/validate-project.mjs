@@ -189,8 +189,8 @@ assert.match(
 );
 assert.match(
   html,
-  /\.trade-plan-grid > \*\s*\{[\s\S]*?min-height:\s*84px;[\s\S]*?height:\s*84px;[\s\S]*?padding:\s*11px;/,
-  "Trade Plan cards must be 30% smaller and uniformly sized"
+  /\.trade-plan-grid > \*\s*\{[^}]*?min-height:\s*84px;[^}]*?\bheight:\s*auto;[^}]*?padding:\s*11px;[^}]*\}/,
+  "Trade Plan cards must remain compact with responsive height"
 );
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]

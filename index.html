@@ -1745,8 +1745,9 @@
 }
 
 .trade-plan-grid > * {
+  min-width: 0;
   min-height: 84px;
-  height: 84px;
+  height: auto;
   padding: 11px;
   box-sizing: border-box;
   display: flex;
@@ -1771,6 +1772,30 @@
   color: #f5f7fa;
   font-size: 22px;
   font-weight: 800;
+}
+
+/* Trade Plan only: allow long prices to wrap without clipping fixed-height cards. */
+.trade-plan-grid .coin-detail-label {
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.trade-plan-grid .coin-detail-value {
+  min-width: 0;
+  font-size: clamp(16px, 2vw, 22px);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.trade-plan-grid .trade-plan-suggested-risk .coin-detail-label {
+  font-size: 10px;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.trade-plan-grid .trade-plan-suggested-risk .coin-detail-value {
+  font-size: clamp(16px, 1.8vw, 20px);
 }
     
 .trade-plan-entry {
@@ -6451,7 +6476,7 @@ ${!hasValidTrade ? `
 </div>
 </div>
 
-<div class="coin-detail-card">
+<div class="coin-detail-card trade-plan-suggested-risk">
 <div class="coin-detail-label">Suggested risk % / leverage · not calculated position size</div>
 <div class="coin-detail-value">
   ${
