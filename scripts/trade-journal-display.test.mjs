@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../trade-journal.js',import.meta.url),'utf8');
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+class Element {
+  constructor(){this.children=[];this.dataset={};this.listeners={};this.value='';}
+  set textContent(v){this.value=String(v);} get textContent(){return this.value+' '+this.children.map(c=>c.textContent).join(' ');}
+  set innerHTML(v){throw Error('Unsafe HTML');}
+  append(...children){this.children.push(...children);} replaceChildren(...children){this.value='';this.children=children;}
+  addEventListener(type,fn){this.listeners[type]=fn;} showModal(){this.open=true;} close(){this.open=false;}
+}
+function runtime(){const context=vm.createContext({window:{},document:{createElement:()=>new Element(),querySelector:()=>null},AbortSignal});vm.runInContext(source,context);return context.window.Sm1mTradeJournal;}
+const api=runtime();
+const fixture={tradeId:'frozen:1',origin:{symbol:'OKBUSDT',direction:'Long',grade:'A+',opportunityScore:88,confidence:97,action:'Strong Buy',detectedAt:'2026-09-01T00:00:00Z',riskReward:2},initialPlan:{entryPrice:100,entryZone:{from:99,to:101},initialStopLoss:90,takeProfit1:110,takeProfit2:120,takeProfit3:130},outcome:{status:'Stopped',entryPrice:101,currentStopLoss:101,exitPrice:101,resultR:0.25,activatedAt:'2026-09-01T00:01:00Z',checkedAt:'2026-09-01T00:05:00Z',exits:[{target:'TP1',price:110,initialFraction:0.25,realizedR:0.25,checkedAt:'2026-09-01T00:03:00Z'}]}};
+for(const [value,label] of [[1,'WIN'],[-1,'LOSS'],[0,'BREAK EVEN'],[0.25,'WIN']])test(`final ${value} classified ${label}`,()=>assert.equal(api.result({...fixture,outcome:{status:'Stopped',resultR:value}}).label,label));
+for(const status of ['Expired','Active','WaitingEntry','Pending'])test(`${status} cannot become final result`,()=>assert.equal(api.result({...fixture,outcome:{status,resultR:1}}).label,'N/A'));
+test('saved details distinguish planned/actual, stops and exits without fetch',()=>{const dialog=new Element();api.details(fixture,dialog);for(const t of ['Planned Entry / midpoint','100','Actual / Modelled Entry','101','Initial Stop Loss','90','Final / Current Stop Loss','TP1','0.25','Original detectedAt','Strong Buy','88','97','not necessarily exchange fills'])assert.ok(dialog.textContent.includes(t),t);assert.equal(dialog.open,true);});
+test('missing fields safe; malformed exits ignored; no reconstructed exits',()=>{const d=new Element();api.details({tradeId:'x',outcome:{exits:[null,2]}},d);assert.match(d.textContent,/N\/A/);assert.match(d.textContent,/No recorded partial exits/);});
+test('archive strings remain text, never HTML',()=>{const d=new Element();api.details({...fixture,origin:{symbol:'<img onerror=alert(1)>'}},d);assert.ok(d.textContent.includes('<img onerror=alert(1)>'));});
+const response=data=>({ok:true,json:async()=>({ok:true,...data})});
+test('explicit pagination deduplicates IDs and stops, detail makes zero requests',async()=>{const calls=[];const pages=[{records:[fixture],totalArchived:2,nextOffset:1},{records:[fixture,{...fixture,tradeId:'frozen:2'}],totalArchived:2,nextOffset:null}];const store=api.createStore(async url=>{calls.push(url);return response(pages.shift());},()=>{});await store.load();assert.match(calls[0],/mode=validation-archive&offset=0&limit=100$/);api.details(fixture,new Element());assert.equal(calls.length,1);await store.load();assert.equal(store.state.records.size,2);assert.match(calls[1],/offset=1/);await store.load();assert.equal(calls.length,2);});
+test('concurrent load guarded and loading published before request',async()=>{let resolve,calls=0;const store=api.createStore(()=>{calls++;assert.equal(store.state.loading,true);return new Promise(r=>resolve=r);},()=>{});const pending=store.load();await store.load();assert.equal(calls,1);resolve(response({records:[]}));await pending;});
+test('errors retain records and allow explicit retry',async()=>{let fail=true;const store=api.createStore(async()=>{if(fail)throw Error();return response({records:[fixture]});},()=>{});await store.load();assert.equal(store.state.error,true);fail=false;await store.load();assert.equal(store.state.records.size,1);});
+test('malformed record skipped without crashing valid rows',async()=>{const store=api.createStore(async()=>response({records:[null,{},fixture]}),()=>{});await store.load();assert.equal(store.state.skipped,2);assert.equal(store.state.records.size,1);const root=new Element();api.render(root,store.state,new Element(),()=>{});assert.equal(root.children.find(c=>c.className==='journal-list').children[0].dataset.tradeId,fixture.tradeId);});
+test('empty, coverage and load-more rendering',async()=>{const store=api.createStore(async()=>response({records:[]}),()=>{});await store.load();const root=new Element();api.render(root,store.state,new Element(),()=>{});assert.match(root.textContent,/No archived trades/);assert.match(root.textContent,/not complete all-time history/);assert.match(root.textContent,/Archive boundary: N\/A/);});
+test('invalid pagination fails closed',async()=>{const store=api.createStore(async()=>response({records:[fixture],nextOffset:0}),()=>{});await store.load();assert.equal(store.state.error,true);assert.equal(store.state.records.size,0);});
+test('no polling, live analysis, account inputs or monetary computation',()=>{assert.doesNotMatch(source,/setInterval|setTimeout|riskAmount|riskPercent|balance|leverage|mode=refresh|symbol=/);assert.equal((source.match(/fetcher\(/g)||[]).length,1);});
+test('navigation uses existing generic tab mechanism and session-gated script',()=>{for(const tab of ['global-ranking','entry-setups','top-coins','watchlist','trade-journal'])assert.ok(html.includes(`data-dashboard-tab="${tab}"`));assert.ok(html.includes('data-private-dashboard data-private-src="./trade-journal.js"'));assert.ok(html.includes('panel.hidden = panel.dataset.dashboardPanel !== selectedTab'));});
+test('all inline and journal JS parse',()=>{new vm.Script(source);for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))if(match[1].trim())new vm.Script(match[1]);});

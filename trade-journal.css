@@ -1,0 +1,16 @@
+.trade-journal-panel { min-width: 0; }
+.journal-notice { color: #94a3b8; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.journal-list { display: grid; gap: 10px; margin: 12px 0; }
+.journal-card, .journal-section { min-width: 0; }
+.journal-card { padding: 12px; border: 1px solid #1e293b; border-radius: 12px; background: #0f172a; }
+.journal-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr)); gap: 10px 14px; margin: 10px 0 0; }
+.journal-fields > div { min-width: 0; }
+.journal-fields dt { font-size: 11px; color: #94a3b8; }
+.journal-fields dd { margin: 3px 0 0; color: #e2e8f0; font-size: 13px; overflow-wrap: anywhere; }
+.journal-button { max-width: 100%; overflow-wrap: anywhere; cursor: pointer; background: #0f172a; color: #22d3ee; border: 1px solid #334155; border-radius: 8px; padding: 8px 12px; }
+.journal-dialog { box-sizing: border-box; width: min(820px, calc(100% - 24px)); max-height: 90vh; padding: 18px; background: #020617; color: #e2e8f0; border: 1px solid #334155; border-radius: 14px; overflow: auto; }
+.journal-dialog::backdrop { background: #020617cc; }
+.journal-dialog h2, .journal-dialog h3 { color: #22d3ee; font-size: 14px; overflow-wrap: anywhere; }
+.journal-dialog .journal-section { padding: 12px 0; border-top: 1px solid #1e293b; }
+@media (max-width: 600px) { .journal-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } .journal-dialog { padding: 12px; } }
+@media (max-width: 340px) { .journal-fields { grid-template-columns: minmax(0, 1fr); } }
