@@ -3067,6 +3067,7 @@
                 typeof coin?.symbol === "string"
               )
               .slice(0, 20)
+              .map(coin => ({ ...coin, updateStatus: "stale" }))
           : [];
       } catch {
         return [];
@@ -3088,26 +3089,31 @@
       );
     }
 
-    function compactFavoriteCoin(coin) {
+    // Ranking/scanner analysis uses SWAP explicitly; older rows omit the field.
+    function favoriteInstrumentType(coin) {
+      return coin.instrumentType || "SWAP";
+    }
+
+    function favoriteSourceLabel(coin) {
+      return coin.updateStatus === "ranking"
+        ? "Ranking snapshot"
+        : "Saved / stale";
+    }
+
+    function compactFavoriteCoin(coin, generatedAt = null) {
       return {
         rank: coin.rank ?? null,
         symbol: coin.symbol,
-        opportunityScore:
-          coin.opportunityScore ?? 0,
-        confidence: coin.confidence ?? 0,
-        recommendationConfidence:
-          coin.recommendationConfidence ?? null,
-        grade:
-          coin.grade ||
-          coin.opportunityGrade ||
-          "D",
-        direction: coin.direction || "Neutral",
-        action: getScannerAction(coin),
-        updatedAt:
-          coin.updatedAt ||
-          new Date().toISOString(),
-        updateStatus:
-          coin.updateStatus || "ranking"
+        instrumentType: favoriteInstrumentType(coin),
+        opportunityScore: coin.opportunityScore ?? null,
+        confidence: coin.confidence ?? null,
+        recommendationConfidence: coin.recommendationConfidence ?? null,
+        grade: coin.grade || coin.opportunityGrade || "—",
+        confirmedAPlus: coin.confirmedAPlus === true,
+        direction: coin.direction || "—",
+        action: coin.action || coin.recommendation?.action || "—",
+        updatedAt: coin.updatedAt || generatedAt || null,
+        updateStatus: "ranking"
       };
     }
 
@@ -3138,8 +3144,8 @@
             </thead>
             <tbody>
               ${favoriteCoins.map((coin, index) => {
-                const grade = coin.grade || "D";
-                const action = coin.action || "Wait";
+                const grade = coin.grade || "—";
+                const action = coin.action || "—";
                 return `
                   <tr class="scanner-row favorite-coin" data-symbol="${coin.symbol}">
                     <td class="scanner-favorite-column">
@@ -3158,16 +3164,16 @@
                         data-symbol="${coin.symbol}"
                         aria-label="Удалить ${coin.symbol} из Watchlist"
                         title="Удалить из Watchlist"
-                      >★</button>${coin.symbol}</td>
-                    <td>${coin.opportunityScore ?? 0}</td>
+                      >★</button>${coin.symbol}<small style="display:block">${favoriteSourceLabel(coin)}</small></td>
+                    <td>${coin.opportunityScore ?? "—"}</td>
                     <td>
                       <span class="grade grade-${grade.toLowerCase().replace("+", "plus")}">${grade}</span>
                     </td>
-                    <td>${coin.confidence ?? 0}%</td>
+                    <td>${coin.confidence == null ? "—" : `${coin.confidence}%`}</td>
                     <td>${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</td>
                     <td>
                       <span class="${coin.direction === "Long" ? "long" : coin.direction === "Short" ? "short" : "neutral"}">
-                        ${coin.direction || "Neutral"}
+                        ${coin.direction || "—"}
                       </span>
                     </td>
                     <td><span class="${getScannerActionClass(action)}">${action}</span></td>
@@ -3198,79 +3204,21 @@
       renderFavoriteCoins();
     }
 
-    async function loadFavoriteCoinAnalysis(saved) {
-      try {
-        const response = await fetch(
-          `https://sergey-ai-trader-api.vercel.app/api/market?symbol=${encodeURIComponent(saved.symbol)}`,
-          { cache: "no-store" }
-        );
-        const data = await response.json();
-
-        if (!response.ok || data?.ok !== true) {
-          throw new Error(
-            data?.error ||
-            `Favorite update failed: ${response.status}`
-          );
-        }
-
-        const technical = data.technical || {};
-        const probability = technical.probability || {};
-        const confidence = probability.confidence || {};
-        const assessment = probability.aiAssessment || {};
-        const recommendation =
-          technical.recommendation || {};
-
-        return {
-          ...saved,
-          confidence:
-            typeof confidence.score === "number"
-              ? confidence.score
-              : saved.confidence,
-          grade:
-            technical.opportunityGrade || "—",
-          direction:
-            assessment.direction ||
-            probability.direction ||
-            saved.direction,
-          action:
-            recommendation.action ||
-            saved.action,
-          updatedAt:
-            data.time ||
-            new Date().toISOString(),
-          updateStatus: "direct"
-        };
-      } catch (error) {
-        console.error(
-          `Favorite ${saved.symbol} update error:`,
-          error
-        );
-
-        return {
-          ...saved,
-          updateStatus: "stale"
-        };
-      }
-    }
-
-    async function syncFavoriteCoinsWithRanking() {
+    function syncFavoriteCoinsWithRanking(generatedAt = null) {
       if (!favoriteCoins.length) {
         renderFavoriteCoins();
         return;
       }
-
-      favoriteCoins = await Promise.all(
-        favoriteCoins.map(async saved => {
-          const current = globalRankingResults.find(
-            coin => coin.symbol === saved.symbol
-          );
-
-          return current
-            ? compactFavoriteCoin(current)
-            : loadFavoriteCoinAnalysis(saved);
-        })
-      );
-
+      favoriteCoins = favoriteCoins.map(saved => {
+        const current = globalRankingResults.find(coin =>
+          coin.symbol === saved.symbol &&
+          (!saved.instrumentType ||
+            favoriteInstrumentType(coin) === saved.instrumentType)
+        );
+        return current
+          ? compactFavoriteCoin(current, generatedAt)
+          : { ...saved, updateStatus: "stale" };
+      });
       saveFavoriteCoins();
       renderFavoriteCoins();
     }
@@ -3369,7 +3317,7 @@ function getScannerActionClass(action) {
       const rows = coins
         .filter(Boolean)
         .map((coin) => {
-          const action = coin.action || getScannerAction(coin);
+          const action = coin.action || (removeFavorites ? "—" : getScannerAction(coin));
           const actionClass = getScannerActionClass(action);
           const directionClass =
             coin.direction === "Long"
@@ -3377,7 +3325,7 @@ function getScannerActionClass(action) {
               : coin.direction === "Short"
                 ? "short"
                 : "neutral";
-          const grade = coin.grade || coin.opportunityGrade || "D";
+          const grade = coin.grade || coin.opportunityGrade || (removeFavorites ? "—" : "D");
           const favorite = isFavoriteCoin(coin.symbol);
           const favoriteButton = removeFavorites
             ? `<button
@@ -3398,11 +3346,11 @@ function getScannerActionClass(action) {
           return `
             <div class="mobile-scanner-row scanner-row ${removeFavorites ? "favorite-coin" : ""}" data-symbol="${coin.symbol}">
               ${favoriteButton}
-              <span class="mobile-scanner-symbol">${coin.symbol}</span>
-              <span class="mobile-scanner-score">${coin.opportunityScore ?? 0}</span>
+              <span class="mobile-scanner-symbol">${coin.symbol}${removeFavorites ? `<small style="display:block">${favoriteSourceLabel(coin)}</small>` : ""}</span>
+              <span class="mobile-scanner-score">${coin.opportunityScore ?? (removeFavorites ? "—" : 0)}</span>
               <span class="mobile-scanner-grade grade grade-${grade.toLowerCase().replace("+", "plus")}">${grade}</span>
               <span class="mobile-scanner-direction ${directionClass}">${coin.direction || "Neutral"}</span>
-              <span class="mobile-scanner-signal">Signal ${coin.confidence ?? 0}%</span>
+              <span class="mobile-scanner-signal">Signal ${removeFavorites && coin.confidence == null ? "—" : `${coin.confidence ?? 0}%`}</span>
               <span class="mobile-scanner-recommendation">Rec. ${typeof coin.recommendationConfidence === "number" ? `${coin.recommendationConfidence}%` : "—"}</span>
               <span class="mobile-scanner-action ${actionClass}">${action}</span>
             </div>
@@ -5201,7 +5149,7 @@ function renderRankingFreshness() {
    globalRankingResults =
      sortedResults;
 
-  syncFavoriteCoinsWithRanking();
+  syncFavoriteCoinsWithRanking(data.generatedAt);
   renderGlobalMarketSummary();
   renderCoreMarkets();
 
@@ -5358,7 +5306,7 @@ renderGlobalRankingPage();
   globalRankingResults =
     quickGlobalTop10;
 
-  syncFavoriteCoinsWithRanking();
+  syncFavoriteCoinsWithRanking(data.generatedAt);
 }
     const marketCountElement =
          document.querySelector("#market-count");
