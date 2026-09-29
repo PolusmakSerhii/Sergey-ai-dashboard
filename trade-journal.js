@@ -9,9 +9,47 @@
   const rText = value => number(value) === null ? 'N/A' : `${value > 0 ? '+' : ''}${Number(value.toFixed(2))}R`;
   function result(record) {
     const outcome = object(record.outcome);
-    if (!['TP1Hit', 'TP3Hit', 'Stopped'].includes(outcome.status)) return { value: null, label: 'N/A' };
+    if (!['TP1Hit', 'TP3Hit', 'Stopped'].includes(outcome.status) ||
+        typeof outcome.checkedAt !== 'string' || !Number.isFinite(Date.parse(outcome.checkedAt))) return { value: null, label: 'N/A' };
     const value = number(outcome.resultR);
     return { value, label: value === null ? 'N/A' : value > 0 ? 'WIN' : value < 0 ? 'LOSS' : 'BREAK EVEN' };
+  }
+  const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL' });
+  function filterRecords(records, filters) {
+    return [...records.values()].filter(record => {
+      const origin = object(record.origin), score = number(origin.opportunityScore);
+      return (!filters.search.trim() || (typeof origin.symbol === 'string' && origin.symbol.toUpperCase().includes(filters.search.trim().toUpperCase()))) &&
+        (filters.direction === 'ALL' || origin.direction === filters.direction) &&
+        (filters.result === 'ALL' || result(record).label === filters.result) &&
+        (filters.score === 'ALL' || score !== null && (filters.score === '85–89' ? score >= 85 && score < 90 : filters.score === '90–94' ? score >= 90 && score < 95 : score >= 95));
+    });
+  }
+  function summarize(records) {
+    const summary = { completed: 0, wins: 0, losses: 0, breakEven: 0, netR: 0, winRate: null, averageR: null };
+    for (const record of new Map(records.map(record => [record.tradeId, record])).values()) {
+      const final = result(record);
+      if (final.value === null) continue;
+      summary.completed++; summary.netR += final.value;
+      if (final.value > 0) summary.wins++; else if (final.value < 0) summary.losses++; else summary.breakEven++;
+    }
+    if (summary.completed) { summary.winRate = summary.wins / summary.completed * 100; summary.averageR = summary.netR / summary.completed; }
+    return summary;
+  }
+  function controls(filters, update) {
+    const bar = node('div', undefined, 'journal-controls');
+    const searchLabel = node('label', 'Search Symbol'), search = node('input');
+    search.type = 'search'; search.value = filters.search; search.placeholder = 'Symbol';
+    search.addEventListener('input', () => { filters.search = search.value; update(); }); searchLabel.append(search); bar.append(searchLabel);
+    const inputs = { search };
+    for (const [key, label, options] of [['direction', 'Direction', ['ALL', 'Long', 'Short']], ['result', 'Result', ['ALL', 'WIN', 'LOSS', 'BREAK EVEN']], ['score', 'Score', ['ALL', '85–89', '90–94', '95+']]]) {
+      const wrapper = node('label', label), select = node('select');
+      for (const value of options) { const option = node('option', value.toUpperCase()); option.value = value; select.append(option); }
+      select.value = filters[key]; select.addEventListener('change', () => { filters[key] = select.value; update(); });
+      inputs[key] = select; wrapper.append(select); bar.append(wrapper);
+    }
+    const reset = node('button', 'Reset', 'journal-button'); reset.type = 'button';
+    reset.addEventListener('click', () => { Object.assign(filters, defaultFilters()); for (const key of Object.keys(inputs)) inputs[key].value = filters[key]; update(); });
+    bar.append(reset); return bar;
   }
   function node(tag, value, className) {
     const element = document.createElement(tag);
@@ -42,7 +80,7 @@
     dialog.append(exits); if (!dialog.open) dialog.showModal();
   }
   function createStore(fetcher, notify) {
-    const state = { records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, skipped: 0 };
+    const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, skipped: 0 };
     return { state, async load() {
       if (state.loading || state.next === null) return;
       const offset = state.next; state.loading = true; state.error = false; notify(state);
@@ -66,23 +104,32 @@
     }};
   }
   function render(root, state, dialog, load) {
-    root.replaceChildren(node('p', 'Saved canonical trade records available in the validation archive. Coverage may be incomplete; this is not complete all-time history.', 'journal-notice'),
-      node('p', `Archive boundary: ${date(state.boundary)} · Loaded ${state.records.size} archived trades${state.total === null ? '' : ` / ${state.total} reported`}`, 'journal-notice'));
-    if (state.skipped) root.append(node('p', `${state.skipped} malformed records skipped.`, 'journal-notice'));
-    if (state.error) root.append(node('p', 'Archive unavailable. Loaded records are retained. Please retry.', 'journal-notice'));
-    if (state.loading) root.append(node('p', 'Loading archived trades...', 'journal-notice'));
-    if (state.loaded && !state.records.size && !state.loading) root.append(node('p', 'No archived trades available.'));
+    state.filters ||= defaultFilters();
+    if (!root.journalView) {
+      root.journalView = node('div');
+      root.replaceChildren(node('p', 'Сохранённые записи сделок из архива валидации. Архив может содержать не всю историю сделок.', 'journal-notice'),
+        controls(state.filters, () => render(root, state, dialog, load)), root.journalView);
+    }
+    const view = root.journalView, selected = filterRecords(state.records, state.filters), summary = summarize(selected);
+    const active = state.filters.search.trim() || ['direction', 'result', 'score'].some(key => state.filters[key] !== 'ALL');
+    view.replaceChildren(node('p', `Граница архива: ${date(state.boundary)} · Загружено сделок: ${state.records.size}${state.total === null ? '' : ` из ${state.total}`} · После фильтрации: ${selected.length} из ${state.records.size} загруженных сделок. Аналитика рассчитана только по загруженным сделкам и не является статистикой за всё время.`, 'journal-notice'),
+      fields(active ? 'FILTERED COHORT' : 'LOADED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['NET R', rText(summary.netR)], ['AVERAGE R', rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
+    if (state.skipped) view.append(node('p', `${state.skipped} malformed records skipped.`, 'journal-notice'));
+    if (state.error) view.append(node('p', 'Archive unavailable. Loaded records are retained. Please retry.', 'journal-notice'));
+    if (state.loading) view.append(node('p', 'Loading archived trades...', 'journal-notice'));
+    if (state.loaded && !state.records.size && !state.loading) view.append(node('p', 'No archived trades available.'));
+    if (state.records.size && !selected.length) view.append(node('p', 'No matching loaded records.'));
     const list = node('div', undefined, 'journal-list');
-    for (const record of state.records.values()) {
+    for (const record of selected) {
       const origin = object(record.origin), outcome = object(record.outcome), final = result(record);
       const card = node('article', undefined, 'journal-card'); card.dataset.tradeId = record.tradeId;
       const open = node('button', text(origin.symbol), 'journal-button'); open.type = 'button'; open.addEventListener('click', () => details(record, dialog));
       card.append(open, fields(null, [['Direction', ['Long', 'Short'].includes(origin.direction) ? origin.direction.toUpperCase() : 'N/A'], ['Original Grade', origin.grade], ['Original Score', origin.opportunityScore], ['Original Confidence', origin.confidence], ['Lifecycle', outcome.status], ['Result R', `${rText(final.value)} · ${final.label}`], ['Opened', date(outcome.activatedAt)], ['Closed', final.value === null ? 'N/A' : date(outcome.checkedAt)]])); list.append(card);
     }
-    root.append(list);
-    if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); root.append(more); }
+    view.append(list);
+    if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); view.append(more); }
   }
-  window.Sm1mTradeJournal = { result, details, createStore, render };
+  window.Sm1mTradeJournal = { result, details, createStore, render, defaultFilters, filterRecords, summarize };
   const root = document.querySelector('#trade-journal-content'), dialog = document.querySelector('#trade-journal-dialog');
   if (!root || !dialog) return;
   const store = createStore(window.fetch.bind(window), state => render(root, state, dialog, () => store.load()));

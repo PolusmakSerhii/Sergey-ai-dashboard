@@ -14,3 +14,9 @@
 .journal-dialog .journal-section { padding: 12px 0; border-top: 1px solid #1e293b; }
 @media (max-width: 600px) { .journal-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } .journal-dialog { padding: 12px; } }
 @media (max-width: 340px) { .journal-fields { grid-template-columns: minmax(0, 1fr); } }
+
+.journal-controls { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto; gap: 8px; align-items: end; margin: 12px 0; }
+.journal-controls label { min-width: 0; color: #94a3b8; font-size: 11px; }
+.journal-controls input, .journal-controls select { box-sizing: border-box; display: block; width: 100%; min-width: 0; margin-top: 4px; padding: 8px; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: #e2e8f0; }
+@media (max-width: 768px) { .journal-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 400px) { .journal-controls { grid-template-columns: minmax(0, 1fr); } }
