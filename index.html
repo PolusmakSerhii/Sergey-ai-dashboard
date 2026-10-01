@@ -4293,7 +4293,9 @@ if (!data) {
           const stopLossLevel = `
             <span>Stop Loss<strong>${signal.initialPlan?.stopLoss ?? signal.stopLoss ?? "—"}</strong></span>
           `;
-          const orderedLevels = direction === "Short"
+          const orderedLevels = signal.initialPlan?.exitStrategy?.version === "tp1-50-reanalyse-v1"
+            ? [stopLossLevel, currentLevel, entryLevel, tp1Level]
+            : direction === "Short"
             ? [tp1Level, currentLevel, entryLevel, stopLossLevel]
             : [stopLossLevel, entryLevel, currentLevel, tp1Level];
 
