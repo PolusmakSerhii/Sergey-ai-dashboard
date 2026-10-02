@@ -27,9 +27,9 @@ test('compact CSS applies only to exact new policy, legacy delegates unchanged',
   assert.equal((output.match(/class="active-trade-item is-tp1-reanalysis"/g) || []).length, 1);
   assert.equal(legacy[0][0], old); assert.equal(legacy[0][1], true);
 });
-test('chronology overrides progress across both policies and directions', () => {
+test('newest activation first overrides progress across both policies and directions', () => {
   const old = trade('EARLY', '2026-09-29', { initialPlan: { exitStrategy: { version: 'partial-25-25-50-be-v1' } } });
-  assert.deepEqual(order([trade('LATE', '2026-10-02', { price: 119 }), trade('MIDDLE', '2026-10-01', { direction: 'Short' }), old]), ['EARLY', 'MIDDLE', 'LATE']);
+  assert.deepEqual(order([trade('LATE', '2026-10-02', { price: 101 }), trade('MIDDLE', '2026-10-01', { direction: 'Short', price: 119 }), old]), ['LATE', 'MIDDLE', 'EARLY']);
 });
 test('verified candle fallback only; primary timestamp takes precedence; unknown last', () => {
   const withCheck = (symbol, activatedAt, timestamp, rule = 'first-complete-candle-touch') => trade(symbol, null, {
@@ -40,13 +40,14 @@ test('verified candle fallback only; primary timestamp takes precedence; unknown
     withCheck('PRIMARY', '2026-10-03', Date.parse('2026-09-01')),
     withCheck('FALLBACK', 'invalid', Date.parse('2026-10-01')),
     withCheck('MISSING', null, Date.parse('2026-10-02'))
-  ]), ['FALLBACK', 'MISSING', 'PRIMARY', 'UNKNOWN']);
+  ]), ['PRIMARY', 'MISSING', 'FALLBACK', 'UNKNOWN']);
 });
 test('missing/invalid times ignore creation dates and sort last by id then filtered index', () => {
   const first = trade('FIRST', null, { tradeId: 'same', createdAt: '2000-01-01', plannedAt: '2000-01-01' });
   const second = trade('SECOND', 'invalid', { tradeId: 'same' });
   assert.deepEqual(order([first, trade('Z', null), second, trade('KNOWN', '2026-10-01'), trade('A', '')]), ['KNOWN', 'A', 'Z', 'FIRST', 'SECOND']);
   assert.deepEqual(order([trade('B', '2026-10-01'), trade('A', '2026-10-01')]), ['A', 'B']);
+  assert.deepEqual(order([trade('FIRST', '2026-10-01', { tradeId: 'same' }), trade('SECOND', '2026-10-01', { tradeId: 'same' })]), ['FIRST', 'SECOND']);
 });
 test('null/non-finite fallback is not a valid activation', () => {
   for (const timestamp of [null, undefined, NaN, Infinity, '2026-01-01']) {
@@ -55,10 +56,10 @@ test('null/non-finite fallback is not a valid activation', () => {
   }
 });
 test('source array and nested objects stay unchanged, inactive records excluded', () => {
-  const trades = [trade('LATE', '2026-10-02'), trade('EARLY', '2026-10-01'), trade('WAIT', null, { outcome: { status: 'WaitingEntry' } })];
+  const trades = [trade('EARLY', '2026-10-01'), trade('LATE', '2026-10-02'), trade('WAIT', null, { outcome: { status: 'WaitingEntry' } })];
   const before = structuredClone(trades);
   const freeze = value => { if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); } };
-  freeze(trades); assert.deepEqual(order(trades), ['EARLY', 'LATE']); assert.deepEqual(trades, before);
+  freeze(trades); assert.deepEqual(order(trades), ['LATE', 'EARLY']); assert.deepEqual(trades, before);
 });
 for (const [direction, price, stop, tp, progress, width, left] of [
   ['Long', 110, 90, 120, '+50', 25, 75], ['Long', 95, 90, 120, '-25', 25, 25],
