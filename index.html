@@ -779,6 +779,10 @@
         transform 160ms ease;
     }
 
+    .active-trade-item.is-tp1-reanalysis {
+      align-self: start;
+    }
+
     .active-trade-item:hover,
     .active-trade-item:focus-visible {
       border-color: rgba(78, 227, 178, 0.56);
@@ -4196,13 +4200,29 @@ if (!data) {
             : null;
       };
 
+      const activationTime = signal => {
+        const value = signal.outcome?.activatedAt;
+        const primary = typeof value === "string" && value.trim()
+          ? Date.parse(value)
+          : typeof value === "number" ? new Date(value).getTime() : NaN;
+        if (Number.isFinite(primary)) return primary;
+        const check = signal.outcome?.entryCheck;
+        const timestamp = check?.candle?.timestamp;
+        return check?.rule === "first-complete-candle-touch" &&
+          typeof timestamp === "number" &&
+          Number.isFinite(new Date(timestamp).getTime())
+            ? timestamp : Infinity;
+      };
       const activeTrades = Array.isArray(latest?.readySignals)
         ? latest.readySignals.filter(
             signal => signal?.outcome?.status === "Active"
-          ).sort((a, b) =>
-            (getProgressToTp1(b) ?? -Infinity) -
-            (getProgressToTp1(a) ?? -Infinity)
-          )
+          ).map((signal, index) => ({ signal, index, time: activationTime(signal) }))
+          .sort((a, b) => {
+            if (a.time !== b.time) return a.time < b.time ? -1 : 1;
+            const aId = String(a.signal.tradeId ?? "");
+            const bId = String(b.signal.tradeId ?? "");
+            return aId < bId ? -1 : aId > bId ? 1 : a.index - b.index;
+          }).map(item => item.signal)
         : [];
 
       countElement.textContent = activeTrades.length
@@ -4302,7 +4322,7 @@ if (!data) {
           return `
             <button
               type="button"
-              class="active-trade-item"
+              class="active-trade-item${signal.initialPlan?.exitStrategy?.version === "tp1-50-reanalyse-v1" ? " is-tp1-reanalysis" : ""}"
               data-symbol="${signal.symbol || ""}"
               aria-label="Открыть полный анализ ${signal.symbol || "монеты"}"
               title="Открыть полный анализ"
