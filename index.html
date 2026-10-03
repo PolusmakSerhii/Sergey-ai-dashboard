@@ -2794,9 +2794,6 @@
 
   <section class="statistics-extra" aria-label="Дополнительная статистика">
     <div id="statistics-trade-analytics">Новые показатели: N/A</div>
-    <p class="statistics-streak-note" id="statistics-streak-note">
-      Серия результатов появится после первой завершённой сделки
-    </p>
   </section>
 
   <details class="statistics-history-card statistics-collapsible" id="advanced-analytics">
@@ -4909,31 +4906,6 @@ if (!data) {
         const analyticsElement = document.querySelector("#statistics-trade-analytics");
         if (analyticsElement) renderTradeAnalytics(analyticsElement, analytics);
 
-        const streakNote = document.querySelector(
-          "#statistics-streak-note"
-        );
-        const streakType = outcomes.currentStreak?.type;
-        const streakCount = Number(
-          outcomes.currentStreak?.count
-        ) || 0;
-        const maxConsecutiveLosses = Number(
-          outcomes.maxConsecutiveLosses
-        ) || 0;
-
-        if (streakNote) {
-          streakNote.classList.toggle(
-            "is-win",
-            streakType === "Win"
-          );
-          streakNote.classList.toggle(
-            "is-loss",
-            streakType === "Loss"
-          );
-          streakNote.textContent = streakType && streakCount > 0
-            ? `Текущая серия: ${streakCount} ${streakType === "BreakEven" ? "BREAK EVEN" : streakType} подряд · Максимум LOSS подряд: ${maxConsecutiveLosses}`
-            : "Серия результатов появится после первой завершённой сделки";
-        }
-
         renderActiveTrades(latest);
         renderCompletedTrades(
           history,
@@ -5581,7 +5553,7 @@ document.querySelector(
       header.append(heading);
       element.append(header);
       if (!analytics || !Number.isInteger(analytics.completed) || analytics.completed <= 0) {
-        element.append(node("p", "statistics-extra-note", "LONG/SHORT и TP Hit Rate: N/A — ожидаем новые завершённые сделки."));
+        element.append(node("p", "statistics-extra-note", "LONG/SHORT: N/A — ожидаем новые завершённые сделки."));
         return;
       }
       const badges = node("div", "statistics-extra-badges");
@@ -5621,17 +5593,7 @@ document.querySelector(
         section.append(head, values); directions.append(section);
       }
       element.append(directions);
-      const count = analytics.partialCompleted;
-      const tp = node("div", "statistics-extra-tp");
-      tp.append(node("span", "statistics-extra-label", `TP HIT RATE · ${Number.isInteger(count) ? count : 0} completed plans · 25/25/50`));
-      const hits = node("div", "statistics-extra-tp-values");
-      for (const target of ["TP1", "TP2", "TP3"]) {
-        const value = count > 0 && Number.isInteger(analytics.hits?.[target])
-          ? `${(100 * analytics.hits[target] / count).toFixed(1)}%` : "N/A";
-        hits.append(node("span", "", `${target} ${value}`));
-      }
-      tp.append(hits); element.append(tp,
-        node("p", "statistics-extra-note", "Старые итоги не пересчитываются · ACTIVE и EXPIRED не учитываются"));
+
     }
 
     function getTradeExecutionStatus({ confirmedAPlus, liveTradePlan = {}, tradePlan = {},
