@@ -1866,6 +1866,23 @@
     font-size: 14px;
     line-height: 1.6;
 }
+.risk-manager-heading { color:#67d9ff; font-size:16px; font-weight:700; }
+.risk-manager-label > span, .risk-manager-ru { display:block; }
+.risk-manager-ru { color:#a9b8c9; font-size:11px; line-height:1.4; font-weight:400; }
+.risk-manager-note { color:#a9b8c9; font-size:12px; line-height:1.45; margin:6px 0; overflow-wrap:anywhere; }
+.risk-manager-metrics, .risk-manager-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)); gap:8px; margin:10px 0; }
+.risk-manager-metric, .risk-manager-field, .risk-manager-panel { min-width:0; overflow-wrap:anywhere; }
+.risk-manager-metric { padding:8px; border:1px solid #243548; border-radius:8px; }
+.risk-manager-metric .risk-manager-label { font-size:12px; }
+.risk-manager-value { display:block; color:#f5f7fa; font-size:16px; margin-top:4px; }
+.risk-manager-data { display:flex; flex-wrap:wrap; gap:8px 16px; font-size:12px; margin:10px 0; }
+.risk-manager-data .risk-manager-note { flex-basis:100%; }
+.risk-manager-warning { color:#f4b942; }
+.risk-manager-details { font-size:12px; margin:8px 0; }
+.risk-manager-details summary { cursor:pointer; }
+.risk-manager-details summary .risk-manager-label { display:inline-block; }
+.risk-manager-status { font-size:13px; margin:8px 0; }
+.risk-manager-output { min-width:0; overflow-wrap:anywhere; }
 .trade-reasons {
     margin: 20px 0;
     padding: 18px;
@@ -6552,7 +6569,7 @@ ${Object.keys(marketEnvironment).length > 0 ? `
 `;
 
   const riskElement = document.createElement("section");
-  riskElement.className = "trade-reasons";
+  riskElement.className = "trade-reasons risk-manager-panel";
   coinDetails.querySelector("#coin-trade-plan-section")?.append(riskElement);
   window.SM1MRisk?.mount(riskElement, { apiUrl: API_URL,
     tradeId: data.tradeRegistration?.tradeId || trackedSignal?.tradeId, safety: data.dataSafety, trackedSignal });
