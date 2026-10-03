@@ -4121,8 +4121,10 @@ if (!data) {
       const currentStop = outcome.currentStopLoss;
       const entry = outcome.entryPrice;
       const current = outcome.priceCheck?.status === "verified" ? outcome.markPrice : null;
-      const targets = [plan.takeProfit1, plan.takeProfit2, plan.takeProfit3];
-      const minimum = Math.min(initialStop, ...targets), maximum = Math.max(initialStop, ...targets);
+      const isTp1Reanalysis = plan.exitStrategy?.version === "tp1-50-reanalyse-v1";
+      const targets = isTp1Reanalysis ? [plan.takeProfit1] : [plan.takeProfit1, plan.takeProfit2, plan.takeProfit3];
+      const scaleLevels = isTp1Reanalysis ? [initialStop, currentStop, entry, ...targets].filter(finite) : [initialStop, ...targets];
+      const minimum = Math.min(...scaleLevels), maximum = Math.max(...scaleLevels);
       const position = price => finite(price) && finite(minimum) && finite(maximum) && maximum > minimum
         ? Math.max(0, Math.min(100, (price - minimum) / (maximum - minimum) * 100)) : null;
       const marker = (price, label, className) => position(price) !== null
@@ -4147,7 +4149,7 @@ if (!data) {
           ${targetRows}
           <div><span>Position remaining</span><strong>${finite(outcome.remainingPosition) ? number(outcome.remainingPosition*100)+"%" : "N/A"}</strong></div>
         </div>
-        <div class="partial-price-line" role="img" aria-label="Current Stop Loss ${number(currentStop)}, Entry ${number(entry)}, TP1 ${number(targets[0])}, TP2 ${number(targets[1])}, TP3 ${number(targets[2])}">
+        <div class="partial-price-line" role="img" aria-label="Current Stop Loss ${number(currentStop)}, Entry ${number(entry)}, ${targets.map((price, i) => `TP${i+1} ${number(price)}`).join(", ")}">
           ${marker(currentStop, stopLabel, "partial-stop")}
           ${currentStop !== entry ? marker(entry, "Entry", "partial-entry") : ""}
           ${targets.map((price,i)=>marker(price,`TP${i+1}`,"partial-target")).join("")}
@@ -4159,7 +4161,7 @@ if (!data) {
           <div><span>Total R</span><strong>${r(outcome.totalR)}</strong></div>
         </div>
         <div class="active-trade-age">R price timestamp: ${time}. Fractions use initial position size.</div>
-        <div class="active-trade-age">After TP1: SL = actual Entry. After TP2: SL unchanged.</div>
+        <div class="active-trade-age">${isTp1Reanalysis ? "After TP1: 50% realized · SL → Break Even · Re-analysis → HOLD / CLOSE" : "After TP1: SL = actual Entry. After TP2: SL unchanged."}</div>
         ${renderTradeVerification(outcome)}
       </div>`;
       return card ? `<button type="button" class="active-trade-item partial-trade-item" data-symbol="${escape(signal.symbol)}" aria-label="Открыть полный анализ ${escape(signal.symbol)}">
@@ -5809,6 +5811,8 @@ const trackedPlanIsCurrent =
   Boolean(trackedPlan) &&
   OPEN_TRACKED_TRADE_STATUSES.has(trackedStatus) &&
   hasValidTrackedTradeGeometry(trackedSignal);
+const frozenExitPolicyVersion = trackedPlanIsCurrent ? trackedPlan.exitStrategy?.version : undefined;
+const isTp1ReanalysisPlan = frozenExitPolicyVersion === "tp1-50-reanalyse-v1";
 const tradePlan = trackedPlanIsCurrent
   ? {
       ...liveTradePlan,
@@ -5965,7 +5969,7 @@ const diagnosticDisplay = getAnalysisDiagnosticDisplay({
   ${(() => {
     try {
       return window.SergeyCoinOverview && typeof window.SergeyCoinOverview.render === "function"
-        ? window.SergeyCoinOverview.render({data, ranking: scannerCoin, plan: tradePlan, tracked: trackedPlanIsCurrent, execution: tradeExecutionStatus})
+        ? window.SergeyCoinOverview.render({data, ranking: scannerCoin, plan: tradePlan, tracked: trackedPlanIsCurrent, frozenExitPolicyVersion, execution: tradeExecutionStatus})
         : "";
     } catch {
       return "";
@@ -6401,12 +6405,13 @@ ${!hasValidTrade ? `
 </div>
 
 <div class="coin-detail-card trade-plan-target">
-<div class="coin-detail-label">TP1</div>
+<div class="coin-detail-label">${isTp1ReanalysisPlan ? "TP1 · 50%" : "TP1"}</div>
 <div class="coin-detail-value">
     ${tradePlan.takeProfit1 ?? "—"}
 </div>
 </div>
 
+${!isTp1ReanalysisPlan ? `
 <div class="coin-detail-card trade-plan-target">
 <div class="coin-detail-label">TP2</div>
 <div class="coin-detail-value">
@@ -6420,6 +6425,8 @@ ${!hasValidTrade ? `
     ${tradePlan.takeProfit3 ?? "—"}
 </div>
 </div>
+
+` : ""}
 
 <div class="coin-detail-card trade-plan-risk">
 <div class="coin-detail-label">Risk / Reward</div>

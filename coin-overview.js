@@ -2,7 +2,7 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const number = value => (typeof value === 'number' || (typeof value === 'string' && value.trim())) && Number.isFinite(Number(value)) ? Number(value) : null;
   const price = value => { const n = number(value); return n !== null && n > 0 ? escape(n.toLocaleString('ru-RU', {maximumSignificantDigits:10})) : '—'; };
-  function render({data = {}, ranking = {}, plan = {}, tracked = false, execution = {}} = {}) {
+  function render({data = {}, ranking = {}, plan = {}, tracked = false, frozenExitPolicyVersion, execution = {}} = {}) {
     const technical = data.technical || {}, probability = technical.probability || {};
     const confirmed = technical.confirmedAPlus;
     const rawScore = number(technical.opportunityScore);
@@ -45,7 +45,7 @@
       ${confirmed === true ? '<p>Backend подтвердил условия A+. Статус входа указан в блоке Execution.</p>' : `<ul class="overview-checks">${rows.join('')}</ul><p class="overview-note">Это доступные проверки свежего анализа, а не полный список причин. Отсутствующие live-поля не заменяются данными Ranking.</p>`}
       </details>
       <details><summary>Вход, стоп и цели</summary><p class="overview-note">${tracked ? 'Уровни сохранённого плана. Текущий статус: ' + escape(execution.title || 'неизвестен') : confirmed === true ? 'Уровни подтверждённого плана. Статус входа смотрите в Execution.' : 'Предварительные уровни, если доступны. Подтверждения для нового входа нет.'}</p>
-      <dl class="overview-levels"><div><dt>Зона входа</dt><dd>${price(plan.entryZone?.from)} – ${price(plan.entryZone?.to)}</dd></div>${[['Стоп',plan.stopLoss],['Цель 1',plan.takeProfit1],['Цель 2',plan.takeProfit2],['Цель 3',plan.takeProfit3]].map(([name,value])=>`<div><dt>${name}</dt><dd>${price(value)}</dd></div>`).join('')}</dl></details>
+      <dl class="overview-levels"><div><dt>Зона входа</dt><dd>${price(plan.entryZone?.from)} – ${price(plan.entryZone?.to)}</dd></div>${[['Стоп',plan.stopLoss],['Цель 1',plan.takeProfit1],...(frozenExitPolicyVersion === 'tp1-50-reanalyse-v1' ? [] : [['Цель 2',plan.takeProfit2],['Цель 3',plan.takeProfit3]])].map(([name,value])=>`<div><dt>${name}</dt><dd>${price(value)}</dd></div>`).join('')}</dl></details>
       <p class="overview-note">Свежий анализ: ${escape(timestamp)}</p>
     </section>`;
   }
