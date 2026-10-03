@@ -48,8 +48,9 @@
       provenance.append(node('p', `${label}: ${d?.source || 'N/A'} · ${d?.instrumentType || 'N/A'} · ${d?.asOf || d?.lastConfirmedAt || 'N/A'}`, 'risk-manager-note'));
     });
     dataStatus.append(node('p', 'Актуальность данных не является разрешением на вход.', 'risk-manager-note'));
+    const riskCheckReminder = bilingual('RISK CHECK REQUIRED', 'Требуется проверка риска');
     if (safety?.status !== 'READY') dataStatus.append(bilingual('DATA SAFETY BLOCKED', 'Проверка данных не пройдена', 'risk-manager-warning'));
-    else dataStatus.append(bilingual('RISK CHECK REQUIRED', 'Требуется проверка риска'));
+    else dataStatus.append(riskCheckReminder);
     for (const code of safety?.reasonCodes || []) dataStatus.append(node('p', reasonText(code), 'risk-manager-warning'));
     element.append(dataStatus, provenance);
     if (!tradeId) { element.append(bilingual('UNAVAILABLE — a registered frozen trade plan is required.', 'Расчёт недоступен — требуется зарегистрированный зафиксированный план.')); return; }
@@ -60,16 +61,19 @@
       box.append(bilingual(en, ru), node('strong', value, 'risk-manager-value')); return box;
     };
     const showReference = (reference, active = false) => {
-      referencePanel.replaceChildren(metric('PLANNED ENTRY', 'Плановый вход · Frozen A+ plan', referenceValue(reference?.plannedEntry)));
+      referencePanel.replaceChildren(metric('PLANNED ENTRY', active ? 'Плановый вход' : 'Плановый вход · Frozen A+ plan', referenceValue(reference?.plannedEntry)));
       if (active) referencePanel.append(metric('ACTUAL ENTRY', 'Вход по модели', referenceValue(reference?.actualEntry)));
-      referencePanel.append(metric('INITIAL STOP LOSS', 'Начальный стоп · Frozen A+ plan', referenceValue(reference?.initialStopLoss)));
+      referencePanel.append(metric('INITIAL STOP LOSS', active ? 'Начальный стоп' : 'Начальный стоп · Frozen A+ plan', referenceValue(reference?.initialStopLoss)));
       if (active) referencePanel.append(metric('CURRENT STOP LOSS', 'Текущий стоп', referenceValue(reference?.currentStopLoss)));
     };
     const positionStatus = node('div', '', 'risk-manager-position-status');
     element.append(positionStatus, referencePanel);
     const activePresentation = () => {
       status(positionStatus, 'ACTIVE POSITION', 'Активная позиция');
+      referencePanel.className = 'risk-manager-metrics risk-manager-active-metrics';
+      riskCheckReminder.remove();
       element.append(node('p', 'Сделка активирована по модели. Здесь показаны сохранённые параметры позиции для контроля. Новый размер позиции не рассчитывается; разрешение на новый вход не выдаётся.', 'risk-manager-note'));
+      element.append(dataStatus, provenance);
     };
     const tracked = trackedSignal?.tradeId === tradeId ? trackedSignal : null;
     const state = tracked?.outcome?.status;

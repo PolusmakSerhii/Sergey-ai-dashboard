@@ -1883,6 +1883,13 @@
 .risk-manager-details summary .risk-manager-label { display:inline-block; }
 .risk-manager-status { font-size:13px; margin:8px 0; }
 .risk-manager-output { min-width:0; overflow-wrap:anywhere; }
+.risk-manager-active-metrics { grid-template-columns:repeat(4,minmax(0,1fr)); }
+@media (max-width:900px) {
+    .risk-manager-active-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:560px) {
+    .risk-manager-active-metrics { grid-template-columns:minmax(0,1fr); }
+}
 .trade-reasons {
     margin: 20px 0;
     padding: 18px;

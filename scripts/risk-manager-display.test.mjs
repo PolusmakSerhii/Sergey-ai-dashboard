@@ -49,7 +49,7 @@ test('syntax checks inline scripts and isolated risk renderer',()=>{
 });
 
 test('tracked Active and completed modes never offer a new sizing form',()=>{
- class Node {children=[];style={};append(...x){this.children.push(...x);}replaceChildren(...x){this.children=x;}}
+ class Node {children=[];style={};remove(){}append(...x){this.children.push(...x);}replaceChildren(...x){this.children=x;}}
  const c={window:{},document:{createElement:tag=>Object.assign(new Node(),{tag})},fetch:()=>assert.fail('no request on mount')};
  vm.runInNewContext(source,c);
  const text=n=>[n.textContent||'',...n.children.map(text)].join(' ');
@@ -59,7 +59,7 @@ test('tracked Active and completed modes never offer a new sizing form',()=>{
  c.window.SM1MRisk.mount(root,{tradeId:'id',trackedSignal});
  assert.equal(root.children.some(n=>n.tag==='form'),false);
  assert.match(text(root),status==='Active'?/ACTIVE POSITION/:/historical trade/);
- if(status==='Active')for(const value of ['PLANNED ENTRY','Плановый вход · Frozen A+ plan 100','ACTUAL ENTRY','Вход по модели 99.5','INITIAL STOP LOSS','Начальный стоп · Frozen A+ plan 90','CURRENT STOP LOSS','Текущий стоп 99.5'])assert.ok(text(root).includes(value));
+ if(status==='Active')for(const value of ['PLANNED ENTRY','Плановый вход 100','ACTUAL ENTRY','Вход по модели 99.5','INITIAL STOP LOSS','Начальный стоп 90','CURRENT STOP LOSS','Текущий стоп 99.5'])assert.ok(text(root).includes(value));
  assert.equal(JSON.stringify(trackedSignal),before);
  }
 });
@@ -83,7 +83,7 @@ for(const [name,risk] of [['null',{targetPotential:null}],['missing',{}],['unsup
 });
 
 function uiHarness(risk={}, fail=false) {
- class N {constructor(tag){this.tag=tag;this.children=[];this.events={};this.value='';this.checked=false;this.style={};}append(...xs){for(const x of xs){x.parent=this;this.children.push(x);}}prepend(...xs){this.children.unshift(...xs);}replaceChildren(...xs){this.children=[];this.append(...xs);}setAttribute(){}addEventListener(e,f){this.events[e]=f;}remove(){this.parent.children=this.parent.children.filter(x=>x!==this);}}
+ class N {constructor(tag){this.tag=tag;this.children=[];this.events={};this.value='';this.checked=false;this.style={};}append(...xs){for(const x of xs){if(x.parent)x.remove();x.parent=this;this.children.push(x);}}prepend(...xs){this.children.unshift(...xs);}replaceChildren(...xs){this.children=[];this.append(...xs);}setAttribute(){}addEventListener(e,f){this.events[e]=f;}remove(){if(this.parent)this.parent.children=this.parent.children.filter(x=>x!==this);this.parent=null;}}
  const root=new N('section'),calls=[],timers=[];
  const c={window:{},document:{createElement:t=>new N(t)},Date,URL,AbortSignal,setTimeout:f=>timers.push(f),fetch:async(url,options)=>{calls.push({url:String(url),options});if(fail)throw Error('network');return{ok:true,json:async()=>({ok:true,risk:{status:'READY',mode:'planned-entry',validUntil:new Date(Date.now()+10000).toISOString(),...risk}})}}};
  vm.runInNewContext(source,c);return {root,calls,timers,mount:args=>c.window.SM1MRisk.mount(root,{apiUrl:'https://example.test/api/market',tradeId:'id',...args})};
@@ -122,4 +122,41 @@ test('network error fails closed with bilingual message',async()=>{
 test('no trade mounts unavailable without requests and responsive CSS shrinks below 150px',()=>{
  const h=uiHarness();h.mount({tradeId:null});assert.equal(h.calls.length,0);assert.equal(descendants(h.root).some(n=>n.tag==='form'),false);
  assert.match(html,/\.risk-manager-metrics, \.risk-manager-form\s*\{[^}]*minmax\(min\(100%,150px\),1fr\)/);assert.match(html,/\.risk-manager-metric, \.risk-manager-field, \.risk-manager-panel\s*\{[^}]*min-width:0;[^}]*overflow-wrap:anywhere/);
+});
+
+
+function assertActiveOrder(root) {
+ const text=textTree(root);
+ const labels=['ACCOUNT RISK MANAGER','Расчёт по введённым вами данным','ACTIVE POSITION','PLANNED ENTRY','ACTUAL ENTRY','INITIAL STOP LOSS','CURRENT STOP LOSS','Сделка активирована по модели. Здесь показаны сохранённые параметры позиции для контроля. Новый размер позиции не рассчитывается; разрешение на новый вход не выдаётся.','DATA STATUS','DATA DETAILS'];
+ const positions=labels.map(label=>{assert.ok(text.includes(label),label);return text.indexOf(label);});
+ assert.deepEqual(positions,[...positions].sort((a,b)=>a-b));
+ assert.doesNotMatch(text,/Frozen A\+ plan|RISK CHECK REQUIRED/);
+ assert.equal(root.children.filter(n=>n.className==='risk-manager-data').length,1);
+ assert.notEqual(root.children.find(n=>n.tag==='details').open,true);
+}
+test('Active content precedes data; pre-entry reminder hidden but real warnings/provenance retained',()=>{
+ for(const status of ['READY','BLOCKED','UNAVAILABLE']){
+ const h=uiHarness();h.mount({trackedSignal:{tradeId:'id',initialPlan:{entryPrice:100,initialStopLoss:90},outcome:{status:'Active',entryPrice:101,currentStopLoss:101}},safety:{status,reasonCodes:['STALE_DATA'],price:{source:'OKX',instrumentType:'SWAP',asOf:'2026-10-04',fresh:false}}});
+ assertActiveOrder(h.root);assert.equal(h.calls.length,0);
+ assert.match(textTree(h.root),/Provider history is stale/);
+ assert.match(textTree(h.root),/Unavailable \/ stale/);
+ assert.match(textTree(h.root.children.find(n=>n.tag==='details')),/OKX · SWAP · 2026-10-04/);
+ if(status!=='READY')assert.match(textTree(h.root),/DATA SAFETY BLOCKED/);
+ }
+});
+test('existing-position response uses the same Active ordering and removes pre-entry reminder',async()=>{
+ const h=uiHarness({mode:'existing-position',reference:{plannedEntry:100,actualEntry:101,initialStopLoss:90,currentStopLoss:101}});
+ h.mount({safety:{status:'READY'}});
+ assert.match(textTree(h.root),/RISK CHECK REQUIRED/);
+ assert.match(textTree(h.root),/Плановый вход · Frozen A\+ plan/);
+ assert.ok(textTree(h.root).indexOf('DATA STATUS')<textTree(h.root).indexOf('PLANNED ENTRY'));
+ await h.root.children.find(n=>n.tag==='form').events.submit({preventDefault(){}});
+ assertActiveOrder(h.root);assert.equal(h.calls.length,1);
+});
+test('only Active metrics use scoped four/two/one columns with shrinkable wrapping cells',()=>{
+ assert.match(html,/\.risk-manager-active-metrics\s*\{\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+ assert.match(html,/@media \(max-width:900px\)\s*\{\s*\.risk-manager-active-metrics\s*\{\s*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(html,/@media \(max-width:560px\)\s*\{\s*\.risk-manager-active-metrics\s*\{\s*grid-template-columns:minmax\(0,1fr\)/);
+ assert.match(html,/\.risk-manager-metric, \.risk-manager-field, \.risk-manager-panel\s*\{[^}]*min-width:0;[^}]*overflow-wrap:anywhere/);
+ const h=uiHarness();h.mount();assert.equal(descendants(h.root).some(n=>n.className?.includes('risk-manager-active-metrics')),false);
 });
