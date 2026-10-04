@@ -37,7 +37,7 @@ test('existing Active remains management-only when live confirmation is lost',()
 test('actual legacy HTML blocks consume display values instead of raw backend wording',()=>{
   const start=html.indexOf('${diagnosticDisplay.summary ? `'),end=html.indexOf('${tradeStatistics.confidence',start);
   assert.ok(start>0&&end>start);const block=html.slice(start,end);
-  assert.ok(block.includes('${diagnosticDisplay.recommendation.status}'));
+  assert.ok(block.includes('${coinAnalysisEscape(diagnosticDisplay.recommendation.status)}'));
   assert.doesNotMatch(block,/\$\{(?:aiSummary|recommendation\.)/);
   const call=html.slice(html.indexOf('const diagnosticDisplay ='),html.indexOf('const diagnosticDisplay =')+300);
   assert.match(call,/confirmedAPlus: data\.technical\?\.confirmedAPlus/);

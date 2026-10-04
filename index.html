@@ -1969,6 +1969,8 @@
 .market-context.cvd-context summary::before{content:"▶";display:inline-block;width:1.3em;font-size:11px}
 .market-context.cvd-context details[open]>summary::before{content:"▼"}
 @media(max-width:480px){.market-context.trade-reasons{padding:12px}.market-context .liquidation-flow-grid{grid-template-columns:minmax(0,1fr)}.market-context .context-window{grid-column:auto}}
+#coin-analysis-content .coin-analysis-ru { display:block; color:#a9b8c9; font-size:11px; font-weight:400; line-height:1.4; margin-top:3px; overflow-wrap:anywhere; }
+
 .trade-stat-row {
   margin-top: 14px;
 }
@@ -5696,6 +5698,139 @@ document.querySelector(
       };
     }
 
+
+    // Presentation only: never translate fields before decision/execution logic.
+    function coinAnalysisRussian(context, original) {
+      if (typeof original !== "string") return null;
+      const labels = {
+        "AI Confidence":"Уверенность анализа", "Conviction":"Уверенность в направлении",
+        "Signal Strength":"Сила сигнала", "Setup Score":"Оценка сетапа",
+        "Score Difference":"Разница вероятностей Long / Short",
+        "Status":"Статус", "Entry Timing":"Состояние входа", "Priority":"Приоритет",
+        "Instruction":"Инструкция", "Risk":"Оценка риска"
+      };
+      if (context === "label") return labels[original] ?? null;
+      const active = "Existing trade follows its frozen plan. Live analysis does not authorize a new entry.";
+      const activeRu = "Существующая сделка следует зафиксированному плану. Текущий анализ не разрешает новый вход.";
+      const analysis = "Analysis only. No new entry permission; follow the Execution status.";
+      const analysisRu = "Только анализ. Разрешения на новый вход нет; следуйте статусу исполнения.";
+      const num = "[+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?";
+      const match = pattern => original.match(new RegExp("^(?:" + pattern + ")$"));
+      if (context === "summary") {
+        for (const [en,ru] of [["Directional analysis","Анализ направления"],["Bullish candidate","Бычий кандидат"],["Bearish candidate","Медвежий кандидат"]]) {
+          if (original === en + ". " + active) return ru + ". " + activeRu;
+          if (original === en + ". " + analysis) return ru + ". " + analysisRu;
+        }
+        let m = match("(Bullish|Bearish|Neutral) market bias, but no confirmed trade\\. Signal strength ("+num+")/100 and confidence ("+num+")/100\\.");
+        if (m) return ({Bullish:"Бычий",Bearish:"Медвежий",Neutral:"Нейтральный"}[m[1]]) + " уклон рынка, но подтверждённой сделки нет. Сила сигнала "+m[2]+"/100, уверенность "+m[3]+"/100.";
+        m = match("(BUY|SELL) setup confirmed\\. Signal strength ("+num+")/100 and confidence ("+num+")/100\\.");
+        return m ? "Сетап "+m[1]+" подтверждён анализом. Сила сигнала "+m[2]+"/100, уверенность "+m[3]+"/100." : null;
+      }
+      if (context === "recommendation") {
+        const values = {
+          "Active trade · live directional analysis":"Активная сделка · текущий анализ направления",
+          "Bullish candidate · analysis only":"Бычий кандидат · только анализ",
+          "Bearish candidate · analysis only":"Медвежий кандидат · только анализ",
+          "Directional analysis · analysis only":"Анализ направления · только анализ",
+          "Valid Long Setup":"Валидный Long-сетап", "Valid Short Setup":"Валидный Short-сетап",
+          "No Trade":"Нет торгового сетапа", "ACTIVE TRADE":"СДЕЛКА АКТИВНА",
+          "Wait Confirmation":"Ожидание подтверждения", "WAIT CONFIRMATION":"Ожидание подтверждения",
+          "Wait Pullback":"Ожидание отката", "Execute in Entry Zone":"Вход только в зоне входа",
+          "WAIT FOR ENTRY":"Ожидание зоны входа", "READY TO ENTER":"Цена в подтверждённой зоне входа",
+          "EXPIRED":"План истёк", "INVALIDATED":"План утратил силу",
+          "RISK CHECK REQUIRED":"Требуется проверка риска", "DATA SAFETY BLOCKED":"Проверка данных не пройдена",
+          "Manage existing trade":"Управление текущей сделкой", "Watch only":"Только наблюдение",
+          "High":"Высокий", "Medium":"Средний", "Low":"Низкий",
+          "Analytical estimate only; no new entry permission":"Только аналитическая оценка; без разрешения на новый вход",
+          "Do not enter until a valid setup appears":"Не входите до появления валидного сетапа",
+          "Wait for stronger confirmation before entering":"Ожидайте более сильного подтверждения перед входом",
+          [active]:activeRu, [analysis]:analysisRu
+        };
+        if (Object.hasOwn(values, original)) return values[original];
+        let m = match("Entry is allowed only between ("+num+"|N/A) and ("+num+"|N/A)");
+        if (m) return "По описанию сетапа вход ограничен зоной "+m[1]+" — "+m[2]+". Не является отдельным разрешением на вход.";
+        m = match("Wait for price to return to the entry zone ("+num+"|N/A) - ("+num+"|N/A)");
+        return m ? "Ожидайте возврата цены в зону входа "+m[1]+" - "+m[2] : null;
+      }
+      if (context === "environment") {
+        const values = {
+          "Volume participation data is unavailable":"Данные об активности объёма недоступны",
+          "Normalized volatility data is unavailable":"Данные нормализованной волатильности недоступны",
+          "Market signals show strong directional clarity":"Сигналы рынка показывают выраженное направление",
+          "Market direction remains uncertain":"Направление рынка остаётся неопределённым",
+          "Market uncertainty is too high":"Неопределённость рынка слишком высока",
+          "Probability or confidence data is unavailable":"Данные вероятности или уверенности недоступны",
+          "CoinGlass derivatives data is incomplete":"Данные деривативов CoinGlass неполны",
+          "Core market environment data is incomplete":"Основные данные рыночной среды неполны",
+          "Volume spike combined with extreme volatility":"Всплеск объёма при экстремальной волатильности",
+          "Tradable: YES":"Среда подходит для торговли: ДА. Не является разрешением на вход",
+          "Tradable: NO":"Среда подходит для торговли: НЕТ. Не является разрешением на вход"
+        };
+        if (Object.hasOwn(values, original)) return values[original];
+        let m = match("Score: ("+num+"|—) / 100");
+        if (m) return "Оценка рыночной среды: "+m[1]+" / 100";
+        m = match("Condition: (Excellent|Healthy|Caution|Poor|Dangerous)");
+        if (m) return "Состояние среды: "+({Excellent:"Отличная",Healthy:"Благоприятная",Caution:"Требует осторожности",Poor:"Неблагоприятная",Dangerous:"Опасная"}[m[1]]);
+        m = match("(Very high|Healthy|Low|Very low) market participation: ("+num+")x average volume");
+        if (m) return ({ "Very high":"Очень высокая",Healthy:"Достаточная",Low:"Низкая","Very low":"Очень низкая"}[m[1]])+" активность рынка: объём "+m[2]+"× среднего";
+        m = match("(Volatility is too low|Tradable volatility|Elevated volatility|Extreme volatility): ATR ("+num+")%");
+        return m ? ({ "Volatility is too low":"Слишком низкая","Tradable volatility":"Подходящая","Elevated volatility":"Повышенная","Extreme volatility":"Экстремальная"}[m[1]])+" волатильность: ATR "+m[2]+"%" : null;
+      }
+      if (context !== "reason" && context !== "smart-money") return null;
+      const common = {
+        "RSI oversold":"RSI в зоне перепроданности", "RSI overbought":"RSI в зоне перекупленности",
+        "MACD above zero":"MACD выше нуля", "MACD below zero":"MACD ниже нуля",
+        "Sell-side liquidity sweep":"Цена ниже предыдущего минимума — sell-side liquidity",
+        "Buy-side liquidity sweep":"Цена выше предыдущего максимума — buy-side liquidity"
+      };
+      if (Object.hasOwn(common, original)) return common[original];
+      for (const [en,ru] of [["discount","дисконтной"],["premium","премиальной"]])
+        if (original === "Price in "+en+" zone" || original === "Price is in "+en+" zone") return "Цена в "+ru+" зоне";
+      for (const [en,adj,fem,plural] of [["Bullish","бычий","бычья","бычьих"],["Bearish","медвежий","медвежья","медвежьих"]]) {
+        const cap = adj[0].toUpperCase()+adj.slice(1), capFem = fem[0].toUpperCase()+fem.slice(1);
+        const pairs = {
+          ["Strong "+en.toLowerCase()+" EMA trend"]:"Сильный "+adj+" тренд EMA",
+          ["RSI confirms "+en.toLowerCase()+" momentum"]:"RSI подтверждает "+adj+" импульс",
+          [en+" break of structure"]:cap+" пробой структуры (BOS)",
+          [en+" change of character"]:capFem+" смена характера структуры (CHOCH)",
+          [en+" market structure shift"]:cap+" сдвиг структуры (MSS)",
+          [en+" candle imbalance"]:cap+" свечной дисбаланс",
+          ["Strong "+en.toLowerCase()+" confluence"]:"Согласованность "+plural+" факторов",
+          [en+" Smart Money"]:cap+" уклон Smart Money", [en+" Smart Money score"]:capFem+" оценка Smart Money",
+          [en+" FVG detected"]:"Обнаружен "+adj+" FVG",
+          [en+" order block detected"]:"Обнаружен "+adj+" Order Block", [en+" structure"]:capFem+" структура"
+        };
+        if (Object.hasOwn(pairs, original)) return pairs[original];
+        let m = match(en+" (FVG|order block) near price: ("+num+"[-–]"+num+")");
+        if (m) return cap+" "+(m[1]==="FVG"?"FVG":"Order Block")+" рядом с ценой: "+m[2];
+        m = match(en+" derivatives signal: ("+num+")");
+        if (m) return cap+" сигнал деривативов: "+m[1];
+        m = match(en+" volume confirmation: ("+num+")x average volume");
+        if (m) return "Объём подтверждает "+adj+" сигнал: "+m[1]+"× среднего";
+      }
+      let m = match("Equal (highs|lows) liquidity near ("+num+")");
+      if (m) return "Ликвидность у равных "+(m[1]==="highs"?"максимумов":"минимумов")+" около "+m[2];
+      m = match("(Bullish|Bearish): (.+)");
+      if (m) {
+        const translated = coinAnalysisRussian("reason",m[2]);
+        return translated ? (m[1]==="Bullish"?"Бычьи факторы: ":"Медвежьи факторы: ")+translated : null;
+      }
+      m = match("Derivatives: (Funding|Open Interest|Long/Short|Liquidations): (Slight )?(Bullish|Bearish) (Contrarian|Confirmation)");
+      if (m) return "Деривативы · "+m[1]+": "+(m[2]?"слабый ":"")+(m[3]==="Bullish"?"бычий":"медвежий")+(m[4]==="Contrarian"?" контртрендовый уклон":" подтверждающий сигнал");
+      return null;
+    }
+
+    function coinAnalysisEscape(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+    }
+
+    function coinAnalysisTranslation(context, original, label = null) {
+      const translated = coinAnalysisRussian(context, original);
+      const prefix = label ? coinAnalysisRussian("label",label) : null;
+      if (!translated && !prefix) return "";
+      return '<small class="coin-analysis-ru" lang="ru">'+coinAnalysisEscape(prefix ? prefix+(translated ? ": "+translated : "") : translated)+'</small>';
+    }
+
     async function openCoinModal(symbol) {
       const coinModal =
         document.querySelector("#coin-modal");
@@ -6252,7 +6387,8 @@ ${diagnosticDisplay.summary ? `
     font-size:16px;
     line-height:1.65;
   ">
-    ${diagnosticDisplay.summary}
+    ${coinAnalysisEscape(diagnosticDisplay.summary)}
+    ${coinAnalysisTranslation("summary", diagnosticDisplay.summary)}
   </div>
 </div>
 ` : ""}
@@ -6264,24 +6400,29 @@ ${diagnosticDisplay.recommendation.status ? `
     </div>
 
     <div class="trade-reason-item">
-        ✅ Status: ${diagnosticDisplay.recommendation.status}
+        ✅ Status: ${coinAnalysisEscape(diagnosticDisplay.recommendation.status)}
+        ${coinAnalysisTranslation("recommendation", diagnosticDisplay.recommendation.status, "Status")}
     </div>
 
     <div class="trade-reason-item">
-        ⏳ Entry Timing: ${diagnosticDisplay.recommendation.entryTiming?.status ?? "—"}
+        ⏳ Entry Timing: ${coinAnalysisEscape(diagnosticDisplay.recommendation.entryTiming?.status ?? "—")}
+        ${coinAnalysisTranslation("recommendation", diagnosticDisplay.recommendation.entryTiming?.status ?? "—", "Entry Timing")}
     </div>
 
     <div class="trade-reason-item">
-        ⭐ Priority: ${diagnosticDisplay.recommendation.entryTiming?.priority ?? "—"}
+        ⭐ Priority: ${coinAnalysisEscape(diagnosticDisplay.recommendation.entryTiming?.priority ?? "—")}
+        ${coinAnalysisTranslation("recommendation", diagnosticDisplay.recommendation.entryTiming?.priority ?? "—", "Priority")}
     </div>
 
     <div class="trade-reason-item">
         📋 Instruction:
-        ${diagnosticDisplay.recommendation.entryTiming?.instruction ?? "—"}
+        ${coinAnalysisEscape(diagnosticDisplay.recommendation.entryTiming?.instruction ?? "—")}
+        ${coinAnalysisTranslation("recommendation", diagnosticDisplay.recommendation.entryTiming?.instruction ?? "—", "Instruction")}
     </div>
 
     <div class="trade-reason-item">
-        ⚠️ Risk: ${diagnosticDisplay.recommendation.risk ?? "—"}
+        ⚠️ Risk: ${coinAnalysisEscape(diagnosticDisplay.recommendation.risk ?? "—")}
+        ${coinAnalysisTranslation("recommendation", diagnosticDisplay.recommendation.risk ?? "—", "Risk")}
     </div>
 </div>
 ` : ""}
@@ -6296,7 +6437,7 @@ ${tradeStatistics.confidence !== null ? `
    <div class="trade-stat-row">
 
     <div class="trade-stat-header">
-        <span>📈 AI Confidence</span>
+        <span>📈 AI Confidence${coinAnalysisTranslation("label", "AI Confidence")}</span>
         <span>${tradeStatistics.confidence}/100</span>
     </div>
 
@@ -6311,7 +6452,7 @@ ${tradeStatistics.confidence !== null ? `
 
    <div class="trade-stat-row">
     <div class="trade-stat-header">
-        <span>🎯 Conviction</span>
+        <span>🎯 Conviction${coinAnalysisTranslation("label", "Conviction")}</span>
         <span>${tradeStatistics.conviction ?? "—"}/100</span>
     </div>
 
@@ -6325,7 +6466,7 @@ ${tradeStatistics.confidence !== null ? `
 
 <div class="trade-stat-row">
     <div class="trade-stat-header">
-        <span>⚡ Signal Strength</span>
+        <span>⚡ Signal Strength${coinAnalysisTranslation("label", "Signal Strength")}</span>
         <span>${tradeStatistics.signalStrength ?? "—"}/100</span>
     </div>
 
@@ -6339,7 +6480,7 @@ ${tradeStatistics.confidence !== null ? `
 
 <div class="trade-stat-row">
     <div class="trade-stat-header">
-        <span>⭐ Setup Score</span>
+        <span>⭐ Setup Score${coinAnalysisTranslation("label", "Setup Score")}</span>
         <span>${tradeStatistics.setupScore ?? "—"}/100</span>
     </div>
 
@@ -6354,6 +6495,7 @@ ${tradeStatistics.confidence !== null ? `
     <div class="trade-reason-item">
         ⚖️ Score Difference:
         ${tradeStatistics.scoreDifference ?? "—"}
+        ${coinAnalysisTranslation("label", "Score Difference")}
     </div>
 
 </div>
@@ -6487,7 +6629,8 @@ ${tradeReasons.length > 0 ? `
     .slice(0, 6)
     .map(reason => `
       <div class="trade-reason-item">
-        ${reason}
+        ${coinAnalysisEscape(reason)}
+        ${coinAnalysisTranslation("reason", reason)}
       </div>
     `)
     .join("")}
@@ -6504,7 +6647,8 @@ ${smartMoneyReasons.length > 0 ? `
         .slice(0, 6)
         .map(reason => `
             <div class="trade-reason-item">
-                💎 ${reason}
+                💎 ${coinAnalysisEscape(reason)}
+        ${coinAnalysisTranslation("smart-money", reason)}
             </div>
         `)
         .join("")}
@@ -6519,14 +6663,17 @@ ${Object.keys(marketEnvironment).length > 0 ? `
 
     <div class="trade-reason-item">
         Score: ${marketEnvironment.score ?? "—"} / 100
+        ${coinAnalysisTranslation("environment", "Score: " + (marketEnvironment.score ?? "—") + " / 100")}
     </div>
 
     <div class="trade-reason-item">
         Condition: ${marketEnvironment.condition ?? "—"}
+        ${coinAnalysisTranslation("environment", "Condition: " + (marketEnvironment.condition ?? "—"))}
     </div>
 
     <div class="trade-reason-item">
         Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}
+        ${coinAnalysisTranslation("environment", "Tradable: " + (marketEnvironment.tradable === true ? "YES" : "NO"))}
     </div>
 
     ${
@@ -6535,7 +6682,8 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 4)
             .map(reason => `
                 <div class="trade-reason-item">
-                    ${reason}
+                    ${coinAnalysisEscape(reason)}
+        ${coinAnalysisTranslation("environment", reason)}
                 </div>
             `)
             .join("")
@@ -6548,7 +6696,8 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 3)
             .map(warning => `
                 <div class="trade-reason-item">
-                    ⚠ ${warning}
+                    ⚠ ${coinAnalysisEscape(warning)}
+        ${coinAnalysisTranslation("environment", warning)}
                 </div>
             `)
             .join("")
