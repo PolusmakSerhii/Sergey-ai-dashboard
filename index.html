@@ -6513,8 +6513,10 @@ Trade Plan
 
 ${trackedPlanIsCurrent ? `
 <div class="trade-plan-status">
-  <strong>Fixed Trade Plan · ${trackedStatus || "WaitingEntry"}</strong><br>
-  ${trackedPlan.exitStrategy ? "Entry Zone, initial Stop Loss, targets and exit policy are fixed; current SL follows that policy." : "Entry Zone, Stop Loss and targets are locked."}
+  <strong>Fixed Trade Plan · ${trackedStatus || "WaitingEntry"}</strong>
+  <small class="coin-analysis-ru" lang="ru">Зафиксированный торговый план · ${({ Active: "Активен", WaitingEntry: "Ожидает входа", Pending: "В ожидании" })[trackedStatus || "WaitingEntry"]}</small>
+  ${isTp1ReanalysisPlan ? "Entry Zone, initial Stop Loss, TP1 and exit policy are fixed; current SL follows that policy." : trackedPlan.exitStrategy ? "Entry Zone, initial Stop Loss, targets and exit policy are fixed; current SL follows that policy." : "Entry Zone, Stop Loss and targets are locked."}
+  <small class="coin-analysis-ru" lang="ru">${isTp1ReanalysisPlan ? "Зона входа, начальный Stop Loss, TP1 и правила выхода зафиксированы. Текущий Stop Loss определяется этими правилами." : trackedPlan.exitStrategy ? "Зона входа, начальный Stop Loss, цели и правила выхода зафиксированы. Текущий Stop Loss определяется этими правилами." : "Зона входа, Stop Loss и цели зафиксированы."}</small>
 </div>
 ${trackedPlan.exitStrategy ? renderPartialPosition(trackedSignal) : renderTradeVerification(trackedSignal.outcome)}
 ` : ""}
