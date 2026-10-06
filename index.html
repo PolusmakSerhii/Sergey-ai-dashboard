@@ -1969,6 +1969,11 @@
 .market-context.cvd-context summary::before{content:"▶";display:inline-block;width:1.3em;font-size:11px}
 .market-context.cvd-context details[open]>summary::before{content:"▼"}
 @media(max-width:480px){.market-context.trade-reasons{padding:12px}.market-context .liquidation-flow-grid{grid-template-columns:minmax(0,1fr)}.market-context .context-window{grid-column:auto}}
+#coin-analysis-content .coin-analysis-ru[hidden] { display:none; }
+#coin-analysis-content .coin-translation-toggle { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; width:24px; height:24px; padding:0; margin:0 0 0 2px; border:0; background:transparent; color:#a9b8c9; cursor:pointer; line-height:1; }
+#coin-analysis-content .coin-translation-toggle span { display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; width:13px; height:13px; border:1px solid #64748b; border-radius:50%; font-size:9px; font-weight:400; }
+#coin-analysis-content .coin-translation-toggle:hover, #coin-analysis-content .coin-translation-toggle:focus-visible { color:#67d9ff; }
+#coin-analysis-content .coin-translation-toggle:focus-visible { outline:1px solid #67d9ff; outline-offset:1px; border-radius:50%; }
 #coin-analysis-content .coin-analysis-ru { display:block; color:#a9b8c9; font-size:11px; font-weight:400; line-height:1.4; margin-top:3px; overflow-wrap:anywhere; }
 
 .trade-stat-row {
@@ -5825,7 +5830,16 @@ document.querySelector(
       const translated = coinAnalysisRussian(context, original);
       const prefix = label ? coinAnalysisRussian("label",label) : null;
       if (!translated && !prefix) return "";
-      return '<small class="coin-analysis-ru" lang="ru">'+coinAnalysisEscape(prefix ? prefix+(translated ? ": "+translated : "") : translated)+'</small>';
+      return '<button type="button" class="coin-translation-toggle" aria-label="Show Russian translation" aria-expanded="false"><span aria-hidden="true">?</span></button><small class="coin-analysis-ru" lang="ru" hidden>'+coinAnalysisEscape(prefix ? prefix+(translated ? ": "+translated : "") : translated)+'</small>';
+    }
+
+    function toggleCoinTranslation(event) {
+      const button = event.target.closest?.('#coin-analysis-content .coin-translation-toggle');
+      const translation = button?.nextElementSibling;
+      if (!translation?.classList.contains('coin-analysis-ru')) return;
+      translation.hidden = !translation.hidden;
+      button.setAttribute('aria-expanded', String(!translation.hidden));
+      button.setAttribute('aria-label', translation.hidden ? 'Show Russian translation' : 'Hide Russian translation');
     }
 
     async function openCoinModal(symbol) {
@@ -7329,6 +7343,7 @@ document.addEventListener(
       ]);
     }
 
+    document.addEventListener('click', toggleCoinTranslation);
     renderFavoriteCoins();
 
     document

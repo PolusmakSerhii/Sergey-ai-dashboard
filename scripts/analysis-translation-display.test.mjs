@@ -74,3 +74,22 @@ test('actual render bindings include all sections; metrics and decision logic un
  assert.doesNotMatch(html,/\.coin-analysis-ru::before/);
  for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi))if(!/\bsrc\s*=|application\/ld\+json/.test(m[1]))new vm.Script(m[2]);
 });
+test('translation controls start collapsed and preserve escaped Russian content',()=>{
+ const result=c.coinAnalysisTranslation('label','AI Confidence');
+ assert.match(result,/type="button"/);assert.match(result,/aria-expanded="false"/);assert.match(result,/aria-label="Show Russian translation"/);
+ assert.match(result,/lang="ru" hidden/);assert.ok(result.includes(c.coinAnalysisEscape(tr('label','AI Confidence'))));
+ assert.equal(c.coinAnalysisTranslation('reason','unknown untranslated text'),'');
+ assert.match(html,/#coin-analysis-content \.coin-analysis-ru\[hidden\] \{ display:none;/);
+});
+test('independent click toggles update accessible state without changing data or requests',()=>{
+ const make=()=>({nextElementSibling:{hidden:true,classList:{contains:v=>v==='coin-analysis-ru'}},attributes:{},setAttribute(k,v){this.attributes[k]=v;}});
+ const first=make(),second=make();const click=b=>c.toggleCoinTranslation({target:{closest:()=>b}});
+ click(first);assert.equal(first.nextElementSibling.hidden,false);assert.equal(second.nextElementSibling.hidden,true);
+ assert.equal(first.attributes['aria-expanded'],'true');assert.equal(first.attributes['aria-label'],'Hide Russian translation');
+ click(first);assert.equal(first.nextElementSibling.hidden,true);assert.equal(first.attributes['aria-expanded'],'false');
+ assert.equal(first.attributes['aria-label'],'Show Russian translation');
+ c.toggleCoinTranslation({target:{closest:()=>null}});
+ assert.equal((html.match(/document.addEventListener\('click', toggleCoinTranslation\)/g)||[]).length,1);
+ const handler=source.slice(source.indexOf('function toggleCoinTranslation'));
+ assert.doesNotMatch(handler,/fetch|localStorage|resultR|confirmedAPlus/);
+});
