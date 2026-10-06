@@ -7,6 +7,7 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 class Element {
   constructor(){this.children=[];this.dataset={};this.listeners={};this.value='';}
   set textContent(v){this.value=String(v);} get textContent(){return this.value+' '+this.children.map(c=>c.textContent).join(' ');}
+  setAttribute(key,value){this[key]=value;}
   set innerHTML(v){throw Error('Unsafe HTML');}
   append(...children){this.children.push(...children);} replaceChildren(...children){this.value='';this.children=children;}
   addEventListener(type,fn){this.listeners[type]=fn;} showModal(){this.open=true;} close(){this.open=false;}

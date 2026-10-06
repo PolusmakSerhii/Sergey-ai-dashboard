@@ -27,7 +27,7 @@ function classifyLiveCohort(record) {
     const value = number(outcome.resultR);
     return { value, label: value === null ? 'N/A' : value > 0 ? 'WIN' : value < 0 ? 'LOSS' : 'BREAK EVEN' };
   }
-  const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL' });
+  const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL', cohort: 'ALL' });
   function filterCohort(records, cohort = 'ALL') {
     return records.filter(record => cohort === 'ALL' || classifyLiveCohort(record).cohort === cohort &&
       ['PRE-LIVE', 'LIVE'].includes(cohort));
@@ -52,12 +52,81 @@ function classifyLiveCohort(record) {
     if (summary.completed) { summary.winRate = summary.wins / summary.completed * 100; summary.averageR = summary.netR / summary.completed; }
     return summary;
   }
+  function cohortButtons(options, selected, change) {
+    const bar = node('div', undefined, 'cohort-controls');
+    bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Cohort / Период');
+    for (const [value, label] of options) {
+      const button = node('button', label, 'journal-button'); button.type = 'button';
+      button.dataset.cohort = value;
+      button.setAttribute('aria-pressed', String(value === selected));
+      button.addEventListener('click', () => {
+        change(value);
+        for (const item of bar.children) item.setAttribute('aria-pressed', String(item.dataset.cohort === value));
+      });
+      bar.append(button);
+    }
+    return bar;
+  }
+  function bilingual(english, russian) {
+    const label = node('span', english);
+    label.append(node('small', russian, 'cohort-ru')); return label;
+  }
+  function unknownNotice(state) {
+    const count = state.liveCohorts?.summaries?.UNKNOWN?.total;
+    return Number.isInteger(count) && count > 0 ? bilingual(
+      `Records without an unambiguous origin date: ${count}. They remain available in ALL and are excluded from PRE-LIVE/LIVE.`,
+      `Записей без однозначной даты происхождения: ${count}. Они доступны в ALL и исключены из PRE-LIVE/LIVE.`) : null;
+  }
+  function renderPerformance(root, state) {
+    const selected = root.performanceCohort || 'PRE-LIVE';
+    root.performanceCohort = selected;
+    root.replaceChildren(bilingual('PERFORMANCE STATISTICS', 'Статистика результатов'),
+      cohortButtons([['PRE-LIVE', 'PRE-LIVE'], ['LIVE', 'LIVE · FROM 12 OCT 2026']], selected,
+        value => { root.performanceCohort = value; renderPerformance(root, state); }),
+      bilingual('Canonical/modelled SM1M trades · not confirmed exchange P&L',
+        'Канонические/модельные сделки SM1M · не подтверждённый биржевой P&L'),
+      bilingual('Based on available archive records · history completeness is not guaranteed',
+        'По доступным записям архива · полнота истории не гарантируется'));
+    const data = state.liveCohorts, summary = data?.summaries?.[selected];
+    const counts = ['total', 'completed', 'active', 'wins', 'losses', 'breakEvens'];
+    if (state.error || data?.startAt !== LIVE_START_UTC || data?.basis !== 'canonical-modelled' ||
+        !summary || !counts.every(key => Number.isInteger(summary[key]) && summary[key] >= 0)) {
+      root.append(bilingual(state.loading ? 'Loading performance...' : 'Performance unavailable.',
+        state.loading ? 'Загрузка результатов…' : 'Статистика результатов недоступна.')); return;
+    }
+    if (selected === 'LIVE' && summary.total === 0) root.append(bilingual(
+      'LIVE starts 12 Oct 2026, 00:00 Europe/Kyiv.', 'LIVE начинается 12 октября 2026, 00:00 по Киеву.'));
+    const grid = node('dl', undefined, 'journal-fields');
+    const metric = (english, russian, value, kind) => {
+      const cell = node('div'), title = node('dt'); title.append(bilingual(english, russian));
+      const formatted = number(value) === null ? 'N/A' : kind === 'R' ? rText(value) :
+        kind === '%' ? `${value.toFixed(1)}%` : kind === 'ratio' ? value.toFixed(2) : String(value);
+      cell.append(title, node('dd', formatted)); grid.append(cell);
+    };
+    for (const [key, en, ru, kind] of [
+      ['completed','Completed','Завершено'], ['active','Active','Активные'],
+      ['wins','Wins','Прибыльные'], ['losses','Losses','Убыточные'], ['breakEvens','Break-even','Безубыточные'],
+      ['winRate','Win Rate','Доля прибыльных','%'], ['netR','Net R','Итоговый R','R'],
+      ['averageR','Average R','Средний R','R'], ['expectancy','Expectancy','Матожидание, R на сделку','R'],
+      ['profitFactor','Profit Factor','Фактор прибыли','ratio'], ['maxDrawdownR','Max Drawdown','Максимальная просадка, R','R'],
+      ['currentLossStreak','Current Loss Streak','Текущая серия убытков'], ['maxLossStreak','Max Loss Streak','Максимальная серия убытков']
+    ]) metric(en, ru, summary[key], kind);
+    for (const direction of ['Long', 'Short']) {
+      const side = summary.directions?.[direction];
+      metric(`${direction} · Completed`, 'Завершено', side?.count);
+      metric(`${direction} · Wins`, 'Прибыльные', side?.wins);
+      metric(`${direction} · Net R`, 'Итоговый R', side?.netR, 'R');
+    }
+    root.append(grid);
+    const warning = unknownNotice(state); if (warning) root.append(warning);
+  }
   function controls(filters, update) {
     const bar = node('div', undefined, 'journal-controls');
     const searchLabel = node('label', 'Search Symbol'), search = node('input');
     search.type = 'search'; search.value = filters.search; search.placeholder = 'Symbol';
     search.addEventListener('input', () => { filters.search = search.value; update(); }); searchLabel.append(search); bar.append(searchLabel);
     const inputs = { search };
+    const cohorts = cohortButtons([['ALL','ALL'], ['PRE-LIVE','PRE-LIVE'], ['LIVE','LIVE']], filters.cohort, value => { filters.cohort = value; update(); });
     for (const [key, label, options] of [['direction', 'Direction', ['ALL', 'Long', 'Short']], ['result', 'Result', ['ALL', 'WIN', 'LOSS', 'BREAK EVEN']], ['score', 'Score', ['ALL', '85–89', '90–94', '95+']]]) {
       const wrapper = node('label', label), select = node('select');
       for (const value of options) { const option = node('option', value.toUpperCase()); option.value = value; select.append(option); }
@@ -65,8 +134,8 @@ function classifyLiveCohort(record) {
       inputs[key] = select; wrapper.append(select); bar.append(wrapper);
     }
     const reset = node('button', 'Reset', 'journal-button'); reset.type = 'button';
-    reset.addEventListener('click', () => { Object.assign(filters, defaultFilters()); for (const key of Object.keys(inputs)) inputs[key].value = filters[key]; update(); });
-    bar.append(reset); return bar;
+    reset.addEventListener('click', () => { Object.assign(filters, defaultFilters()); for (const key of Object.keys(inputs)) inputs[key].value = filters[key]; for (const button of cohorts.children) button.setAttribute('aria-pressed', String(button.dataset.cohort === 'ALL')); update(); });
+    bar.append(reset); const wrapper = node('div'); wrapper.append(cohorts, bar); return wrapper;
   }
   function node(tag, value, className) {
     const element = document.createElement(tag);
@@ -97,7 +166,7 @@ function classifyLiveCohort(record) {
     dialog.append(exits); if (!dialog.open) dialog.showModal();
   }
   function createStore(fetcher, notify) {
-    const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, skipped: 0 };
+    const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, liveCohorts: null, skipped: 0 };
     return { state, async load() {
       if (state.loading || state.next === null) return;
       const offset = state.next; state.loading = true; state.error = false; notify(state);
@@ -114,6 +183,7 @@ function classifyLiveCohort(record) {
         }
         state.total = Number.isInteger(data.totalArchived) && data.totalArchived >= 0 ? data.totalArchived : null;
         state.boundary = data.validationStartAt;
+        state.liveCohorts = data.liveCohorts || null;
         state.next = next ?? (state.total !== null && offset + data.records.length < state.total && data.records.length ? offset + data.records.length : null);
         state.loaded = true;
       } catch { state.error = true; }
@@ -128,14 +198,19 @@ function classifyLiveCohort(record) {
         controls(state.filters, () => render(root, state, dialog, load)), root.journalView);
     }
     const view = root.journalView, selected = filterRecords(state.records, state.filters), summary = summarize(selected);
-    const active = state.filters.search.trim() || ['direction', 'result', 'score'].some(key => state.filters[key] !== 'ALL');
+    const active = state.filters.search.trim() || ['direction', 'result', 'score', 'cohort'].some(key => state.filters[key] !== 'ALL');
     view.replaceChildren(node('p', `Граница архива: ${date(state.boundary)} · Загружено сделок: ${state.records.size}${state.total === null ? '' : ` из ${state.total}`} · После фильтрации: ${selected.length} из ${state.records.size} загруженных сделок. Аналитика рассчитана только по загруженным сделкам и не является статистикой за всё время.`, 'journal-notice'),
       fields(active ? 'FILTERED COHORT' : 'LOADED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['NET R', rText(summary.netR)], ['AVERAGE R', rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
+    const warning = unknownNotice(state); if (warning) view.append(warning);
     if (state.skipped) view.append(node('p', `${state.skipped} malformed records skipped.`, 'journal-notice'));
     if (state.error) view.append(node('p', 'Archive unavailable. Loaded records are retained. Please retry.', 'journal-notice'));
     if (state.loading) view.append(node('p', 'Loading archived trades...', 'journal-notice'));
     if (state.loaded && !state.records.size && !state.loading) view.append(node('p', 'No archived trades available.'));
-    if (state.records.size && !selected.length) view.append(node('p', 'No matching loaded records.'));
+    const otherFilters = state.filters.search.trim() || ['direction', 'result', 'score'].some(key => state.filters[key] !== 'ALL');
+    if (state.loaded && !state.loading && !state.error && !selected.length && state.filters.cohort === 'LIVE' && !otherFilters) {
+      view.append(bilingual('In loaded records there are no LIVE trades.', 'В загруженных записях нет LIVE-сделок.'));
+      if (state.next !== null) view.append(bilingual('Archive loading is incomplete. Use LOAD MORE.', 'Архив загружен не полностью. Используйте LOAD MORE.'));
+    } else if (state.records.size && !selected.length) view.append(node('p', 'No matching loaded records.'));
     const list = node('div', undefined, 'journal-list');
     for (const record of selected) {
       const origin = object(record.origin), outcome = object(record.outcome), final = result(record);
@@ -146,10 +221,16 @@ function classifyLiveCohort(record) {
     view.append(list);
     if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); view.append(more); }
   }
-  window.Sm1mTradeJournal = { classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
+  window.Sm1mTradeJournal = { renderPerformance, classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
   const root = document.querySelector('#trade-journal-content'), dialog = document.querySelector('#trade-journal-dialog');
   if (!root || !dialog) return;
-  const store = createStore(window.fetch.bind(window), state => render(root, state, dialog, () => store.load()));
+  const performance = document.querySelector('#statistics-trade-analytics');
+  const store = createStore(window.fetch.bind(window), state => {
+    render(root, state, dialog, () => store.load());
+    if (performance) renderPerformance(performance, state);
+  });
+  // This script is loaded only after the existing owner-session gate succeeds.
+  if (performance) store.load();
   document.querySelector('.dashboard-tabs')?.addEventListener('click', event => {
     if (event.target.closest('[data-dashboard-tab]')?.dataset.dashboardTab === 'trade-journal' && !store.state.loaded) store.load();
   });

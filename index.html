@@ -2818,8 +2818,8 @@
 
   </div>
 
-  <section class="statistics-extra" aria-label="Дополнительная статистика">
-    <div id="statistics-trade-analytics">Новые показатели: N/A</div>
+  <section class="statistics-extra" aria-label="Performance Statistics">
+    <div id="statistics-trade-analytics" class="cohort-performance">Loading performance…</div>
   </section>
 
   <details class="statistics-history-card statistics-collapsible" id="advanced-analytics">
@@ -4930,9 +4930,6 @@ if (!data) {
           ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Expectancy: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R/сделку` : "N/A"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
           : "Ожидаем завершённые сделки";
 
-        const analytics = outcomes.tradeAnalytics;
-        const analyticsElement = document.querySelector("#statistics-trade-analytics");
-        if (analyticsElement) renderTradeAnalytics(analyticsElement, analytics);
 
         renderActiveTrades(latest);
         renderCompletedTrades(

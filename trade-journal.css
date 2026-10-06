@@ -20,3 +20,11 @@
 .journal-controls input, .journal-controls select { box-sizing: border-box; display: block; width: 100%; min-width: 0; margin-top: 4px; padding: 8px; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: #e2e8f0; }
 @media (max-width: 768px) { .journal-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 400px) { .journal-controls { grid-template-columns: minmax(0, 1fr); } }
+
+.cohort-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.cohort-controls .journal-button { min-width: 0; white-space: normal; }
+.cohort-controls [aria-pressed="true"] { border-color: #22d3ee; color: #e2e8f0; }
+.cohort-ru { display: block; font-size: 11px; line-height: 1.5; color: #94a3b8; font-weight: normal; }
+.cohort-performance > span { display: block; margin: 8px 0; font-size: 12px; color: #94a3b8; overflow-wrap: anywhere; }
+.cohort-performance > span:first-child { color: #22d3ee; font-size: 14px; font-weight: 600; }
+.cohort-performance .journal-fields { margin-top: 14px; }
