@@ -80,13 +80,16 @@ function classifyLiveCohort(record) {
   function renderPerformance(root, state) {
     const selected = root.performanceCohort || 'PRE-LIVE';
     root.performanceCohort = selected;
-    root.replaceChildren(bilingual('PERFORMANCE STATISTICS', 'Статистика результатов'),
-      cohortButtons([['PRE-LIVE', 'PRE-LIVE'], ['LIVE', 'LIVE · FROM 12 OCT 2026']], selected,
-        value => { root.performanceCohort = value; renderPerformance(root, state); }),
-      bilingual('Canonical/modelled SM1M trades · not confirmed exchange P&L',
-        'Канонические/модельные сделки SM1M · не подтверждённый биржевой P&L'),
+    const header = node('div', undefined, 'performance-header');
+    const heading = node('h3'); heading.append(bilingual('PERFORMANCE STATISTICS', 'Статистика результатов'));
+    header.append(heading, cohortButtons([['PRE-LIVE', 'PRE-LIVE'], ['LIVE', 'LIVE · FROM 12 OCT 2026']], selected,
+      value => { root.performanceCohort = value; renderPerformance(root, state); }));
+    const notice = node('div', undefined, 'performance-notice');
+    notice.append(bilingual('Canonical/modelled SM1M trades · not confirmed exchange P&L',
+      'Канонические/модельные сделки SM1M · не подтверждённый биржевой P&L'),
       bilingual('Based on available archive records · history completeness is not guaranteed',
-        'По доступным записям архива · полнота истории не гарантируется'));
+      'По доступным записям архива · полнота истории не гарантируется'));
+    root.replaceChildren(header, notice);
     const data = state.liveCohorts, summary = data?.summaries?.[selected];
     const counts = ['total', 'completed', 'active', 'wins', 'losses', 'breakEvens'];
     if (state.error || data?.startAt !== LIVE_START_UTC || data?.basis !== 'canonical-modelled' ||
@@ -96,28 +99,44 @@ function classifyLiveCohort(record) {
     }
     if (selected === 'LIVE' && summary.total === 0) root.append(bilingual(
       'LIVE starts 12 Oct 2026, 00:00 Europe/Kyiv.', 'LIVE начинается 12 октября 2026, 00:00 по Киеву.'));
-    const grid = node('dl', undefined, 'journal-fields');
-    const metric = (english, russian, value, kind) => {
+    const metric = (grid, english, russian, value, kind) => {
       const cell = node('div'), title = node('dt'); title.append(bilingual(english, russian));
-      const formatted = number(value) === null ? 'N/A' : kind === 'R' ? rText(value) :
-        kind === '%' ? `${value.toFixed(1)}%` : kind === 'ratio' ? value.toFixed(2) : String(value);
+      const formatted = number(value) === null ? 'N/A' : kind === 'magnitude' ? `${Number(Math.abs(value).toFixed(2))}R` :
+        kind === 'R' ? rText(value) : kind === '%' ? `${value.toFixed(1)}%` : kind === 'ratio' ? value.toFixed(2) : String(value);
       cell.append(title, node('dd', formatted)); grid.append(cell);
     };
+    const kpis = node('dl', undefined, 'performance-kpis');
     for (const [key, en, ru, kind] of [
-      ['completed','Completed','Завершено'], ['active','Active','Активные'],
+      ['completed','Completed','Завершено'], ['winRate','Win Rate','Доля прибыльных','%'],
+      ['netR','Net R','Итоговый R','R'], ['profitFactor','Profit Factor','Фактор прибыли','ratio'],
+      ['maxDrawdownR','Max Drawdown','Максимальная просадка, R','magnitude'], ['active','Active','Активные']
+    ]) metric(kpis, en, ru, summary[key], kind);
+    const details = node('section', undefined, 'performance-details'), detailsTitle = node('h4');
+    detailsTitle.append(bilingual('DETAILED STATISTICS', 'Детальная статистика'));
+    const secondary = node('dl', undefined, 'performance-secondary');
+    for (const [key, en, ru, kind] of [
       ['wins','Wins','Прибыльные'], ['losses','Losses','Убыточные'], ['breakEvens','Break-even','Безубыточные'],
-      ['winRate','Win Rate','Доля прибыльных','%'], ['netR','Net R','Итоговый R','R'],
       ['averageR','Average R','Средний R','R'], ['expectancy','Expectancy','Матожидание, R на сделку','R'],
-      ['profitFactor','Profit Factor','Фактор прибыли','ratio'], ['maxDrawdownR','Max Drawdown','Максимальная просадка, R','R'],
       ['currentLossStreak','Current Loss Streak','Текущая серия убытков'], ['maxLossStreak','Max Loss Streak','Максимальная серия убытков']
-    ]) metric(en, ru, summary[key], kind);
+    ]) metric(secondary, en, ru, summary[key], kind);
+    details.append(detailsTitle, secondary);
+    const directions = node('div', undefined, 'performance-directions');
     for (const direction of ['Long', 'Short']) {
-      const side = summary.directions?.[direction];
-      metric(`${direction} · Completed`, 'Завершено', side?.count);
-      metric(`${direction} · Wins`, 'Прибыльные', side?.wins);
-      metric(`${direction} · Net R`, 'Итоговый R', side?.netR, 'R');
+      const side = summary.directions?.[direction], block = node('section', undefined, `performance-direction is-${direction.toLowerCase()}`);
+      const title = node('h4'); title.append(bilingual(`${direction.toUpperCase()} TRADES`, direction === 'Long' ? 'Длинные сделки' : 'Короткие сделки'));
+      const grid = node('dl', undefined, 'performance-secondary');
+      const countValid = Number.isInteger(side?.count) && side.count >= 0;
+      const winsValid = countValid && Number.isInteger(side?.wins) && side.wins >= 0 && side.wins <= side.count;
+      metric(grid, 'Completed', 'Завершено', countValid ? side.count : null);
+      metric(grid, 'Wins', 'Прибыльные', winsValid ? side.wins : null);
+      // Count minus wins includes break-even trades; it cannot provide losses.
+      metric(grid, 'Losses', 'Убыточные', null);
+      metric(grid, 'Win Rate', 'Доля прибыльных', winsValid && side.count > 0 ? 100 * side.wins / side.count : null, '%');
+      metric(grid, 'Net R', 'Итоговый R', side?.netR, 'R');
+      metric(grid, 'Average R', 'Средний R', countValid && side.count > 0 && number(side?.netR) !== null ? side.netR / side.count : null, 'R');
+      block.append(title, grid); directions.append(block);
     }
-    root.append(grid);
+    root.append(kpis, details, directions);
     const warning = unknownNotice(state); if (warning) root.append(warning);
   }
   function controls(filters, update) {
