@@ -1912,6 +1912,14 @@
     position: relative;
 }
 
+#coin-analysis-content .trade-analysis-grid .trade-reason-item > .analysis-detail-text {
+    display: inline-block;
+    max-width: 100%;
+    font-size: 16px;
+    line-height: 1.28;
+    overflow-wrap: anywhere;
+}
+
 .trade-reason-item::before {
     content: "✓";
     position: absolute;
@@ -6642,7 +6650,7 @@ ${tradeReasons.length > 0 ? `
     .slice(0, 6)
     .map(reason => `
       <div class="trade-reason-item">
-        ${coinAnalysisEscape(reason)}
+        <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
         ${coinAnalysisTranslation("reason", reason)}
       </div>
     `)
@@ -6660,7 +6668,7 @@ ${smartMoneyReasons.length > 0 ? `
         .slice(0, 6)
         .map(reason => `
             <div class="trade-reason-item">
-                💎 ${coinAnalysisEscape(reason)}
+                💎 <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
         ${coinAnalysisTranslation("smart-money", reason)}
             </div>
         `)
@@ -6675,17 +6683,17 @@ ${Object.keys(marketEnvironment).length > 0 ? `
     </div>
 
     <div class="trade-reason-item">
-        Score: ${marketEnvironment.score ?? "—"} / 100
+        <span class="analysis-detail-text">Score: ${marketEnvironment.score ?? "—"} / 100</span>
         ${coinAnalysisTranslation("environment", "Score: " + (marketEnvironment.score ?? "—") + " / 100")}
     </div>
 
     <div class="trade-reason-item">
-        Condition: ${marketEnvironment.condition ?? "—"}
+        <span class="analysis-detail-text">Condition: ${marketEnvironment.condition ?? "—"}</span>
         ${coinAnalysisTranslation("environment", "Condition: " + (marketEnvironment.condition ?? "—"))}
     </div>
 
     <div class="trade-reason-item">
-        Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}
+        <span class="analysis-detail-text">Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}</span>
         ${coinAnalysisTranslation("environment", "Tradable: " + (marketEnvironment.tradable === true ? "YES" : "NO"))}
     </div>
 
@@ -6695,7 +6703,7 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 4)
             .map(reason => `
                 <div class="trade-reason-item">
-                    ${coinAnalysisEscape(reason)}
+                    <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
         ${coinAnalysisTranslation("environment", reason)}
                 </div>
             `)
@@ -6709,7 +6717,7 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 3)
             .map(warning => `
                 <div class="trade-reason-item">
-                    ⚠ ${coinAnalysisEscape(warning)}
+                    ⚠ <span class="analysis-detail-text">${coinAnalysisEscape(warning)}</span>
         ${coinAnalysisTranslation("environment", warning)}
                 </div>
             `)
