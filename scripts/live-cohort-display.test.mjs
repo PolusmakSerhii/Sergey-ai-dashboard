@@ -97,9 +97,23 @@ test('redesigned performance: six live KPIs, drawdown magnitude, details and hon
  assert.doesNotMatch(kpis.textContent,/\+17.19R/);
  const long=descendants(root).find(e=>e.className==='performance-direction is-long');
  assert.match(long.textContent,/LONG TRADES/);assert.match(long.textContent,/50.0%/);assert.match(long.textContent,/\+0.75R/);
- const loss=descendants(long).find(e=>e.children.length===2 && e.children[0]?.textContent.trim().startsWith('Losses'));assert.equal(loss.children[1].textContent.trim(),'N/A');
+ const loss=descendants(long).find(e=>e.children.length===2 && e.children[0]?.textContent.trim().startsWith('Losses'));assert.equal(loss.children[1].textContent.trim(),'2');
  const short=descendants(root).find(e=>e.className==='performance-direction is-short');assert.doesNotMatch(short.textContent,/Infinity|NaN/);assert.match(short.textContent,/N\/A/);
  assert.match(root.textContent,/DETAILED STATISTICS/);assert.equal(JSON.stringify(data),before);
  button(root,'LIVE · FROM 12 OCT 2026').listeners.click();assert.match(root.textContent,/LIVE starts/);
  assert.deepEqual(descendants(root).find(e=>e.className==='performance-kpis').children.map(e=>e.children[1].textContent.trim()),['0','N/A','0R','N/A','0R','0']);
+});
+
+for (const [side, be, expected] of [
+ [{count:6,wins:1,netR:0},0,'5'],
+ [{count:6,wins:1,netR:0},1,'N/A'],
+ [{count:6,wins:1,netR:0,breakEvens:2},2,'3'],
+ [{count:6,wins:1,netR:0,losses:4},1,'4'],
+ [{count:6,wins:9,netR:0},0,'N/A']
+]) test('directional losses safely resolved '+JSON.stringify(side)+' BE '+be,()=>{
+ const data=cohorts();data.summaries['PRE-LIVE'].breakEvens=be;data.summaries['PRE-LIVE'].directions.Long=side;
+ const root=new Element();ui.renderPerformance(root,{liveCohorts:data});
+ const long=descendants(root).find(e=>e.className==='performance-direction is-long');
+ const loss=descendants(long).find(e=>e.children.length===2 && e.children[0]?.textContent.trim().startsWith('Losses'));
+ assert.equal(loss.children[1].textContent.trim(),expected);
 });

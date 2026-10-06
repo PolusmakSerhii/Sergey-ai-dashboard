@@ -129,8 +129,12 @@ function classifyLiveCohort(record) {
       const winsValid = countValid && Number.isInteger(side?.wins) && side.wins >= 0 && side.wins <= side.count;
       metric(grid, 'Completed', 'Завершено', countValid ? side.count : null);
       metric(grid, 'Wins', 'Прибыльные', winsValid ? side.wins : null);
-      // Count minus wins includes break-even trades; it cannot provide losses.
-      metric(grid, 'Losses', 'Убыточные', null);
+      const directLosses = winsValid && Number.isInteger(side?.losses) && side.losses >= 0 && side.losses <= side.count - side.wins;
+      const sideBE = Number.isInteger(side?.breakEvens) && side.breakEvens >= 0 ? side.breakEvens :
+        summary.breakEvens === 0 ? 0 : null;
+      const losses = directLosses ? side.losses : winsValid && sideBE !== null && sideBE <= side.count - side.wins
+        ? side.count - side.wins - sideBE : null;
+      metric(grid, 'Losses', 'Убыточные', losses);
       metric(grid, 'Win Rate', 'Доля прибыльных', winsValid && side.count > 0 ? 100 * side.wins / side.count : null, '%');
       metric(grid, 'Net R', 'Итоговый R', side?.netR, 'R');
       metric(grid, 'Average R', 'Средний R', countValid && side.count > 0 && number(side?.netR) !== null ? side.netR / side.count : null, 'R');
