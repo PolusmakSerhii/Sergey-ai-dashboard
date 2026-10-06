@@ -1,6 +1,19 @@
 // Read-only presentation of saved archive records. No live analysis or polling.
 (function () {
   'use strict';
+const LIVE_START_UTC = "2026-10-11T21:00:00.000Z";
+function classifyLiveCohort(record) {
+  const instant = value => typeof value === "string" &&
+    /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? Date.parse(value) : NaN;
+  const origin = instant(record?.origin?.detectedAt);
+  if (!Number.isFinite(origin)) return { cohort: "UNKNOWN", reason: "INVALID_OR_MISSING_ORIGIN" };
+  const frozen = record?.initialPlan?.createdAt;
+  if (frozen !== undefined && frozen !== null &&
+      (!Number.isFinite(instant(frozen)) || instant(frozen) !== origin))
+    return { cohort: "UNKNOWN", reason: "FROZEN_ORIGIN_CONFLICT" };
+  return { cohort: origin >= Date.parse(LIVE_START_UTC) ? "LIVE" : "PRE-LIVE", reason: null };
+}
+
   const endpoint = 'https://sergey-ai-trader-api.vercel.app/api/market?mode=validation-archive';
   const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   const text = value => typeof value === 'string' && value.trim() ? value : typeof value === 'number' && Number.isFinite(value) ? String(value) : 'N/A';
@@ -9,14 +22,18 @@
   const rText = value => number(value) === null ? 'N/A' : `${value > 0 ? '+' : ''}${Number(value.toFixed(2))}R`;
   function result(record) {
     const outcome = object(record.outcome);
-    if (!['TP1Hit', 'TP3Hit', 'Stopped'].includes(outcome.status) ||
+    if (!['TP1Hit', 'TP3Hit', 'Stopped', 'Closed'].includes(outcome.status) ||
         typeof outcome.checkedAt !== 'string' || !Number.isFinite(Date.parse(outcome.checkedAt))) return { value: null, label: 'N/A' };
     const value = number(outcome.resultR);
     return { value, label: value === null ? 'N/A' : value > 0 ? 'WIN' : value < 0 ? 'LOSS' : 'BREAK EVEN' };
   }
   const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL' });
+  function filterCohort(records, cohort = 'ALL') {
+    return records.filter(record => cohort === 'ALL' || classifyLiveCohort(record).cohort === cohort &&
+      ['PRE-LIVE', 'LIVE'].includes(cohort));
+  }
   function filterRecords(records, filters) {
-    return [...records.values()].filter(record => {
+    return filterCohort([...records.values()], filters.cohort || 'ALL').filter(record => {
       const origin = object(record.origin), score = number(origin.opportunityScore);
       return (!filters.search.trim() || (typeof origin.symbol === 'string' && origin.symbol.toUpperCase().includes(filters.search.trim().toUpperCase()))) &&
         (filters.direction === 'ALL' || origin.direction === filters.direction) &&
@@ -129,7 +146,7 @@
     view.append(list);
     if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); view.append(more); }
   }
-  window.Sm1mTradeJournal = { result, details, createStore, render, defaultFilters, filterRecords, summarize };
+  window.Sm1mTradeJournal = { classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
   const root = document.querySelector('#trade-journal-content'), dialog = document.querySelector('#trade-journal-dialog');
   if (!root || !dialog) return;
   const store = createStore(window.fetch.bind(window), state => render(root, state, dialog, () => store.load()));
