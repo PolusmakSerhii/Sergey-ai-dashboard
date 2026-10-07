@@ -1912,11 +1912,15 @@
     position: relative;
 }
 
+#coin-analysis-content .trade-analysis-grid .trade-reason-item {
+    margin: 5px 0;
+    line-height: 17.08px;
+}
+
 #coin-analysis-content .trade-analysis-grid .trade-reason-item > .analysis-detail-text {
-    display: inline-block;
-    max-width: 100%;
-    font-size: 16px;
-    line-height: 1.28;
+    display: inline;
+    font-size: 14px;
+    line-height: 1.22;
     overflow-wrap: anywhere;
 }
 
@@ -6650,8 +6654,7 @@ ${tradeReasons.length > 0 ? `
     .slice(0, 6)
     .map(reason => `
       <div class="trade-reason-item">
-        <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
-        ${coinAnalysisTranslation("reason", reason)}
+        <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>&#8288;${coinAnalysisTranslation("reason", reason)}
       </div>
     `)
     .join("")}
@@ -6668,8 +6671,7 @@ ${smartMoneyReasons.length > 0 ? `
         .slice(0, 6)
         .map(reason => `
             <div class="trade-reason-item">
-                💎 <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
-        ${coinAnalysisTranslation("smart-money", reason)}
+                💎 <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>&#8288;${coinAnalysisTranslation("smart-money", reason)}
             </div>
         `)
         .join("")}
@@ -6683,18 +6685,15 @@ ${Object.keys(marketEnvironment).length > 0 ? `
     </div>
 
     <div class="trade-reason-item">
-        <span class="analysis-detail-text">Score: ${marketEnvironment.score ?? "—"} / 100</span>
-        ${coinAnalysisTranslation("environment", "Score: " + (marketEnvironment.score ?? "—") + " / 100")}
+        <span class="analysis-detail-text">Score: ${marketEnvironment.score ?? "—"} / 100</span>&#8288;${coinAnalysisTranslation("environment", "Score: " + (marketEnvironment.score ?? "—") + " / 100")}
     </div>
 
     <div class="trade-reason-item">
-        <span class="analysis-detail-text">Condition: ${marketEnvironment.condition ?? "—"}</span>
-        ${coinAnalysisTranslation("environment", "Condition: " + (marketEnvironment.condition ?? "—"))}
+        <span class="analysis-detail-text">Condition: ${marketEnvironment.condition ?? "—"}</span>&#8288;${coinAnalysisTranslation("environment", "Condition: " + (marketEnvironment.condition ?? "—"))}
     </div>
 
     <div class="trade-reason-item">
-        <span class="analysis-detail-text">Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}</span>
-        ${coinAnalysisTranslation("environment", "Tradable: " + (marketEnvironment.tradable === true ? "YES" : "NO"))}
+        <span class="analysis-detail-text">Tradable: ${marketEnvironment.tradable === true ? "YES" : "NO"}</span>&#8288;${coinAnalysisTranslation("environment", "Tradable: " + (marketEnvironment.tradable === true ? "YES" : "NO"))}
     </div>
 
     ${
@@ -6703,8 +6702,7 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 4)
             .map(reason => `
                 <div class="trade-reason-item">
-                    <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>
-        ${coinAnalysisTranslation("environment", reason)}
+                    <span class="analysis-detail-text">${coinAnalysisEscape(reason)}</span>&#8288;${coinAnalysisTranslation("environment", reason)}
                 </div>
             `)
             .join("")
@@ -6717,8 +6715,7 @@ ${Object.keys(marketEnvironment).length > 0 ? `
             .slice(0, 3)
             .map(warning => `
                 <div class="trade-reason-item">
-                    ⚠ <span class="analysis-detail-text">${coinAnalysisEscape(warning)}</span>
-        ${coinAnalysisTranslation("environment", warning)}
+                    ⚠ <span class="analysis-detail-text">${coinAnalysisEscape(warning)}</span>&#8288;${coinAnalysisTranslation("environment", warning)}
                 </div>
             `)
             .join("")

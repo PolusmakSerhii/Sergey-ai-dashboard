@@ -93,3 +93,10 @@ test('independent click toggles update accessible state without changing data or
  const handler=source.slice(source.indexOf('function toggleCoinTranslation'));
  assert.doesNotMatch(handler,/fetch|localStorage|resultR|confirmedAPlus/);
 });
+test('checked detail rows use compact inline text and keep toggle beside phrase',()=>{
+ assert.match(html,/#coin-analysis-content \.trade-analysis-grid \.trade-reason-item > \.analysis-detail-text\s*\{[^}]*display: inline;[^}]*font-size: 14px;[^}]*line-height: 1\.22;/);
+ assert.match(html,/#coin-analysis-content \.trade-analysis-grid \.trade-reason-item\s*\{[^}]*margin: 5px 0;/);
+ const grid=html.slice(html.indexOf('<div class="trade-analysis-grid">'),html.indexOf('firstAnalysisSummary ||'));
+ assert.equal((grid.match(/<\/span>&#8288;\$\{coinAnalysisTranslation/g)||[]).length,7);
+ assert.match(html,/width:24px; height:24px/);assert.match(html,/width:13px; height:13px/);assert.match(html,/font-size:9px/);
+});
