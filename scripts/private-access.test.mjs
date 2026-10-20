@@ -95,7 +95,7 @@ test('index has a hidden initial state and every Dashboard script is inert until
  new vm.Script(tags[1][2]);
 });
 
-for(const endpoint of ['forward-worker','forward-lifecycle']) {
+for(const endpoint of ['forward-worker','forward-lifecycle','forward-activation']) {
  test(`owner POST ${endpoint} uses only fixed server-side transport`,async()=>{
   const original=global.fetch;const calls=[];
   global.fetch=async(url,options)=>{calls.push({url:String(url),options});return {status:200,json:async()=>({status:'NOT_STARTED'})};};

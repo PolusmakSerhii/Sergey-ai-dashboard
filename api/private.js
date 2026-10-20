@@ -6,7 +6,7 @@ export default async function handler(req,res) {
   if(!sameOrigin(req,config,req.method!=='GET'))return res.status(403).json({ok:false,error:'Forbidden origin'});
   if(!validSession(req,config))return res.status(401).json({ok:false,error:'Unauthorized'});
   const endpoint=req.query?.endpoint;
-  const forward=['forward-worker','forward-lifecycle'].includes(endpoint);
+  const forward=['forward-worker','forward-lifecycle','forward-activation'].includes(endpoint);
   if((!forward&&!['market','news','chat'].includes(endpoint))||!['GET','POST'].includes(req.method))return res.status(404).json({ok:false});
   if(forward&&req.method!=='POST')return res.status(405).json({ok:false});
   if(!forward&&String(req.query.refresh||'false').toLowerCase()==='true')return res.status(403).json({ok:false,error:'Refresh requires scheduler authorization'});
