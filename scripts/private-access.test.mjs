@@ -87,10 +87,62 @@ test('premature protected fetch waits for session; denial never reaches native f
 test('index has a hidden initial state and every Dashboard script is inert until auth loader runs',async()=>{
  const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
  assert.match(html,/<html[^>]+data-private-access="pending"/);assert.match(html,/body > :not\(#private-access-status\).*display: none !important/);
- const tags=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];assert.equal(tags.length,8);
+ const tags=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];assert.equal(tags.length,9);
  assert.match(tags[0][1],/src="\.\/private-access.js"/);
  for(const [,attrs]of tags.slice(1)){assert.match(attrs,/type="text\/plain"/);assert.match(attrs,/data-private-dashboard/);assert.doesNotMatch(attrs,/(?:^|\s)src=/);}
  assert.deepEqual(tags.slice(2).map(([,attrs])=>attrs.match(/data-private-src="([^"]+)"/)[1]),[
- 'https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js','./coin-overview.js','./risk-manager.js','./entry-setups.js','./market-data.js','./ai-chart.js']);
+ 'https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js','./coin-overview.js','./risk-manager.js','./entry-setups.js','./trade-journal.js','./market-data.js','./ai-chart.js']);
  new vm.Script(tags[1][2]);
+});
+
+for(const endpoint of ['forward-worker','forward-lifecycle']) {
+ test(`owner POST ${endpoint} uses only fixed server-side transport`,async()=>{
+  const original=global.fetch;const calls=[];
+  global.fetch=async(url,options)=>{calls.push({url:String(url),options});return {status:200,json:async()=>({status:'NOT_STARTED'})};};
+  try {
+   const r=response();await proxy(request({method:'POST',query:{endpoint,url:'https://evil.test',refresh:'true',mode:'activate',extra:['x','y']},
+    headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN,authorization:'Bearer client-token'},body:{activate:true,secret:'client-value'}}),r);
+   assert.equal(r.code,200);assert.deepEqual(r.body,{status:'NOT_STARTED'});assert.equal(calls.length,1);
+   assert.equal(calls[0].url,`${env.SM1M_BACKEND_ORIGIN}/api/${endpoint}`);
+   const o=calls[0].options;assert.equal(o.method,'POST');assert.equal(o.body,'{}');assert.equal(o.redirect,'error');
+   assert.equal(o.headers.Authorization,`Bearer ${env.SM1M_API_SECRET}`);assert.equal(o.headers.authorization,undefined);
+   assert.equal(o.headers['Content-Type'],'application/json');assert.equal(o.headers.cookie,undefined);
+   assert.equal(r.headers['Cache-Control'],'private, no-store');assert.equal(r.headers['X-Content-Type-Options'],'nosniff');
+   assert.ok(!JSON.stringify(r).includes(env.SM1M_API_SECRET));assert.ok(!JSON.stringify(o).includes('client-token'));
+  } finally {global.fetch=original;}
+ });
+ test(`${endpoint} rejects GET, absent session, CSRF and unsupported methods without fetching`,async()=>{
+  const original=global.fetch;let calls=0;global.fetch=async()=>{calls++;throw Error('unexpected');};
+  try {
+   const owner={cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN};
+   for(const [method,headers,code]of [['GET',owner,405],['POST',{origin:env.SM1M_FRONTEND_ORIGIN},401],
+    ['POST',{...owner,origin:'https://evil.test'},403],['POST',{cookie:cookie()},403],['DELETE',owner,404]]){
+    const r=response();await proxy(request({method,headers,query:{endpoint}}),r);assert.equal(r.code,code);
+   }
+   assert.equal(calls,0);
+  } finally {global.fetch=original;}
+ });
+ test(`${endpoint} never returns an echoed backend secret or transport error details`,async()=>{
+  const original=global.fetch;
+  try {for(const fail of [false,true]){
+   global.fetch=async()=>{if(fail)throw Error(env.SM1M_API_SECRET);return {status:200,json:async()=>({nested:{authorization:`Bearer ${env.SM1M_API_SECRET}`}})};};
+   const r=response();await proxy(request({method:'POST',query:{endpoint},headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN}}),r);
+   assert.equal(r.code,502);assert.ok(!JSON.stringify(r).includes(env.SM1M_API_SECRET));
+  }} finally {global.fetch=original;}
+ });
+}
+test('Forward proxy rejects arbitrary destination endpoints without backend calls',async()=>{
+ const original=global.fetch;let calls=0;global.fetch=async()=>{calls++;throw Error('unexpected');};
+ try {for(const endpoint of ['https://evil.test','../forward-worker','forward-worker/activate',['forward-worker']]){
+  const r=response();await proxy(request({method:'POST',query:{endpoint},headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN}}),r);assert.equal(r.code,404);
+ }assert.equal(calls,0);}finally{global.fetch=original;}
+});
+test('existing market/news/chat proxy methods, queries and bodies remain intact',async()=>{
+ const original=global.fetch;const calls=[];global.fetch=async(url,options)=>{calls.push({url:new URL(url),options});return {status:200,json:async()=>({ok:true})};};
+ try {for(const [endpoint,method,query] of [['market','GET',{symbol:'BTCUSDT'}],['news','GET',{limit:'5'}],['chat','POST',{}],['market','POST',{mode:'risk-manager'}]]){
+  const r=response();const body={message:'test',tradeId:'test'};
+  await proxy(request({method,query:{endpoint,...query},body,headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN}}),r);
+  assert.equal(r.code,200);const last=calls.at(-1);assert.equal(last.url.pathname,`/api/${endpoint}`);
+  assert.deepEqual(Object.fromEntries(last.url.searchParams),query);assert.equal(last.options.body,method==='POST'?JSON.stringify(body):undefined);
+ }}finally{global.fetch=original;}
 });
