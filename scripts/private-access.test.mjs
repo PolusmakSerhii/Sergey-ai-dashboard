@@ -190,3 +190,45 @@ test('diagnostic failures do not retry and echoed secrets are suppressed',async(
   assert.equal(r.headers['Cache-Control'],'private, no-store');
  }}finally{global.fetch=original;}
 });
+
+test('Forward storage diagnostic GET uses fixed destination and server auth with no caller query/body',async()=>{
+ const original=global.fetch;const calls=[];
+ global.fetch=async(url,options)=>{calls.push({url:String(url),options});return {status:200,json:async()=>({rawSha256:'test-hash'})};};
+ try {for(const origin of [env.SM1M_FRONTEND_ORIGIN,undefined]){
+  const r=response();await proxy(request({method:'GET',query:{endpoint:'forward-storage-diagnostic',url:'https://evil.test',refresh:'true',extra:['x']},
+   headers:{cookie:cookie(),...(origin?{origin}:{}),authorization:'Bearer caller-secret'},body:{key:'other',command:'SET'}}),r);
+  assert.equal(r.code,200);assert.deepEqual(r.body,{rawSha256:'test-hash'});
+  assert.equal(calls.length,origin?1:2);
+  const {url,options:o}=calls.at(-1);assert.equal(url,'https://sergey-ai-trader-api.vercel.app/api/forward-storage-diagnostic');
+  assert.equal(o.method,'GET');assert.equal(Object.hasOwn(o,'body'),false);assert.equal(o.redirect,'error');
+  assert.equal(o.headers.Authorization,`Bearer ${env.SM1M_API_SECRET}`);assert.equal(o.headers.authorization,undefined);
+  assert.equal(o.headers.cookie,undefined);assert.ok(!JSON.stringify(o).includes('caller-secret'));
+  assert.equal(r.headers['Cache-Control'],'private, no-store');assert.equal(r.headers['X-Content-Type-Options'],'nosniff');
+ }}finally{global.fetch=original;}
+});
+test('Forward storage diagnostic rejects other methods, invalid sessions, foreign origin and cross-site before fetch',async()=>{
+ const original=global.fetch;let calls=0;global.fetch=async()=>{calls++;throw Error('unexpected');};
+ try {
+  const owner={cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN};
+  for(const method of ['POST','PUT','PATCH','DELETE','HEAD','OPTIONS']){
+   const r=response();await proxy(request({method,headers:owner,query:{endpoint:'forward-storage-diagnostic'}}),r);assert.ok([404,405].includes(r.code));
+  }
+  for(const headers of [{},{cookie:'bad'},{...owner,cookie:cookie()+'bad'}, {...owner,origin:'https://evil.test'},{...owner,'sec-fetch-site':'cross-site'}]){
+   const r=response();await proxy(request({headers,query:{endpoint:'forward-storage-diagnostic'}}),r);assert.ok([401,403].includes(r.code));
+  }
+  for(const endpoint of ['unknown','../forward-storage-diagnostic','forward-storage-diagnostic/other','https://sergey-ai-trader-api.vercel.app/api/forward-storage-diagnostic',['forward-storage-diagnostic']]){
+   const r=response();await proxy(request({headers:owner,query:{endpoint}}),r);assert.equal(r.code,404);
+  }
+  assert.equal(calls,0);
+ }finally{global.fetch=original;}
+});
+test('Forward storage diagnostic failures do not retry and echoed secrets are suppressed',async()=>{
+ const original=global.fetch;
+ try {for(const mode of ['transport','backend','json','secret']){
+  let calls=0;global.fetch=async()=>{calls++;if(mode==='transport')throw Error(env.SM1M_API_SECRET);
+   return {status:mode==='backend'?503:200,json:async()=>{if(mode==='json')throw Error(env.SM1M_API_SECRET);return mode==='secret'?{nested:env.SM1M_API_SECRET}:{error:'DIAGNOSTIC_UNAVAILABLE'};}};};
+  const r=response();await proxy(request({headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN},query:{endpoint:'forward-storage-diagnostic'}}),r);
+  assert.equal(calls,1);assert.equal(r.code,mode==='backend'?503:502);assert.ok(!JSON.stringify(r).includes(env.SM1M_API_SECRET));
+  assert.equal(r.headers['Cache-Control'],'private, no-store');
+ }}finally{global.fetch=original;}
+});

@@ -6,7 +6,7 @@ export default async function handler(req,res) {
   if(!sameOrigin(req,config,req.method!=='GET'))return res.status(403).json({ok:false,error:'Forbidden origin'});
   if(!validSession(req,config))return res.status(401).json({ok:false,error:'Unauthorized'});
   const endpoint=req.query?.endpoint;
-  const diagnostic=endpoint==='open-trades-diagnostic';
+  const diagnostic=['open-trades-diagnostic','forward-storage-diagnostic'].includes(endpoint);
   const forward=['forward-worker','forward-lifecycle','forward-activation','open-trades-repair'].includes(endpoint);
   if((!diagnostic&&!forward&&!['market','news','chat'].includes(endpoint))||!['GET','POST'].includes(req.method))return res.status(404).json({ok:false});
   if(diagnostic&&req.method!=='GET')return res.status(405).json({ok:false});
@@ -16,6 +16,7 @@ export default async function handler(req,res) {
   // Temporary incident-only route: owner session, fixed production destination, no client payload.
   const url=endpoint==='open-trades-repair'
     ? new URL('https://sergey-ai-trader-api.vercel.app/api/open-trades-repair')
+    : endpoint==='forward-storage-diagnostic' ? new URL('https://sergey-ai-trader-api.vercel.app/api/forward-storage-diagnostic')
     : diagnostic ? new URL('https://sergey-ai-trader-api.vercel.app/api/open-trades-diagnostic')
     : new URL('/api/'+endpoint,config.backend);
   for(const [key,value]of Object.entries((forward||diagnostic)?{}:req.query||{})) {
