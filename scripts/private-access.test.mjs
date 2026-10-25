@@ -95,7 +95,7 @@ test('index has a hidden initial state and every Dashboard script is inert until
  new vm.Script(tags[1][2]);
 });
 
-for(const endpoint of ['forward-worker','forward-lifecycle','forward-activation']) {
+for(const endpoint of ['forward-worker','forward-lifecycle','forward-activation','open-trades-repair']) {
  test(`owner POST ${endpoint} uses only fixed server-side transport`,async()=>{
   const original=global.fetch;const calls=[];
   global.fetch=async(url,options)=>{calls.push({url:String(url),options});return {status:200,json:async()=>({status:'NOT_STARTED'})};};
@@ -103,7 +103,9 @@ for(const endpoint of ['forward-worker','forward-lifecycle','forward-activation'
    const r=response();await proxy(request({method:'POST',query:{endpoint,url:'https://evil.test',refresh:'true',mode:'activate',extra:['x','y']},
     headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN,authorization:'Bearer client-token'},body:{activate:true,secret:'client-value'}}),r);
    assert.equal(r.code,200);assert.deepEqual(r.body,{status:'NOT_STARTED'});assert.equal(calls.length,1);
-   assert.equal(calls[0].url,`${env.SM1M_BACKEND_ORIGIN}/api/${endpoint}`);
+   assert.equal(calls[0].url,endpoint==='open-trades-repair'
+    ? 'https://sergey-ai-trader-api.vercel.app/api/open-trades-repair'
+    : `${env.SM1M_BACKEND_ORIGIN}/api/${endpoint}`);
    const o=calls[0].options;assert.equal(o.method,'POST');assert.equal(o.body,'{}');assert.equal(o.redirect,'error');
    assert.equal(o.headers.Authorization,`Bearer ${env.SM1M_API_SECRET}`);assert.equal(o.headers.authorization,undefined);
    assert.equal(o.headers['Content-Type'],'application/json');assert.equal(o.headers.cookie,undefined);
@@ -133,7 +135,7 @@ for(const endpoint of ['forward-worker','forward-lifecycle','forward-activation'
 }
 test('Forward proxy rejects arbitrary destination endpoints without backend calls',async()=>{
  const original=global.fetch;let calls=0;global.fetch=async()=>{calls++;throw Error('unexpected');};
- try {for(const endpoint of ['https://evil.test','../forward-worker','forward-worker/activate',['forward-worker']]){
+ try {for(const endpoint of ['https://evil.test','../forward-worker','forward-worker/activate',['forward-worker'],'../open-trades-repair','open-trades-repair/other',['open-trades-repair']]){
   const r=response();await proxy(request({method:'POST',query:{endpoint},headers:{cookie:cookie(),origin:env.SM1M_FRONTEND_ORIGIN}}),r);assert.equal(r.code,404);
  }assert.equal(calls,0);}finally{global.fetch=original;}
 });

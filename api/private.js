@@ -6,12 +6,15 @@ export default async function handler(req,res) {
   if(!sameOrigin(req,config,req.method!=='GET'))return res.status(403).json({ok:false,error:'Forbidden origin'});
   if(!validSession(req,config))return res.status(401).json({ok:false,error:'Unauthorized'});
   const endpoint=req.query?.endpoint;
-  const forward=['forward-worker','forward-lifecycle','forward-activation'].includes(endpoint);
+  const forward=['forward-worker','forward-lifecycle','forward-activation','open-trades-repair'].includes(endpoint);
   if((!forward&&!['market','news','chat'].includes(endpoint))||!['GET','POST'].includes(req.method))return res.status(404).json({ok:false});
   if(forward&&req.method!=='POST')return res.status(405).json({ok:false});
   if(!forward&&String(req.query.refresh||'false').toLowerCase()==='true')return res.status(403).json({ok:false,error:'Refresh requires scheduler authorization'});
   if(!forward&&req.method==='POST' && !(endpoint==='chat'||(endpoint==='market'&&req.query.mode==='risk-manager')))return res.status(405).json({ok:false});
-  const url=new URL('/api/'+endpoint,config.backend);
+  // Temporary incident-only route: owner session, fixed production destination, no client payload.
+  const url=endpoint==='open-trades-repair'
+    ? new URL('https://sergey-ai-trader-api.vercel.app/api/open-trades-repair')
+    : new URL('/api/'+endpoint,config.backend);
   for(const [key,value]of Object.entries(forward?{}:req.query||{})) {
     if(key==='endpoint')continue;
     if(typeof value!=='string'||value.length>2048)return res.status(400).json({ok:false});
