@@ -16,13 +16,6 @@ for(const [value,label] of [[1,'WIN'],[-1,'LOSS'],[0,'BREAK EVEN'],[null,'N/A'],
  const r=rec('2026-10-12T00:00:00Z','Closed',value);if(value===undefined)delete r.outcome.resultR;
  assert.equal(api.result(r).label,label);assert.equal(api.summarize([r,r]).completed,label==='N/A'?0:1);
 });
-test('ALL retains unknown; cohort filters preserve records and validation cohort',()=>{
- const records=[rec('2026-10-10T00:00:00Z','Active'),rec('2026-10-12T00:00:00Z'),rec(null)];
- const before=JSON.stringify(records);
- assert.equal(api.filterCohort(records).length,3);
- for(const cohort of ['PRE-LIVE','LIVE'])assert.equal(api.filterRecords(new Map(records.map((r,i)=>[i,r])),{...api.defaultFilters(),cohort}).length,1);
- assert.equal(JSON.stringify(records),before);
-});
 
 class Element {
   constructor(){this.children=[];this.dataset={};this.listeners={};this.value='';}
@@ -54,18 +47,6 @@ for(const variant of ['missing','bad boundary','bad origin field','bad count','e
  if(variant==='bad count')state.operationalCohort.summary.completed=null;
  if(variant==='error')state.error=true;
  ui.renderPerformance(root,state);assert.match(root.textContent,/Statistics temporarily unavailable/);assert.ok(!descendants(root).some(e=>e.className==='journal-fields'));
-});
-test('Journal cohort controls combine with filters, reset ALL, unknown warning, empty and partial wording',()=>{
- const root=new Element(),state={filters:ui.defaultFilters(),records:new Map(),loaded:true,next:1,total:3,boundary:null,liveCohorts:cohorts()};
- state.liveCohorts.summaries.UNKNOWN.total=1;
- const rows=[rec('2026-10-10T00:00:00Z'),rec(null)]; rows.forEach((r,i)=>state.records.set(i,r));
- const before=JSON.stringify(rows);ui.render(root,state,new Element(),()=>{throw Error('unexpected request');});
- assert.equal(state.filters.cohort,'ALL');assert.match(root.textContent,/Записей без однозначной даты происхождения: 1/);
- button(root,'PRE-LIVE').listeners.click();assert.equal(ui.filterRecords(state.records,state.filters).length,1);assert.match(root.textContent,/FILTERED COHORT/);
- button(root,'LIVE').listeners.click();assert.match(root.textContent,/В загруженных записях нет LIVE-сделок/);assert.match(root.textContent,/Архив загружен не полностью/);
- state.next=null;ui.render(root,state,new Element(),()=>{});assert.doesNotMatch(root.textContent,/Архив загружен не полностью/);
- state.filters.search='BTC';ui.render(root,state,new Element(),()=>{});assert.match(root.textContent,/No matching loaded records/);assert.doesNotMatch(root.textContent,/нет LIVE-сделок/);
- button(root,'Reset').listeners.click();assert.equal(state.filters.cohort,'ALL');assert.equal(state.filters.search,'');assert.equal(button(root,'ALL')['aria-pressed'],'true');assert.equal(JSON.stringify(rows),before);
 });
 const rows = n => Array.from({length:n},(_,i)=>({...rec('2026-11-02T00:00:00Z'),tradeId:String(i).padStart(4,'0')}));
 function page(records,offset=0) { return {ok:true,initialized:true,schemaVersion:1,rulesRevision:'canonical-trade-archive-v1',validationStartAt:'2026-09-22T00:00:00Z',boundaryPolicy:'test',offset,limit:100,totalArchived:records.length,nextOffset:offset+100<records.length?offset+100:null,records:records.slice(offset,offset+100)}; }

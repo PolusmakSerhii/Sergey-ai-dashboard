@@ -1,4 +1,4 @@
-// Read-only presentation of saved archive records. No live analysis or polling.
+// Read-only presentation of one shared, stable archive snapshot. No live analysis.
 (function () {
   'use strict';
 const LIVE_START_UTC = "2026-10-11T21:00:00.000Z";
@@ -27,13 +27,15 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
     const value = number(outcome.resultR);
     return { value, label: value === null ? 'N/A' : value > 0 ? 'WIN' : value < 0 ? 'LOSS' : 'BREAK EVEN' };
   }
-  const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL', cohort: 'ALL' });
-  function filterCohort(records, cohort = 'ALL') {
-    return records.filter(record => cohort === 'ALL' || classifyLiveCohort(record).cohort === cohort &&
-      ['PRE-LIVE', 'LIVE'].includes(cohort));
+  const defaultFilters = () => ({ search: '', direction: 'ALL', result: 'ALL', score: 'ALL', cohort: 'OPERATIONAL' });
+  function selectOperationalRecords(records) {
+    return records.filter(record => classifyLiveCohort(record, OPERATIONAL_START_UTC).cohort === 'LIVE');
+  }
+  function filterCohort(records, cohort = 'OPERATIONAL') {
+    return cohort === 'ALL' ? [...records] : cohort === 'OPERATIONAL' ? selectOperationalRecords(records) : [];
   }
   function filterRecords(records, filters) {
-    return filterCohort([...records.values()], filters.cohort || 'ALL').filter(record => {
+    return filterCohort([...records.values()], filters.cohort || 'OPERATIONAL').filter(record => {
       const origin = object(record.origin), score = number(origin.opportunityScore);
       return (!filters.search.trim() || (typeof origin.symbol === 'string' && origin.symbol.toUpperCase().includes(filters.search.trim().toUpperCase()))) &&
         (filters.direction === 'ALL' || origin.direction === filters.direction) &&
@@ -84,7 +86,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
       if (ids.has(r.tradeId)) throw Error('Duplicate identity');
       ids.add(r.tradeId);
     }
-    const items = records.filter(r => classifyLiveCohort(r, OPERATIONAL_START_UTC).cohort === 'LIVE');
+    const items = selectOperationalRecords(records);
     const side = () => ({ count: 0, wins: 0, losses: 0, breakEvens: 0, netR: 0 });
     const summary = { total: items.length, completed: 0, active: items.filter(r => r.outcome?.status === 'Active').length,
       wins: 0, losses: 0, breakEvens: 0, netR: 0, maxDrawdownR: 0, currentLossStreak: 0, maxLossStreak: 0,
@@ -202,7 +204,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
     search.type = 'search'; search.value = filters.search; search.placeholder = 'Symbol';
     search.addEventListener('input', () => { filters.search = search.value; update(); }); searchLabel.append(search); bar.append(searchLabel);
     const inputs = { search };
-    const cohorts = cohortButtons([['ALL','ALL'], ['PRE-LIVE','PRE-LIVE'], ['LIVE','LIVE']], filters.cohort, value => { filters.cohort = value; update(); });
+    const cohorts = cohortButtons([['OPERATIONAL','LIVE TRADING'], ['ALL','HISTORY / ALL']], filters.cohort, value => { filters.cohort = value; update(); });
     for (const [key, label, options] of [['direction', 'Direction', ['ALL', 'Long', 'Short']], ['result', 'Result', ['ALL', 'WIN', 'LOSS', 'BREAK EVEN']], ['score', 'Score', ['ALL', '85–89', '90–94', '95+']]]) {
       const wrapper = node('label', label), select = node('select');
       for (const value of options) { const option = node('option', value.toUpperCase()); option.value = value; select.append(option); }
@@ -210,7 +212,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
       inputs[key] = select; wrapper.append(select); bar.append(wrapper);
     }
     const reset = node('button', 'Reset', 'journal-button'); reset.type = 'button';
-    reset.addEventListener('click', () => { Object.assign(filters, defaultFilters()); for (const key of Object.keys(inputs)) inputs[key].value = filters[key]; for (const button of cohorts.children) button.setAttribute('aria-pressed', String(button.dataset.cohort === 'ALL')); update(); });
+    reset.addEventListener('click', () => { Object.assign(filters, defaultFilters()); for (const key of Object.keys(inputs)) inputs[key].value = filters[key]; for (const button of cohorts.children) button.setAttribute('aria-pressed', String(button.dataset.cohort === filters.cohort)); update(); });
     bar.append(reset); const wrapper = node('div'); wrapper.append(cohorts, bar); return wrapper;
   }
   function node(tag, value, className) {
@@ -300,52 +302,26 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
       finally { state.loading = false; notify(state); }
     }};
   }
-  function createStore(fetcher, notify) {
-    const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, liveCohorts: null, skipped: 0 };
-    return { state, async load() {
-      if (state.loading || state.next === null) return;
-      const offset = state.next; state.loading = true; state.error = false; notify(state);
-      try {
-        const response = await fetchArchivePage(fetcher, offset);
-        if (!response.ok) throw Error('Archive unavailable');
-        const data = await response.json();
-        if (data.ok !== true || !Array.isArray(data.records)) throw Error('Invalid archive');
-        const next = data.nextOffset;
-        if (next != null && (!Number.isInteger(next) || next <= offset || data.records.length === 0)) throw Error('Invalid pagination');
-        for (const item of data.records) {
-          if (!item || typeof item.tradeId !== 'string' || !item.tradeId.trim() || !item.origin || !item.outcome) { state.skipped++; continue; }
-          state.records.set(item.tradeId, item);
-        }
-        state.total = Number.isInteger(data.totalArchived) && data.totalArchived >= 0 ? data.totalArchived : null;
-        state.boundary = data.validationStartAt;
-        state.liveCohorts = data.liveCohorts || null;
-        state.next = next ?? (state.total !== null && offset + data.records.length < state.total && data.records.length ? offset + data.records.length : null);
-        state.loaded = true;
-      } catch { state.error = true; }
-      finally { state.loading = false; notify(state); }
-    }};
-  }
-  function render(root, state, dialog, load) {
+  function render(root, state, dialog) {
     state.filters ||= defaultFilters();
     if (!root.journalView) {
       root.journalView = node('div');
       root.replaceChildren(node('p', 'Сохранённые записи сделок из архива валидации. Архив может содержать не всю историю сделок.', 'journal-notice'),
-        controls(state.filters, () => render(root, state, dialog, load)), root.journalView);
+        controls(state.filters, () => render(root, state, dialog)), root.journalView);
     }
-    const view = root.journalView, selected = filterRecords(state.records, state.filters), summary = summarize(selected);
-    const active = state.filters.search.trim() || ['direction', 'result', 'score', 'cohort'].some(key => state.filters[key] !== 'ALL');
-    view.replaceChildren(node('p', `Граница архива: ${date(state.boundary)} · Загружено сделок: ${state.records.size}${state.total === null ? '' : ` из ${state.total}`} · После фильтрации: ${selected.length} из ${state.records.size} загруженных сделок. Аналитика рассчитана только по загруженным сделкам и не является статистикой за всё время.`, 'journal-notice'),
-      fields(active ? 'FILTERED COHORT' : 'LOADED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['NET R', rText(summary.netR)], ['AVERAGE R', rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
-    const warning = unknownNotice(state); if (warning) view.append(warning);
-    if (state.skipped) view.append(node('p', `${state.skipped} malformed records skipped.`, 'journal-notice'));
-    if (state.error) view.append(node('p', 'Archive unavailable. Loaded records are retained. Please retry.', 'journal-notice'));
-    if (state.loading) view.append(node('p', 'Loading archived trades...', 'journal-notice'));
-    if (state.loaded && !state.records.size && !state.loading) view.append(node('p', 'No archived trades available.'));
-    const otherFilters = state.filters.search.trim() || ['direction', 'result', 'score'].some(key => state.filters[key] !== 'ALL');
-    if (state.loaded && !state.loading && !state.error && !selected.length && state.filters.cohort === 'LIVE' && !otherFilters) {
-      view.append(bilingual('In loaded records there are no LIVE trades.', 'В загруженных записях нет LIVE-сделок.'));
-      if (state.next !== null) view.append(bilingual('Archive loading is incomplete. Use LOAD MORE.', 'Архив загружен не полностью. Используйте LOAD MORE.'));
-    } else if (state.records.size && !selected.length) view.append(node('p', 'No matching loaded records.'));
+    const view = root.journalView;
+    const modeLabel = state.filters.cohort === 'ALL' ? 'HISTORY / ALL' : 'LIVE TRADING · FROM 02 NOV 2026';
+    view.replaceChildren(node('p', modeLabel, 'journal-notice'));
+    if (state.loading || state.error || !state.loaded || !state.operationalCohort) {
+      view.append(node('p', state.loading ? 'Loading archived trades...' : 'Statistics temporarily unavailable', 'journal-notice'));
+      return;
+    }
+    const selected = filterRecords(state.records, state.filters), summary = summarize(selected);
+    view.append(node('p', `Граница архива: ${date(state.boundary)} · Полный подтверждённый snapshot: ${state.records.size} сделок · После фильтрации: ${selected.length} из ${state.records.size}. По доступным записям архива; полнота истории не гарантируется.`, 'journal-notice'),
+      fields('SELECTED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['NET R', rText(summary.netR)], ['AVERAGE R', summary.averageR === null ? 'N/A' : rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
+    if (!selected.length) view.append(node('p', state.filters.cohort === 'OPERATIONAL' && !state.filters.search.trim() &&
+      ['direction', 'result', 'score'].every(key => state.filters[key] === 'ALL')
+      ? 'No LIVE TRADING trades in the current stable archive snapshot.' : 'No matching archived trades.'));
     const list = node('div', undefined, 'journal-list');
     for (const record of selected) {
       const origin = object(record.origin), outcome = object(record.outcome), final = result(record);
@@ -354,24 +330,17 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
       card.append(open, fields(null, [['Direction', ['Long', 'Short'].includes(origin.direction) ? origin.direction.toUpperCase() : 'N/A'], ['Original Grade', origin.grade], ['Original Score', origin.opportunityScore], ['Original Confidence', origin.confidence], ['Lifecycle', outcome.status], ['Result R', `${rText(final.value)} · ${final.label}`], ['Opened', date(outcome.activatedAt)], ['Closed', final.value === null ? 'N/A' : date(outcome.checkedAt)]])); list.append(card);
     }
     view.append(list);
-    if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); view.append(more); }
   }
-  window.Sm1mTradeJournal = { operationalSummary, createOperationalStore, renderPerformance, classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
+  window.Sm1mTradeJournal = { operationalSummary, selectOperationalRecords, createOperationalStore, renderPerformance, classifyLiveCohort, filterCohort, result, details, render, defaultFilters, filterRecords, summarize };
   const root = document.querySelector('#trade-journal-content'), dialog = document.querySelector('#trade-journal-dialog');
   if (!root || !dialog) return;
   const performance = document.querySelector('#statistics-trade-analytics');
-  const store = createStore(window.fetch.bind(window), state => {
-    render(root, state, dialog, () => store.load());
+  const store = createOperationalStore(window.fetch.bind(window), state => {
+    render(root, state, dialog);
+    if (performance) renderPerformance(performance, state);
   });
-  // Independent bounded statistics load; Journal keeps its historical pagination/filters.
-  // This script runs only after the existing owner-session gate succeeds.
-  if (performance) {
-    const operational = createOperationalStore(window.fetch.bind(window), state => renderPerformance(performance, state));
-    operational.load();
-    document.addEventListener('operational-statistics-tick', () => operational.load());
-    document.addEventListener('visibilitychange', () => operational.load());
-  }
-  document.querySelector('.dashboard-tabs')?.addEventListener('click', event => {
-    if (event.target.closest('[data-dashboard-tab]')?.dataset.dashboardTab === 'trade-journal' && !store.state.loaded) store.load();
-  });
+  // One session-gated loader and one snapshot feed both Dashboard and Journal.
+  store.load();
+  document.addEventListener('operational-statistics-tick', () => store.load());
+  document.addEventListener('visibilitychange', () => store.load());
 })();
