@@ -4892,61 +4892,8 @@ if (!data) {
         const outcomes = data.outcomes || {};
         const completedOutcomes =
           Number(outcomes.completed) || 0;
-        const activeOutcomes =
-          Number(outcomes.active) || 0;
-
-        document.querySelector(
-          "#statistics-win-rate"
-        ).textContent = completedOutcomes > 0 &&
-          Number.isFinite(Number(outcomes.winRate))
-            ? `${Number(outcomes.winRate)}%`
-            : "—";
-
-        const hasBreakEvenCount = typeof outcomes.breakEvens === "number" &&
-          Number.isInteger(outcomes.breakEvens) && outcomes.breakEvens >= 0;
-        const breakEvenSince = typeof outcomes.resultClassificationSince === "string"
-          ? Date.parse(outcomes.resultClassificationSince) : NaN;
-        const breakEvenText = `BREAK EVEN: ${hasBreakEvenCount ? outcomes.breakEvens : "N/A"}` +
-          (hasBreakEvenCount && Number.isFinite(breakEvenSince)
-            ? ` (учёт с ${new Date(breakEvenSince).toISOString().slice(0,10)} UTC)` : "");
-
-        document.querySelector(
-          "#statistics-outcomes"
-        ).textContent = completedOutcomes > 0
-          ? `Активных: ${activeOutcomes} · WIN: ${Number(outcomes.wins) || 0} (${Number(outcomes.winRate) || 0}%) · LOSS: ${Number(outcomes.losses) || 0} (${Number(outcomes.lossRate) || 0}%) · ${breakEvenText}`
-          : activeOutcomes > 0
-            ? `Активных сделок: ${activeOutcomes} · Ждём результата`
-            : "Нет активных и завершённых сделок";
-
-        const hasProfitFactor =
-          outcomes.profitFactor !== null &&
-          outcomes.profitFactor !== undefined &&
-          Number.isFinite(Number(outcomes.profitFactor));
-        const hasNetR =
-          outcomes.netR !== null &&
-          outcomes.netR !== undefined &&
-          Number.isFinite(Number(outcomes.netR));
-        const hasAverageR =
-          outcomes.averageR !== null &&
-          outcomes.averageR !== undefined &&
-          Number.isFinite(Number(outcomes.averageR));
-        const hasMaxDrawdownR =
-          outcomes.maxDrawdownR !== null &&
-          outcomes.maxDrawdownR !== undefined &&
-          Number.isFinite(Number(outcomes.maxDrawdownR));
-
-        document.querySelector(
-          "#statistics-profit-factor"
-        ).textContent = hasProfitFactor
-          ? Number(outcomes.profitFactor).toFixed(2)
-          : "—";
-
-        document.querySelector(
-          "#statistics-r-performance"
-        ).textContent = completedOutcomes > 0
-          ? `Net R: ${hasNetR ? `${formatSignedChange(Number(outcomes.netR))}R` : "—"} · Average R: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R` : "—"} · Expectancy: ${hasAverageR ? `${formatSignedChange(Number(outcomes.averageR))}R/сделку` : "N/A"} · Drawdown: ${hasMaxDrawdownR ? `${Number(outcomes.maxDrawdownR)}R` : "—"}`
-          : "Ожидаем завершённые сделки";
-
+        // Main outcome cards are rendered exclusively from the archive operational cohort.
+        // Keep cumulative outcomes only for historical completed-trade display below.
 
         renderActiveTrades(latest);
         renderCompletedTrades(
@@ -7379,7 +7326,10 @@ document.addEventListener(
     );
 
     window.setInterval(
-      renderRankingFreshness,
+      () => {
+        renderRankingFreshness();
+        document.dispatchEvent(new Event('operational-statistics-tick'));
+      },
       30 * 1000
     );
 

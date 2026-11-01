@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 const LIVE_START_UTC = "2026-10-11T21:00:00.000Z";
-function classifyLiveCohort(record) {
+function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
   const instant = value => typeof value === "string" &&
     /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value) ? Date.parse(value) : NaN;
   const origin = instant(record?.origin?.detectedAt);
@@ -11,7 +11,7 @@ function classifyLiveCohort(record) {
   if (frozen !== undefined && frozen !== null &&
       (!Number.isFinite(instant(frozen)) || instant(frozen) !== origin))
     return { cohort: "UNKNOWN", reason: "FROZEN_ORIGIN_CONFLICT" };
-  return { cohort: origin >= Date.parse(LIVE_START_UTC) ? "LIVE" : "PRE-LIVE", reason: null };
+  return { cohort: origin >= Date.parse(startAt) ? "LIVE" : "PRE-LIVE", reason: null };
 }
 
   const endpoint = 'https://sergey-ai-trader-api.vercel.app/api/market?mode=validation-archive';
@@ -77,31 +77,84 @@ function classifyLiveCohort(record) {
       `Records without an unambiguous origin date: ${count}. They remain available in ALL and are excluded from PRE-LIVE/LIVE.`,
       `Записей без однозначной даты происхождения: ${count}. Они доступны в ALL и исключены из PRE-LIVE/LIVE.`) : null;
   }
+  const OPERATIONAL_START_UTC = '2026-11-01T22:00:00.000Z';
+  function operationalSummary(records) {
+    const ids = new Set();
+    for (const r of records) {
+      if (ids.has(r.tradeId)) throw Error('Duplicate identity');
+      ids.add(r.tradeId);
+    }
+    const items = records.filter(r => classifyLiveCohort(r, OPERATIONAL_START_UTC).cohort === 'LIVE');
+    const side = () => ({ count: 0, wins: 0, losses: 0, breakEvens: 0, netR: 0 });
+    const summary = { total: items.length, completed: 0, active: items.filter(r => r.outcome?.status === 'Active').length,
+      wins: 0, losses: 0, breakEvens: 0, netR: 0, maxDrawdownR: 0, currentLossStreak: 0, maxLossStreak: 0,
+      winRate: null, averageR: null, expectancy: null, profitFactor: null,
+      directions: { Long: side(), Short: side() } };
+    let peak = 0, profit = 0, loss = 0;
+    const completed = items.filter(r => result(r).value !== null).sort((a,b) =>
+      Date.parse(a.outcome.checkedAt) - Date.parse(b.outcome.checkedAt) || (a.tradeId < b.tradeId ? -1 : a.tradeId > b.tradeId ? 1 : 0));
+    for (const r of completed) {
+      const value = result(r).value, key = value > 0 ? 'wins' : value < 0 ? 'losses' : 'breakEvens';
+      summary.completed++; summary[key]++; summary.netR += value;
+      profit += Math.max(0, value); loss += Math.max(0, -value);
+      peak = Math.max(peak, summary.netR);
+      summary.maxDrawdownR = Math.max(summary.maxDrawdownR, peak - summary.netR);
+      summary.currentLossStreak = value < 0 ? summary.currentLossStreak + 1 : 0;
+      summary.maxLossStreak = Math.max(summary.maxLossStreak, summary.currentLossStreak);
+      const direction = ['Long', 'Short'].includes(r.origin.direction) ? summary.directions[r.origin.direction] : null;
+      if (direction) { direction.count++; direction[key]++; direction.netR += value; }
+    }
+    if (summary.completed) {
+      summary.winRate = 100 * summary.wins / summary.completed;
+      summary.averageR = summary.expectancy = summary.netR / summary.completed;
+    }
+    if (loss > 0) summary.profitFactor = profit / loss;
+    return { startAt: OPERATIONAL_START_UTC, originField: 'origin.detectedAt', basis: 'canonical-modelled',
+      coverage: 'available-archive-records', summary };
+  }
+  // Compare the entire hydrated dataset, independent of JSON object property order.
+  function canonical(value) {
+    if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
+    if (value && typeof value === 'object') return '{' + Object.keys(value).sort().map(k => JSON.stringify(k)+':'+canonical(value[k])).join(',') + '}';
+    return JSON.stringify(value);
+  }
+  function renderOperationalOverview(summary) {
+    const set = (selector, value) => { const el = document.querySelector(selector); if (el) el.textContent = value; };
+    const metric = (value, digits = 2) => number(value) === null ? '—' : value.toFixed(digits);
+    set('#statistics-win-rate', summary?.completed > 0 ? `${metric(summary.winRate, 1)}%` : '—');
+    set('#statistics-outcomes', summary
+      ? `Активных: ${summary.active} · WIN: ${summary.wins} · LOSS: ${summary.losses} · BREAK EVEN: ${summary.breakEvens}`
+      : 'LIVE TRADING statistics unavailable');
+    set('#statistics-profit-factor', metric(summary?.profitFactor));
+    set('#statistics-r-performance', summary
+      ? `Net R: ${rText(summary.netR)} · Average R: ${summary.completed ? rText(summary.averageR) : '—'} · Expectancy: ${summary.completed ? rText(summary.expectancy) : '—'} · Drawdown: ${metric(summary.maxDrawdownR)}R`
+      : 'LIVE TRADING statistics unavailable');
+  }
   function renderPerformance(root, state) {
-    const selected = root.performanceCohort || 'PRE-LIVE';
-    root.performanceCohort = selected;
     const header = node('div', undefined, 'performance-header');
     const heading = node('h3'); heading.append(bilingual('PERFORMANCE STATISTICS', 'Статистика результатов'));
-    header.append(heading, cohortButtons([['PRE-LIVE', 'PRE-LIVE'], ['LIVE', 'LIVE · FROM 12 OCT 2026']], selected,
-      value => { root.performanceCohort = value; renderPerformance(root, state); }));
+    header.append(heading, node('span', 'LIVE TRADING · FROM 02 NOV 2026', 'cohort-controls'));
     const notice = node('div', undefined, 'performance-notice');
     notice.append(bilingual('Canonical/modelled SM1M trades · not confirmed exchange P&L',
       'Канонические/модельные сделки SM1M · не подтверждённый биржевой P&L'),
       bilingual('Based on available archive records · history completeness is not guaranteed',
       'По доступным записям архива · полнота истории не гарантируется'));
     root.replaceChildren(header, notice);
-    const data = state.liveCohorts, summary = data?.summaries?.[selected];
+    const data = state.operationalCohort, summary = data?.summary;
     const counts = ['total', 'completed', 'active', 'wins', 'losses', 'breakEvens'];
-    if (state.error || data?.startAt !== LIVE_START_UTC || data?.basis !== 'canonical-modelled' ||
+    if (state.error || data?.startAt !== OPERATIONAL_START_UTC || data?.originField !== 'origin.detectedAt' || data?.basis !== 'canonical-modelled' ||
         !summary || !counts.every(key => Number.isInteger(summary[key]) && summary[key] >= 0)) {
-      root.append(bilingual(state.loading ? 'Loading performance...' : 'Performance unavailable.',
+      renderOperationalOverview(null);
+      root.append(bilingual(state.loading ? 'Loading performance...' : 'Statistics temporarily unavailable',
         state.loading ? 'Загрузка результатов…' : 'Статистика результатов недоступна.')); return;
     }
-    if (selected === 'LIVE' && summary.total === 0) root.append(bilingual(
-      'LIVE starts 12 Oct 2026, 00:00 Europe/Kyiv.', 'LIVE начинается 12 октября 2026, 00:00 по Киеву.'));
+    renderOperationalOverview(summary);
+    root.append(node('p', `Completed: ${summary.completed} · для оценки нужно ≥30 сделок и ≥15 дней`, 'performance-notice'));
+    if (summary.total === 0) root.append(bilingual(
+      'LIVE TRADING starts 02 Nov 2026, 00:00 Europe/Kyiv.', 'LIVE TRADING начинается 2 ноября 2026, 00:00 по Киеву.'));
     const metric = (grid, english, russian, value, kind) => {
       const cell = node('div'), title = node('dt'); title.append(bilingual(english, russian));
-      const formatted = number(value) === null ? 'N/A' : kind === 'magnitude' ? `${Number(Math.abs(value).toFixed(2))}R` :
+      const formatted = number(value) === null ? '—' : kind === 'magnitude' ? `${Number(Math.abs(value).toFixed(2))}R` :
         kind === 'R' ? rText(value) : kind === '%' ? `${value.toFixed(1)}%` : kind === 'ratio' ? value.toFixed(2) : String(value);
       cell.append(title, node('dd', formatted)); grid.append(cell);
     };
@@ -188,13 +241,72 @@ function classifyLiveCohort(record) {
     for (const exit of saved) exits.append(fields(null, [['Target', exit.target], ['Price', exit.price], ['Initial fraction', exit.initialFraction], ['Realized R', rText(exit.realizedR)], ['Checked At', date(exit.checkedAt)]]));
     dialog.append(exits); if (!dialog.open) dialog.showModal();
   }
+  function fetchArchivePage(fetcher, offset) {
+    return fetcher(`${endpoint}&offset=${offset}&limit=100`, { method: 'GET', cache: 'no-store', signal: AbortSignal.timeout(30000) });
+  }
+  const OPERATIONAL_REFRESH_MS = 5 * 60 * 1000;
+  function createOperationalStore(fetcher, notify, { now = () => Date.now(), visible = () => document.visibilityState === 'visible' } = {}) {
+    const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false,
+      next: 0, total: null, boundary: null, liveCohorts: null, operationalCohort: null, skipped: 0,
+      lastSuccessfulAt: null, nextRefreshAt: null };
+    async function pass() {
+      const records = [], ids = new Set();
+      let offset = 0, total = null, contract = null, metadata;
+      for (let page = 0; page < 50; page++) {
+        const response = await fetchArchivePage(fetcher, offset);
+        if (!response.ok) throw Error('Archive unavailable');
+        const data = await response.json();
+        if (data.ok !== true || data.initialized !== true || data.schemaVersion !== 1 ||
+            data.rulesRevision !== 'canonical-trade-archive-v1' || !Number.isFinite(Date.parse(data.validationStartAt)) ||
+            !Array.isArray(data.records) || data.offset !== offset || data.limit !== 100 ||
+            !Number.isInteger(data.totalArchived) || data.totalArchived < 0 || data.totalArchived > 5000)
+          throw Error('Invalid archive');
+        const currentContract = canonical([data.schemaVersion, data.rulesRevision, data.validationStartAt, data.boundaryPolicy]);
+        if (total !== null && (total !== data.totalArchived || contract !== currentContract)) throw Error('Archive changed');
+        total = data.totalArchived; contract = currentContract; metadata = data;
+        const count = Math.min(100, total - offset);
+        if (count < 0 || data.records.length !== count ||
+            data.nextOffset !== (offset + count < total ? offset + count : null)) throw Error('Invalid pagination');
+        for (const r of data.records) {
+          if (!r || typeof r.tradeId !== 'string' || !r.tradeId.trim() || ids.has(r.tradeId) ||
+              !r.origin || typeof r.origin !== 'object' || Array.isArray(r.origin) ||
+              !r.outcome || typeof r.outcome !== 'object' || Array.isArray(r.outcome) ||
+              (records.length && records.at(-1).tradeId >= r.tradeId)) throw Error('Invalid archive record');
+          ids.add(r.tradeId); records.push(r);
+        }
+        if (data.nextOffset === null) return { records, metadata, fingerprint: contract + canonical(records) };
+        offset = data.nextOffset;
+      }
+      throw Error('Page bound');
+    }
+    return { state, async load() {
+      const time = now();
+      if (state.loading || !visible() || (state.nextRefreshAt !== null && time < state.nextRefreshAt)) return;
+      // Throttle failed cycles too; visibility/timer events never cause immediate retries.
+      state.nextRefreshAt = time + OPERATIONAL_REFRESH_MS;
+      state.loading = true; state.loaded = false; state.error = false; state.operationalCohort = null; notify(state);
+      try {
+        const first = await pass(), second = await pass();
+        if (first.fingerprint !== second.fingerprint) throw Error('Unstable archive');
+        state.operationalCohort = operationalSummary(second.records);
+        state.records = new Map(second.records.map(r => [r.tradeId, r]));
+        state.total = second.records.length; state.next = null;
+        state.boundary = second.metadata.validationStartAt;
+        state.liveCohorts = second.metadata.liveCohorts || null;
+        state.lastSuccessfulAt = now();
+        state.nextRefreshAt = state.lastSuccessfulAt + OPERATIONAL_REFRESH_MS;
+        state.loaded = true;
+      } catch { state.error = true; state.operationalCohort = null; }
+      finally { state.loading = false; notify(state); }
+    }};
+  }
   function createStore(fetcher, notify) {
     const state = { filters: defaultFilters(), records: new Map(), loading: false, loaded: false, error: false, next: 0, total: null, boundary: null, liveCohorts: null, skipped: 0 };
     return { state, async load() {
       if (state.loading || state.next === null) return;
       const offset = state.next; state.loading = true; state.error = false; notify(state);
       try {
-        const response = await fetcher(`${endpoint}&offset=${offset}&limit=100`, { method: 'GET', cache: 'no-store', signal: AbortSignal.timeout(30000) });
+        const response = await fetchArchivePage(fetcher, offset);
         if (!response.ok) throw Error('Archive unavailable');
         const data = await response.json();
         if (data.ok !== true || !Array.isArray(data.records)) throw Error('Invalid archive');
@@ -244,16 +356,21 @@ function classifyLiveCohort(record) {
     view.append(list);
     if (state.next !== null && !state.loading) { const more = node('button', state.error ? 'RETRY' : 'LOAD MORE', 'journal-button'); more.type = 'button'; more.addEventListener('click', load); view.append(more); }
   }
-  window.Sm1mTradeJournal = { renderPerformance, classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
+  window.Sm1mTradeJournal = { operationalSummary, createOperationalStore, renderPerformance, classifyLiveCohort, filterCohort, result, details, createStore, render, defaultFilters, filterRecords, summarize };
   const root = document.querySelector('#trade-journal-content'), dialog = document.querySelector('#trade-journal-dialog');
   if (!root || !dialog) return;
   const performance = document.querySelector('#statistics-trade-analytics');
   const store = createStore(window.fetch.bind(window), state => {
     render(root, state, dialog, () => store.load());
-    if (performance) renderPerformance(performance, state);
   });
-  // This script is loaded only after the existing owner-session gate succeeds.
-  if (performance) store.load();
+  // Independent bounded statistics load; Journal keeps its historical pagination/filters.
+  // This script runs only after the existing owner-session gate succeeds.
+  if (performance) {
+    const operational = createOperationalStore(window.fetch.bind(window), state => renderPerformance(performance, state));
+    operational.load();
+    document.addEventListener('operational-statistics-tick', () => operational.load());
+    document.addEventListener('visibilitychange', () => operational.load());
+  }
   document.querySelector('.dashboard-tabs')?.addEventListener('click', event => {
     if (event.target.closest('[data-dashboard-tab]')?.dataset.dashboardTab === 'trade-journal' && !store.state.loaded) store.load();
   });
