@@ -129,7 +129,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
       : 'LIVE TRADING statistics unavailable');
     set('#statistics-profit-factor', metric(summary?.profitFactor));
     set('#statistics-r-performance', summary
-      ? `Net R: ${rText(summary.netR)} · Average R: ${summary.completed ? rText(summary.averageR) : '—'} · Expectancy: ${summary.completed ? rText(summary.expectancy) : '—'} · Drawdown: ${metric(summary.maxDrawdownR)}R`
+      ? `Gross R (модель): ${rText(summary.netR)} · Average R: ${summary.completed ? rText(summary.averageR) : '—'} · Expectancy: ${summary.completed ? rText(summary.expectancy) : '—'} · Drawdown: ${metric(summary.maxDrawdownR)}R`
       : 'LIVE TRADING statistics unavailable');
   }
   function renderPerformance(root, state) {
@@ -163,7 +163,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
     const kpis = node('dl', undefined, 'performance-kpis');
     for (const [key, en, ru, kind] of [
       ['completed','Completed','Завершено'], ['winRate','Win Rate','Доля прибыльных','%'],
-      ['netR','Net R','Итоговый R','R'], ['profitFactor','Profit Factor','Фактор прибыли','ratio'],
+      ['netR','Gross R (модель)','Итоговый R','R'], ['profitFactor','Profit Factor','Фактор прибыли','ratio'],
       ['maxDrawdownR','Max Drawdown','Максимальная просадка, R','magnitude'], ['active','Active','Активные']
     ]) metric(kpis, en, ru, summary[key], kind);
     const details = node('section', undefined, 'performance-details'), detailsTitle = node('h4');
@@ -191,7 +191,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
         ? side.count - side.wins - sideBE : null;
       metric(grid, 'Losses', 'Убыточные', losses);
       metric(grid, 'Win Rate', 'Доля прибыльных', winsValid && side.count > 0 ? 100 * side.wins / side.count : null, '%');
-      metric(grid, 'Net R', 'Итоговый R', side?.netR, 'R');
+      metric(grid, 'Gross R (модель)', 'Итоговый R', side?.netR, 'R');
       metric(grid, 'Average R', 'Средний R', countValid && side.count > 0 && number(side?.netR) !== null ? side.netR / side.count : null, 'R');
       block.append(title, grid); directions.append(block);
     }
@@ -318,7 +318,7 @@ function classifyLiveCohort(record, startAt = LIVE_START_UTC) {
     }
     const selected = filterRecords(state.records, state.filters), summary = summarize(selected);
     view.append(node('p', `Граница архива: ${date(state.boundary)} · Полный подтверждённый snapshot: ${state.records.size} сделок · После фильтрации: ${selected.length} из ${state.records.size}. По доступным записям архива; полнота истории не гарантируется.`, 'journal-notice'),
-      fields('SELECTED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['NET R', rText(summary.netR)], ['AVERAGE R', summary.averageR === null ? 'N/A' : rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
+      fields('SELECTED ARCHIVE COHORT', [['COMPLETED', summary.completed], ['WIN RATE', summary.winRate === null ? 'N/A' : `${summary.winRate.toFixed(1)}%`], ['Gross R (модель)', rText(summary.netR)], ['AVERAGE R', summary.averageR === null ? 'N/A' : rText(summary.averageR)], ['WINS', summary.wins], ['LOSSES', summary.losses], ['BREAK EVEN', summary.breakEven]]));
     if (!selected.length) view.append(node('p', state.filters.cohort === 'OPERATIONAL' && !state.filters.search.trim() &&
       ['direction', 'result', 'score'].every(key => state.filters[key] === 'ALL')
       ? 'No LIVE TRADING trades in the current stable archive snapshot.' : 'No matching archived trades.'));

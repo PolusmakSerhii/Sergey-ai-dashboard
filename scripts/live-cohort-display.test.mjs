@@ -124,7 +124,7 @@ test('A+ overview and all performance sections share one operational summary, wi
  assert.match(root.textContent,/DETAILED STATISTICS/);assert.match(root.textContent,/LONG TRADES/);assert.match(root.textContent,/SHORT TRADES/);assert.match(root.textContent,/LIVE TRADING · FROM 02 NOV 2026/);
  runtime.renderPerformance(root,{operationalCohort:operational(summary())});
  assert.equal(els['#statistics-win-rate'].textContent.trim(),'—');assert.match(els['#statistics-outcomes'].textContent,/Активных: 0 · WIN: 0 · LOSS: 0 · BREAK EVEN: 0/);assert.equal(els['#statistics-profit-factor'].textContent.trim(),'—');
- assert.match(els['#statistics-r-performance'].textContent,/Net R: 0R · Average R: — · Expectancy: — · Drawdown: 0.00R/);
+ assert.match(els['#statistics-r-performance'].textContent,/Gross R \(модель\): 0R · Average R: — · Expectancy: — · Drawdown: 0.00R/);
  const details=descendants(root).find(e=>e.className==='performance-secondary');
  assert.deepEqual(details.children.map(e=>e.children[1].textContent.trim()),['0','0','0','—','—','0','0']);
  for(const dir of ['long','short']){const section=descendants(root).find(e=>e.className==='performance-direction is-'+dir);assert.deepEqual(descendants(section).find(e=>e.className==='performance-secondary').children.map(e=>e.children[1].textContent.trim()),['0','0','0','—','0R','—']);}
