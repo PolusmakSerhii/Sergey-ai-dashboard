@@ -4242,6 +4242,36 @@ if (!data) {
             : null;
       };
 
+      const postTp1State = signal => {
+        if (signal.initialPlan?.exitStrategy?.version !== "tp1-50-reanalyse-v1") return null;
+        const outcome = signal.outcome;
+        const exits = Array.isArray(outcome?.exits) ? outcome.exits : [];
+        const tp1 = exits.filter(exit => exit?.target === "TP1");
+        if (!tp1.length) return null;
+        const positive = value => typeof value === "number" && Number.isFinite(value) && value > 0;
+        if (tp1.length !== 1 || !positive(tp1[0].price) ||
+            typeof tp1[0].checkedAt !== "string" || !Number.isFinite(Date.parse(tp1[0].checkedAt)))
+          return "TP1: данные выхода неполные";
+        const parts = ["TP1 достигнут ✓"];
+        const fraction = value => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
+        const percent = value => `${Number((value * 100).toFixed(2))}%`;
+        const normalized = signal.initialPlan.exitStrategy.allocationBasis === "initial-position";
+        const exited = exits.reduce((sum, exit) => sum + (fraction(exit?.initialFraction) ? exit.initialFraction : NaN), 0);
+        if (normalized && fraction(exited) && exited > 0) parts.push(`Закрыто: ${percent(exited)}`);
+        if (normalized && fraction(outcome.remainingPosition))
+          parts.push(`Остаток: ${percent(outcome.remainingPosition)}${outcome.remainingPosition > 0 ? " Active" : ""}`);
+        else parts.push("Остаток Active");
+        if (positive(outcome.currentStopLoss)) parts.push(outcome.currentStopLoss === outcome.entryPrice
+          ? `Stop: BE (Entry ${outcome.entryPrice})` : `Stop: ${outcome.currentStopLoss}`);
+        const decision = outcome.lastReanalysis;
+        if (decision?.decision === "CLOSE") parts.push(decision.executionStatus === "pending"
+          ? "Reanalysis: CLOSE · Pending execution" : "Reanalysis: CLOSE (решение)");
+        else if (outcome.reanalysisPending === true) parts.push(decision?.decision === "HOLD"
+          ? "Reanalysis: HOLD (последнее решение) · Pending" : "Reanalysis: Pending");
+        else if (decision?.decision === "HOLD") parts.push("Reanalysis: HOLD (последнее решение)");
+        return parts.join(" · ");
+      };
+
       const activationTime = signal => {
         const value = signal.outcome?.activatedAt;
         const primary = typeof value === "string" && value.trim()
@@ -4344,9 +4374,10 @@ if (!data) {
             : isNegativeProgress
               ? 50 - progressWidth
               : 50 + progressWidth;
-          const progressText = progress === null
+          const postTp1 = postTp1State(signal);
+          const progressText = postTp1 ?? (progress === null
             ? "Прогресс недоступен"
-            : `Прогресс к TP1: ${progress > 0 ? "+" : ""}${progress}%`;
+            : `Прогресс к TP1: ${progress > 0 ? "+" : ""}${progress}%`);
           const entryLevel = `
             <span>Entry<strong>${signal.outcome?.entryPrice ?? "—"}</strong></span>
           `;
@@ -4380,6 +4411,7 @@ if (!data) {
               <div class="active-trade-levels">
                 ${orderedLevels.join("")}
               </div>
+              ${postTp1 ? "" : `
               <div class="active-trade-progress" aria-label="${progressText}">
                 <div
                   class="active-trade-progress-fill${isNegativeProgress ? " is-negative" : ""}"
@@ -4391,7 +4423,7 @@ if (!data) {
                   style="left:${currentPosition}%"
                   aria-hidden="true"
                 ></span>
-              </div>
+              </div>`}
               <div class="active-trade-age">
                 ${progressText} · Вход: ${activatedTime} · ${activeDuration}
               </div>

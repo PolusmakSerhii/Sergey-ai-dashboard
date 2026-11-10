@@ -72,3 +72,47 @@ for (const [direction, price, stop, tp, progress, width, left] of [
   assert.ok(output.includes(`style="width:${width}%"`)); assert.ok(output.includes(`style="left:${left}%"`));
   assert.match(output, /active-trade-progress-entry" aria-hidden="true"/);
 });
+
+const post = (changes = {}, strategy = {}) => trade('POST', '2026-10-01', {
+  price: 150,
+  initialPlan: { stopLoss: 90, takeProfit1: 120, exitStrategy: { version: 'tp1-50-reanalyse-v1', allocationBasis: 'initial-position', ...strategy } },
+  outcome: { status: 'Active', entryPrice: 100, activatedAt: '2026-10-01',
+    exits: [{ target: 'TP1', price: 120, checkedAt: '2026-10-02T00:00:00Z', initialFraction: .5 }],
+    remainingPosition: .5, currentStopLoss: 100, ...changes }
+});
+test('post TP1 saved evidence, fractions, BE and no progress; record unchanged', () => {
+  const r = post(), before = structuredClone(r), out = render([r]).output;
+  for (const t of ['TP1 достигнут ✓', 'Закрыто: 50%', 'Остаток: 50% Active', 'Stop: BE (Entry 100)']) assert.ok(out.includes(t));
+  assert.doesNotMatch(out, /Прогресс к TP1|class="active-trade-progress"/); assert.deepEqual(r, before);
+});
+test('price above TP1 alone retains pre TP1 progress', () => {
+  const out = render([post({ exits: [], remainingPosition: 1 })]).output;
+  assert.match(out, /Прогресс к TP1: \+250%/); assert.doesNotMatch(out, /TP1 достигнут/);
+});
+test('partial metadata does not invent fractions, BE or reanalysis', () => {
+  const out = render([post({ exits: [{ target: 'TP1', price: 120, checkedAt: '2026-10-02T00:00:00Z' }], remainingPosition: undefined, currentStopLoss: undefined })]).output;
+  assert.match(out, /TP1 достигнут ✓ · Остаток Active/); assert.doesNotMatch(out, /Закрыто:|50%|Stop: BE|Reanalysis:|Прогресс к TP1/);
+});
+test('fraction units must be proven', () => {
+  const out = render([post({}, { allocationBasis: undefined })]).output;
+  assert.match(out, /Остаток Active/); assert.doesNotMatch(out, /Закрыто:|Остаток: 50%/);
+});
+for (const stop of [null, undefined, NaN, '100', 0]) test('invalid current stop '+stop, () => assert.doesNotMatch(render([post({ currentStopLoss: stop })]).output, /Stop:/));
+test('non BE stop does not claim BE', () => {
+  const out = render([post({ currentStopLoss: 101 })]).output; assert.match(out, /Stop: 101/); assert.doesNotMatch(out, /Stop: BE/);
+});
+for (const [metadata, text] of [
+  [{ lastReanalysis: { decision: 'HOLD', executionStatus: 'observed' }, reanalysisPending: false }, 'Reanalysis: HOLD (последнее решение)'],
+  [{ lastReanalysis: { decision: 'HOLD' }, reanalysisPending: true }, 'Reanalysis: HOLD (последнее решение) · Pending'],
+  [{ lastReanalysis: { decision: 'CLOSE', executionStatus: 'pending' }, reanalysisPending: true }, 'Reanalysis: CLOSE · Pending execution'],
+  [{ lastReanalysis: { decision: 'CLOSE' } }, 'Reanalysis: CLOSE (решение)'],
+  [{ reanalysisPending: true }, 'Reanalysis: Pending']
+]) test(text, () => assert.ok(render([post(metadata)]).output.includes(text)));
+test('unknown decision cannot enter markup', () => assert.doesNotMatch(render([post({ lastReanalysis: { decision: '<img onerror=BAD>' } })]).output, /<img|BAD|Reanalysis:/));
+test('malformed TP1 event suppresses progress without claiming hit', () => {
+  const out = render([post({ exits: [{ target: 'TP1', price: null, checkedAt: 'invalid' }] })]).output;
+  assert.match(out, /TP1: данные выхода неполные/); assert.doesNotMatch(out, /TP1 достигнут|Прогресс к TP1/);
+});
+test('completed records excluded from active cards', () => {
+  for (const status of ['Closed', 'Stopped', 'TP1Hit', 'TP3Hit']) assert.doesNotMatch(render([post({ status, remainingPosition: 0 })]).output, /active-trade-item|Остаток Active/);
+});
