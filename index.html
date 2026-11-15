@@ -133,6 +133,12 @@
       display: none !important;
     }
 
+    /* Presentation only: retain analytics charts and opportunity history logic. */
+    #advanced-analytics,
+    #best-opportunity-history {
+      display: none !important;
+    }
+
     /* Hide only the 24H overview; preserve nested Performance Statistics. */
     #statistics > .card-label,
     #statistics > .statistics-grid {
@@ -2956,7 +2962,7 @@
     </div>
   </details>
 
-  <details class="statistics-history-card statistics-collapsible">
+  <details class="statistics-history-card statistics-collapsible" id="best-opportunity-history">
     <summary>
       <p class="statistics-metric-label" style="margin: 0;">
         Best Opportunity History
