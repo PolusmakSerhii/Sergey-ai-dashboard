@@ -133,6 +133,12 @@
       display: none !important;
     }
 
+    /* Hide only the 24H overview; preserve nested Performance Statistics. */
+    #statistics > .card-label,
+    #statistics > .statistics-grid {
+      display: none !important;
+    }
+
     .card.dashboard-tab-panel {
       margin-top: 0 !important;
       border: 0;
