@@ -2037,47 +2037,26 @@
     #45b9ff
   );
 }    
-    .ai-chart-section {
-  margin-top: 24px;
-  padding: 20px;
-  border: 1px solid #243548;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.ai-chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.ai-chart-title {
-  margin: 0;
-  color: #67d9ff;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.ai-chart-symbol {
-  color: #7f91a4;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.ai-chart-container {
-  display: flex;
-  min-height: 420px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border: 1px solid rgba(103, 217, 255, 0.18);
-  border-radius: 12px;
-  background: #08111c;
-  color: #7f91a4;
-  font-size: 14px;
-}
+    .ai-chart-section { margin: 16px 0; min-width: 0; }
+    .ai-chart-container {
+      box-sizing: border-box; width: 100%; min-width: 0; padding: clamp(8px, 2vw, 16px);
+      border: 1px solid #243548; border-radius: 12px; background: #08111c;
+      color: #ccd9e6; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr);
+    }
+    .chart-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .chart-heading strong { color: #67d9ff; overflow-wrap: anywhere; }
+    .chart-heading small { color: #93a8bb; }
+    .chart-heading button { margin-left: auto; }
+    .chart-averages { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 12px system-ui; }
+    .chart-averages span:nth-child(1) { color: #f4b942; }
+    .chart-averages span:nth-child(2) { color: #4da3ff; }
+    .chart-averages span:nth-child(3) { color: #b875ff; }
+    .chart-intervals { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); max-width: 28rem; width: 100%; gap: 3px; }
+    .chart-intervals button, .chart-heading button { min-width: 0; min-height: 36px; padding: 2px 4px; border: 1px solid #243548; border-radius: 6px; background: #102031; color: #b9cada; cursor: pointer; }
+    .chart-plot { height: clamp(230px, 46vh, 465px); min-width: 0; overflow: hidden; }
+    .ai-chart-container:fullscreen { height: 100%; border: 0; border-radius: 0; overflow: auto; grid-template-rows: auto auto auto minmax(100px, 1fr) auto; }
+    .ai-chart-container:fullscreen .chart-plot { height: 100%; }
+    .chart-error { color: #ffb4b4; overflow-wrap: anywhere; }
     @media (max-width: 700px) {
   .coin-details-grid,
   .trade-analysis-grid {
@@ -5852,6 +5831,7 @@ document.querySelector(
     }
 
     async function openCoinModal(symbol) {
+      window.SergeyAIChart?.dispose();
       const coinModal =
         document.querySelector("#coin-modal");
       
@@ -6363,22 +6343,12 @@ ${tradeExecutionStatus ? `
 ` : ""}
 
 </div>
-<section id="coin-ai-chart-section" class="ai-chart-section">
-  <div class="ai-chart-header">
-    <h3 class="ai-chart-title">
-      Interactive AI Chart
-    </h3>
-
-    <span class="ai-chart-symbol">
-      ${symbol} · Chart preparation
-    </span>
-  </div>
-
+<section id="coin-ai-chart-section" class="ai-chart-section" aria-label="Interactive AI Chart">
   <div
     id="ai-chart-container"
     class="ai-chart-container"
   >
-    Chart engine will be connected in the next step
+    Загрузка графика…
   </div>
 </section>
 
@@ -7175,6 +7145,7 @@ const closeModalBottomButton =
     document.querySelector("#close-modal-bottom");
 
 function closeCoinModal() {
+  window.SergeyAIChart?.dispose();
   coinModal?.classList.add("hidden");
 }
 

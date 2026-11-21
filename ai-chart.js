@@ -206,150 +206,33 @@ function createEMALayer(
   );
 }
 
-function createChartLegend(options = {}) {
-  const {
-    chartContainer,
-    chart,
-    candlestickSeries,
-    ema20Series,
-    symbol,
-    timeframe
-  } = options;
-
-  if (
-    !chartContainer ||
-    !chart ||
-    !candlestickSeries
-  ) {
-    return null;
+function createChartLegend(chart, series) {
+  const element = document.createElement("div");
+  element.className = "chart-averages";
+  const cells = series.map((_, i) => {
+    const cell = document.createElement("span");
+    cell.append("EMA" + [20, 50, 200][i] + " ");
+    const value = document.createElement("strong");
+    cell.append(value);
+    element.append(cell);
+    return value;
+  });
+  let latest = [];
+  function render(values) {
+    cells.forEach((cell, i) => { cell.textContent = values[i] == null ? "—" : formatChartValue(values[i]); });
   }
-   let currentTimeframe =
-     timeframe || "1H";
-  
-  const legend =
-    document.createElement("div");
-
-  legend.style.cssText = `
-    position:absolute;
-    top:14px;
-    left:16px;
-    z-index:20;
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px 14px;
-    padding:9px 12px;
-    border:1px solid rgba(143,161,181,0.18);
-    border-radius:9px;
-    background:rgba(8,17,28,0.86);
-    color:#a7b5c5;
-    font-size:12px;
-    font-weight:700;
-    pointer-events:none;
-    backdrop-filter:blur(8px);
-  `;
-
-  function renderLegend(
-    candle = null,
-    ema20 = null
-  ) {
-    legend.innerHTML = `
-      <span style="color:#67d9ff;">
-       ${symbol || "—"} · ${currentTimeframe}
-      </span>
-
-      <span>
-        O:
-        <strong style="color:#f5f7fa;">
-          ${formatChartValue(candle?.open)}
-        </strong>
-      </span>
-
-      <span>
-        H:
-        <strong style="color:#4ee3b2;">
-          ${formatChartValue(candle?.high)}
-        </strong>
-      </span>
-
-      <span>
-        L:
-        <strong style="color:#ff7474;">
-          ${formatChartValue(candle?.low)}
-        </strong>
-      </span>
-
-      <span>
-        C:
-        <strong style="color:#f5f7fa;">
-          ${formatChartValue(candle?.close)}
-        </strong>
-      </span>
-
-      <span>
-        EMA20:
-        <strong style="color:#f4b942;">
-          ${formatChartValue(ema20?.value)}
-        </strong>
-      </span>
-    `;
-  }
-
-  renderLegend();
-
-  chartContainer.appendChild(
-    legend
-  );
-
-  const crosshairHandler =
-    param => {
-      if (
-        !param?.time ||
-        !param.seriesData
-      ) {
-        renderLegend();
-        return;
-      }
-
-      const candle =
-        param.seriesData.get(
-          candlestickSeries
-        );
-
-      const ema20 =
-        ema20Series
-          ? param.seriesData.get(
-              ema20Series
-            )
-          : null;
-
-      renderLegend(
-        candle,
-        ema20
-      );
-    };
-
-  chart.subscribeCrosshairMove(
-    crosshairHandler
-  );
-
-  return {
-  element: legend,
-  crosshairHandler,
-
-  setTimeframe(nextTimeframe) {
-    currentTimeframe =
-      nextTimeframe || "1H";
-
-    renderLegend();
-  }
-};
+  render(latest);
+  chart.subscribeCrosshairMove(param => render(param.time != null && param.seriesData
+    ? series.map(line => param.seriesData.get(line)?.value) : latest));
+  return { element, setValues(values) { latest = values; render(latest); } };
 }
 
 function createTimeframeToolbar(options = {}) {
   const {
   chartContainer,
   activeTimeframe = "1H",
-  onTimeframeChange
+  onTimeframeChange,
+  getLoadedTimeframe
 } = options;
   
   if (!chartContainer) {
@@ -371,21 +254,7 @@ function createTimeframeToolbar(options = {}) {
   const toolbar =
     document.createElement("div");
 
-  toolbar.style.cssText = `
-    position:absolute;
-    top:76px;
-    right:16px;
-    z-index:21;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    padding:6px;
-    border:1px solid rgba(143,161,181,0.18);
-    border-radius:9px;
-    background:rgba(8,17,28,0.86);
-    backdrop-filter:blur(8px);
-  `;
-
+  toolbar.className = "chart-intervals";
   const buttons = new Map();
 
   function updateActiveButton(
@@ -404,6 +273,7 @@ function createTimeframeToolbar(options = {}) {
       timeframe ===
       currentTimeframe;
 
+    button.setAttribute("aria-pressed", String(isActive));
     button.style.borderColor =
       isActive
         ? "rgba(103,217,255,0.75)"
@@ -430,34 +300,6 @@ function createTimeframeToolbar(options = {}) {
     button.dataset.timeframe =
       timeframe;
 
-    const isActive =
-      timeframe === activeTimeframe;
-
-    button.style.cssText = `
-      min-width:38px;
-      height:30px;
-      padding:0 9px;
-      border:1px solid ${
-        isActive
-          ? "rgba(103,217,255,0.75)"
-          : "transparent"
-      };
-      border-radius:7px;
-      background:${
-        isActive
-          ? "rgba(103,217,255,0.16)"
-          : "transparent"
-      };
-      color:${
-        isActive
-          ? "#67d9ff"
-          : "#8fa1b5"
-      };
-      font-size:12px;
-      font-weight:800;
-      cursor:pointer;
-    `;
-
     button.title =
       `${timeframe} timeframe`;
     
@@ -472,7 +314,7 @@ function createTimeframeToolbar(options = {}) {
     }
 
     const previousTimeframe =
-      currentTimeframe;
+      getLoadedTimeframe?.() || currentTimeframe;
 
     updateActiveButton(
       timeframe
@@ -516,9 +358,7 @@ function createTimeframeToolbar(options = {}) {
     );
   }
 
-  chartContainer.appendChild(
-    toolbar
-  );
+  updateActiveButton(activeTimeframe);
 return {
   element: toolbar,
   buttons,
@@ -532,192 +372,6 @@ return {
 };
 }
   
-  function createChartControlsRow(
-  options = {}
-) {
-  const {
-    chartContainer,
-    chartLegend,
-    timeframeToolbar
-  } = options;
-
-  if (!chartContainer) {
-    return null;
-  }
-
-  const controlsRow =
-    document.createElement("div");
-
-  controlsRow.style.cssText = `
-    position:absolute;
-    top:14px;
-    left:16px;
-    right:16px;
-    z-index:30;
-
-   display:flex;
-   align-items:flex-start;
-   justify-content:space-between;
-   flex-wrap:nowrap; 
-   
-   gap:10px 16px;
-
-    pointer-events:none;
-  `;
-
-  if (chartLegend?.element) {
-    const legendElement =
-      chartLegend.element;
-
-    legendElement.style.position =
-      "static";
-
-    legendElement.style.top =
-      "auto";
-
-    legendElement.style.left =
-      "auto";
-
-    legendElement.style.maxWidth =
-      "100%";
-
-   legendElement.style.flex =
-  "1 1 auto";
-
-legendElement.style.minWidth =
-  "0";
-
-legendElement.style.overflow =
-  "hidden";
-
-    controlsRow.appendChild(
-      legendElement
-    );
-  }
-
-  if (timeframeToolbar?.element) {
-    const toolbarElement =
-      timeframeToolbar.element;
-
-    toolbarElement.style.position =
-      "static";
-
-    toolbarElement.style.top =
-      "auto";
-
-    toolbarElement.style.right =
-      "auto";
-
-    toolbarElement.style.flex =
-      "0 0 auto";
-    toolbarElement.style.maxWidth =
-      "520px";
-    
-    toolbarElement.style.marginLeft =
-      "auto";
-
-    toolbarElement.style.pointerEvents =
-      "auto";
-
-    controlsRow.appendChild(
-      toolbarElement
-    );
-  }
-  const fullscreenButton =
-  document.createElement("button");
-
-fullscreenButton.type = "button";
-fullscreenButton.textContent = "⛶";
-
-fullscreenButton.title =
-  "Open chart in fullscreen";
-
-fullscreenButton.style.cssText = `
-  flex: 0 0 auto;
-
-  min-width: 44px;
-  height: 44px;
-
-  padding: 0 12px;
-
-  border: 1px solid
-    rgba(103, 217, 255, 0.45);
-
-  border-radius: 10px;
-
-  background:
-    rgba(8, 17, 28, 0.92);
-
-  color: #67d9ff;
-
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1;
-
-  cursor: pointer;
-
-  pointer-events: auto;
-`;
-
-fullscreenButton.addEventListener(
-  "click",
-  async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await chartContainer.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (error) {
-      console.error(
-        "Chart fullscreen failed:",
-        error
-      );
-    }
-  }
-);
-document.addEventListener(
-  "fullscreenchange",
-  () => {
-    const isChartFullscreen =
-      document.fullscreenElement === chartContainer;
-
-    if (isChartFullscreen) {
-      chartContainer.style.width = "100vw";
-      chartContainer.style.height = "100vh";
-      chartContainer.style.background = "#08111c";
-      chartContainer.style.padding = "20px";
-      chartContainer.style.boxSizing =
-        "border-box";
-    } else {
-      chartContainer.style.width = "";
-      chartContainer.style.height = "";
-      chartContainer.style.background = "";
-      chartContainer.style.padding = "";
-      chartContainer.style.boxSizing = "";
-    }
-
-    window.setTimeout(() => {
-      window.dispatchEvent(
-        new Event("resize")
-      );
-    }, 100);
-  }
-);
-    
-controlsRow.appendChild(
-  fullscreenButton
-);
-    
-  chartContainer.appendChild(
-    controlsRow
-  );
-
-  return {
-    element: controlsRow
-  };
-}
-
 async function loadCandlestickData(
   options = {}
 ) {
@@ -729,8 +383,10 @@ const {
   ema50Series,
   ema200Series,
   symbol,
+  volumeSeries,
   timeframe = "1H",
   limit = 300,
+  getDisplayWidth = () => Infinity,
   isCurrentRequest = () => true
 } = options;
   
@@ -816,6 +472,10 @@ const {
 
     if (!valid) continue;
 
+    const v = candle.volume;
+    if ((typeof v === "number" || (typeof v === "string" && v.trim() !== "")) &&
+        Number.isFinite(Number(v)) && Number(v) >= 0) normalizedCandle.volume = Number(v);
+
     candlesByTime.set(
       normalizedCandle.time,
       normalizedCandle
@@ -863,56 +523,25 @@ if (ema50Series) {
     priceFormat
   });
 }
-  candlestickSeries.setData(
-    candles
-  );
-  
-   const ema20Data =
-  calculateEMAData(
-    candles,
-    20
-  );
+  candlestickSeries.setData(candles);
+  volumeSeries.setData(candles.filter(c => c.volume !== undefined).map(c => ({
+    time: c.time, value: c.volume, color: c.close >= c.open ? "#319889" : "#ba596e"
+  })));
+  const ema20Data = calculateEMAData(candles, 20);
+  const ema50Data = calculateEMAData(candles, 50);
+  const ema200Data = calculateEMAData(candles, 200);
+  ema20Series?.setData(ema20Data);
+  ema50Series?.setData(ema50Data);
+  ema200Series?.setData(ema200Data);
 
-if (
-  ema20Series &&
-  ema20Data.length > 0
-) {
-  ema20Series.setData(
-    ema20Data
-  );
-}
-   const ema50Data =
-  calculateEMAData(
-    candles,
-    50
-  );
-
-if (
-  ema50Series &&
-  ema50Data.length > 0
-) {
-  ema50Series.setData(
-    ema50Data
-  );
-}
-  const ema200Data =
-  calculateEMAData(
-    candles,
-    200
-  );
-
-if (
-  ema200Series &&
-  ema200Data.length > 0
-) {
-  ema200Series.setData(
-    ema200Data
-  );
-}
-  
-  chart
-    .timeScale()
-    .fitContent();
+  if (getDisplayWidth() > 0 && getDisplayWidth() <= 480) {
+    // Presentation only: retain the full series for scrolling and EMA calculations.
+    chart.timeScale().setVisibleLogicalRange({
+      from: Math.max(0, candles.length - 40), to: candles.length + 2
+    });
+  } else {
+    chart.timeScale().fitContent();
+  }
 
   console.log(
     "AI Chart candles loaded:",
@@ -931,7 +560,7 @@ return {
   count: candles.length,
   candles,
   priceFormat,
-  
+  emaValues: [ema20Data, ema50Data, ema200Data].map(rows => rows.at(-1)?.value),
 indicators: {
   ema20:
     ema20Data.length,
@@ -945,6 +574,7 @@ indicators: {
 };  
 }
 
+let currentChart = null;
 function initializeAIChart(options = {}) {
   const {
     containerId,
@@ -985,19 +615,41 @@ function initializeAIChart(options = {}) {
   };
 }
 
-chartContainer.innerHTML = "";
+currentChart?.dispose();
+  chartContainer.innerHTML = "";
+  const plot = document.createElement("div");
+  plot.className = "chart-plot";
+  chartContainer.append(plot);
+  const header = document.createElement("header");
+  header.className = "chart-heading";
+  const title = document.createElement("strong");
+  title.textContent = symbol;
+  const loading = document.createElement("small");
+  loading.setAttribute("role", "status");
+  const full = document.createElement("button");
+  full.type = "button";
+  full.textContent = "⛶";
+  full.setAttribute("aria-label", "Полный экран");
+  full.hidden = !chartContainer.requestFullscreen;
+  full.onclick = async () => {
+    try {
+      if (document.fullscreenElement === chartContainer) await document.exitFullscreen();
+      else await chartContainer.requestFullscreen();
+    } catch { loading.textContent = "Полный экран недоступен"; }
+  };
+  header.append(title, loading, full);
 
   chartContainer.style.position =
   "relative";
   
 const chart =
   window.LightweightCharts.createChart(
-    chartContainer,
+    plot,
     {
       width:
         chartContainer.clientWidth,
 
-      height: 420,
+      height: plot.clientHeight,
 
       layout: {
         background: {
@@ -1067,108 +719,16 @@ const ema50Series =
     }
   );
   
-const indicatorVisibility = {
-  ema20: true,
-  ema50: true,
-  ema200: true
-};
-  
-if (!candlestickSeries) {
-  chartContainer.innerHTML = `
-    <div style="
-      display:flex;
-      min-height:420px;
-      align-items:center;
-      justify-content:center;
-      color:#ff7474;
-    ">
-      Candlestick layer failed to initialize
-    </div>
-  `;
-
-  return {
-    ok: false,
-    error:
-      "Candlestick layer is unavailable"
-  };
-}
-if (!ema20Series) {
-  console.warn(
-    "EMA20 layer is unavailable"
-  );
-}
-if (!ema50Series) {
-  console.warn(
-    "EMA50 layer is unavailable"
-  );
-}
-  
-if (!ema200Series) {
-  console.warn(
-    "EMA200 layer is unavailable"
-  );
-}
-  function setEMAVisibility(
-  indicator,
-  isVisible
-) {
-  const seriesMap = {
-    ema20: ema20Series,
-    ema50: ema50Series,
-    ema200: ema200Series
-  };
-
-  const series =
-    seriesMap[indicator];
-
-  if (!series) {
-    console.warn(
-      `Indicator series is unavailable: ${indicator}`
-    );
-
-    return {
-      ok: false,
-      indicator,
-      error: "Series unavailable"
-    };
-  }
-
-  indicatorVisibility[indicator] =
-    Boolean(isVisible);
-
-  series.applyOptions({
-    visible:
-      indicatorVisibility[indicator]
-  });
-
-  return {
-    ok: true,
-    indicator,
-    visible:
-      indicatorVisibility[indicator]
-  };
-}
-  
-const chartLegend =
-  createChartLegend({
-    chartContainer,
-    chart,
-    candlestickSeries,
-    ema20Series,
-    symbol,
-    timeframe: "1H"
-  });
-
+const volumeSeries = chart.addSeries(window.LightweightCharts.HistogramSeries,
+  { priceFormat: { type: "volume" }, priceLineVisible: false, lastValueVisible: false, title: "Volume" }, 1);
+chart.panes()[0].setStretchFactor(4);
+chart.panes()[1].setStretchFactor(1);
+const chartLegend = createChartLegend(chart, [ema20Series, ema50Series, ema200Series]);
   let activeTimeframe = "1H";
 
 const candleError = document.createElement("div");
 candleError.setAttribute("role", "alert");
-candleError.style.cssText = `
-  position:absolute; left:16px; right:16px; bottom:36px;
-  z-index:40; padding:14px; border:1px solid #ff7474;
-  border-radius:10px; background:#08111c; color:#ffb4b4;
-  overflow-wrap:anywhere;
-`;
+candleError.className = "chart-error";
 candleError.hidden = true;
 const candleErrorText = document.createElement("div");
 const retryCandlesButton = document.createElement("button");
@@ -1185,15 +745,38 @@ let failedTimeframe = "1H";
 retryCandlesButton.addEventListener("click", () => reloadTimeframe(failedTimeframe));
 
 let latestRequestId = 0;
+let pendingTimeframeSwitch = null;
 
 async function reloadTimeframe(
-  nextTimeframe
+  nextTimeframe,
+  debounceMs = 0
 ) {
   const requestId =
     ++latestRequestId;
 
+  if (pendingTimeframeSwitch) {
+    clearTimeout(pendingTimeframeSwitch.timer);
+    pendingTimeframeSwitch.resolve();
+    pendingTimeframeSwitch = null;
+  }
+
+  loading.textContent = "Загрузка " + nextTimeframe + "…";
   candleError.hidden = true;
   retryCandlesButton.disabled = true;
+  if (debounceMs > 0) {
+    await new Promise(resolve => {
+      pendingTimeframeSwitch = {
+        resolve,
+        timer: setTimeout(() => {
+          pendingTimeframeSwitch = null;
+          resolve();
+        }, debounceMs)
+      };
+    });
+    if (requestId !== latestRequestId) {
+      return { ok: false, ignored: true };
+    }
+  }
   let result;
   try {
     result = await loadCandlestickData({
@@ -1201,10 +784,11 @@ async function reloadTimeframe(
       candlestickSeries,
       ema20Series,
       ema50Series,
-      ema200Series,
+      ema200Series, volumeSeries,
       symbol,
       timeframe: nextTimeframe,
       limit: 300,
+      getDisplayWidth: () => chartContainer.clientWidth,
       isCurrentRequest: () => requestId === latestRequestId
     });
   } catch (error) {
@@ -1227,10 +811,11 @@ async function reloadTimeframe(
     activeTimeframe =
       nextTimeframe;
 
-    chartLegend?.setTimeframe(
-      nextTimeframe
-    );
+    title.textContent = symbol + " · " + nextTimeframe;
+    chartLegend.setValues(result.emaValues);
+    loading.textContent = "";
   } else {
+    loading.textContent = "";
     failedTimeframe = nextTimeframe;
     candleErrorText.textContent = `Не удалось загрузить свечи ${symbol} · ${nextTimeframe}: ${result?.error || "Неизвестная ошибка"}`;
     candleError.hidden = false;
@@ -1244,118 +829,44 @@ const timeframeToolbar =
     chartContainer,
     activeTimeframe: "1H",
 
-    onTimeframeChange:
-      reloadTimeframe
+    onTimeframeChange: nextTimeframe => reloadTimeframe(nextTimeframe, 250),
+    getLoadedTimeframe: () => activeTimeframe
   });
   
-const chartControlsRow =
-  createChartControlsRow({
-    chartContainer,
-    chartLegend,
-    timeframeToolbar
-  });
-  
-const candlesPromise =
-  reloadTimeframe(
-    "1H"
-  );
-  
-candlesPromise.then(
-  result => {
-    console.log(
-      "AI Chart candle result:",
-      result
-    );
-  }
-);
-  
-const resizeObserver =
-  new ResizeObserver(() => {
-    const isFullscreen =
-      document.fullscreenElement ===
-      chartContainer;
-
-const fullscreenHeight =
-  Math.max(
-    420,
-    window.innerHeight - 40
-  );
-
-chart.applyOptions({
-  width:
-    chartContainer.clientWidth,
-
-  height:
-    isFullscreen
-      ? fullscreenHeight
-      : 420
-});
-});
-
-resizeObserver.observe(
-  chartContainer
-);
-  
-  chartContainer.onfullscreenchange = () => {
-  window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => {
-      const isFullscreen =
-        document.fullscreenElement ===
-        chartContainer;
-
-      const nextHeight =
-        isFullscreen
-          ? Math.max(
-              420,
-              window.innerHeight - 40
-            )
-          : 420;
-
-      chart.applyOptions({
-        width:
-          chartContainer.clientWidth,
-
-        height:
-          nextHeight
-      });
-
-      chart
-        .timeScale()
-        .fitContent();
-    });
-  });
-};
-  
-  console.log(
-    "AI Chart initialized:",
-    {
-      containerId,
-      symbol
+chartContainer.prepend(header, chartLegend.element, timeframeToolbar.element);
+let disposed = false;
+function resize() {
+  if (!disposed && plot.clientWidth && plot.clientHeight)
+    chart.resize(plot.clientWidth, plot.clientHeight);
+}
+const resizeObserver = new ResizeObserver(resize);
+resizeObserver.observe(plot);
+function onFullscreen() {
+  requestAnimationFrame(() => { if (!disposed) { resize(); chart.timeScale().fitContent(); } });
+}
+document.addEventListener("fullscreenchange", onFullscreen);
+const instance = {
+  ok: true, candlesPromise: reloadTimeframe("1H"),
+  dispose() {
+    if (disposed) return;
+    disposed = true;
+    latestRequestId++;
+    if (pendingTimeframeSwitch) {
+      clearTimeout(pendingTimeframeSwitch.timer);
+      pendingTimeframeSwitch.resolve();
+      pendingTimeframeSwitch = null;
     }
-  );
-
-return {
-  ok: true,
-  containerId,
-  symbol,
-
-get timeframe() {
-  return activeTimeframe;
-},
-  
-chart,
-candlestickSeries,
-ema20Series,
-ema50Series,
-ema200Series,
-chartLegend,
-timeframeToolbar,
-chartControlsRow,
-candlesPromise,
-resizeObserver
-};  
+    resizeObserver.disconnect();
+    document.removeEventListener("fullscreenchange", onFullscreen);
+    chart.remove();
+    if (currentChart === instance) currentChart = null;
+  }
+};
+currentChart = instance;
+return instance;
 }
 
 window.SergeyAIChart = {
-  initialize: initializeAIChart
+  initialize: initializeAIChart,
+  dispose: () => currentChart?.dispose()
 };
