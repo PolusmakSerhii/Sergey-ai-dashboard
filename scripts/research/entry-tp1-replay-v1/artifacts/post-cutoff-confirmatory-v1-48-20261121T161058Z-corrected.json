@@ -1,0 +1,4357 @@
+{
+  "version": "entry-tp1-replay-v1",
+  "sourceCohortIdentifier": "post-cutoff-confirmatory-v1:2026-11-01T22:00:00.000Z",
+  "replayMode": "v1-parity",
+  "generatedAt": "2026-11-21T16:10:58.000Z",
+  "inputSchema": {
+    "required": {
+      "tradeId": "non-empty string",
+      "symbol": "uppercase USDT symbol",
+      "direction": "Long | Short",
+      "originAt": "ISO-8601 timestamp",
+      "plannedAt": "ISO-8601 timestamp aligned to one minute",
+      "expiresAt": "ISO-8601 timestamp after plannedAt",
+      "plannedEntry": "finite positive number",
+      "entryZone": "{ from: finite positive number, to: finite positive number }",
+      "initialStopLoss": "finite positive number",
+      "takeProfit1": "finite positive number",
+      "exitPolicyVersion": "non-empty string",
+      "replayEndAt": "ISO-8601 timestamp after plannedAt",
+      "candles": "confirmed 1m OHLC array covering the required replay interval"
+    },
+    "optional": {
+      "strategyVersion": "saved strategy identifier when explicitly available; null when archive did not persist one",
+      "activationAt": "archived activation ISO timestamp",
+      "archivedResult": "TP1_BEFORE_SL | SL_BEFORE_TP1 | AMBIGUOUS_SAME_CANDLE | UNRESOLVED",
+      "instrument": "tick/precision metadata",
+      "diagnostics": "saved ATR, volatility, score, provenance, trend and structure evidence"
+    },
+    "candle": "{ timestamp: epoch milliseconds, open, high, low, close: finite positive numbers, confirmed: true }"
+  },
+  "availability": {
+    "fieldsAvailableForAll": [
+      "tradeIdentity",
+      "frozenGeometry",
+      "activationAndEntry",
+      "opportunityScoreAndGrade",
+      "atrAndAtrPercent",
+      "provenanceTimestamps",
+      "trendAndStructure"
+    ],
+    "fieldsPartial": [],
+    "missingFields": [
+      "instrumentPrecisionOrTick",
+      "explicitRegimeLabel",
+      "savedStrategyVersion"
+    ],
+    "counts": {
+      "tradeIdentity": 48,
+      "frozenGeometry": 48,
+      "activationAndEntry": 48,
+      "opportunityScoreAndGrade": 48,
+      "atrAndAtrPercent": 48,
+      "provenanceTimestamps": 48,
+      "trendAndStructure": 48,
+      "instrumentPrecisionOrTick": 0,
+      "explicitRegimeLabel": 0,
+      "savedStrategyVersion": 0
+    }
+  },
+  "sourceProvenance": {
+    "protocol": "post-cutoff-confirmatory-v1",
+    "cutoff": "2026-11-01T22:00:00.000Z",
+    "strategyVersion": null,
+    "exitPolicyVersion": "tp1-50-reanalyse-v1",
+    "rules": "canonical-trade-archive-v1",
+    "sourceSnapshotCompletedRecords": 49,
+    "fixedCohortCount": 48,
+    "excludedPostFreeze": 1,
+    "frozenThroughCompletedAt": "2026-11-21T14:39:00.000Z",
+    "candleSource": "OKX public history-candles 1m confirmed",
+    "candleRequests": 1296
+  },
+  "aggregate": {
+    "tradesReplayed": 48,
+    "parityMatch": 48,
+    "parityMismatch": 0,
+    "parityNotAvailable": 0,
+    "ambiguous": 0,
+    "unresolved": 0,
+    "invalid": 0
+  },
+  "trades": [
+    {
+      "tradeId": "ORCLUSDT:Short:2026-11-02T16:24:41.465Z",
+      "symbol": "ORCLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793636700000,
+        "at": "2026-11-02T16:25:00.000Z",
+        "entryPrice": 123.33
+      },
+      "resolution": {
+        "timestamp": 1793709180000,
+        "at": "2026-11-03T12:33:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 91,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 6.13643,
+        "atrPercent": 4.98,
+        "entryToSlDistance": 6.11640000000001,
+        "entryToTp1Distance": 6.1564,
+        "riskDistancePercentOfPrice": 4.95937728046705,
+        "modeledCostRAtEntry": 0.0302457327839905,
+        "midpointCostR": 0.0327079754763352,
+        "bestZoneCostR": 0.0272658666666666,
+        "worstZoneCostR": 0.0406896877648131,
+        "signalAgeMs": 18535,
+        "analysisToOriginDelayMs": 14190,
+        "priceTimestampDelayMs": 15017,
+        "entryZoneWidth": 2.1477,
+        "entryZoneWidthPercent": 1.73523120459076,
+        "entryLocationWithinZone": 0.295013270009778,
+        "distanceTraveledBeforeActivation": 0.019999999999996,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.75
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 2,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-02T16:24:41.465Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-02T16:00:00.000Z",
+          "confirmedCount": 237,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-02T16:24:26.448Z"
+        },
+        "instrument": {
+          "symbol": "ORCLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793709180000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "CRCLUSDT:Short:2026-11-02T19:36:42.674Z",
+      "symbol": "CRCLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793648220000,
+        "at": "2026-11-02T19:37:00.000Z",
+        "entryPrice": 72.67
+      },
+      "resolution": {
+        "timestamp": 1793791620000,
+        "at": "2026-11-04T11:27:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 88,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 4.53,
+        "atrPercent": 6.23,
+        "entryToSlDistance": 4.56999999999999,
+        "entryToTp1Distance": 4.48999999999999,
+        "riskDistancePercentOfPrice": 6.28870235310306,
+        "modeledCostRAtEntry": 0.0238522975929978,
+        "midpointCostR": 0.0261499015571864,
+        "bestZoneCostR": 0.0217510535821795,
+        "worstZoneCostR": 0.0326015452538632,
+        "signalAgeMs": 17326,
+        "analysisToOriginDelayMs": 15930,
+        "priceTimestampDelayMs": 16914,
+        "entryZoneWidth": 1.5855,
+        "entryZoneWidthPercent": 2.17043863942039,
+        "entryLocationWithinZone": 0.260485651214127,
+        "distanceTraveledBeforeActivation": 0.039999999999992,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.39
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-02T19:36:42.674Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-02T16:00:00.000Z",
+          "confirmedCount": 250,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-02T19:36:25.760Z"
+        },
+        "instrument": {
+          "symbol": "CRCLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793791620000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-03T16:06:44.829Z",
+      "symbol": "GOOGLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793722020000,
+        "at": "2026-11-03T16:07:00.000Z",
+        "entryPrice": 279.73
+      },
+      "resolution": {
+        "timestamp": 1793802720000,
+        "at": "2026-11-04T14:32:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 92,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 9.82286,
+        "atrPercent": 3.51,
+        "entryToSlDistance": 9.91289999999998,
+        "entryToTp1Distance": 9.73290000000003,
+        "riskDistancePercentOfPrice": 3.54373860508347,
+        "modeledCostRAtEntry": 0.0423281784341616,
+        "midpointCostR": 0.0463158471088023,
+        "bestZoneCostR": 0.0387088207529707,
+        "worstZoneCostR": 0.0574727915626016,
+        "signalAgeMs": 15171,
+        "analysisToOriginDelayMs": 15715,
+        "priceTimestampDelayMs": 16154,
+        "entryZoneWidth": 3.43799999999999,
+        "entryZoneWidthPercent": 1.22542074382825,
+        "entryLocationWithinZone": 0.25954043048285,
+        "distanceTraveledBeforeActivation": 0.089999999999975,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.46
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-03T16:06:44.829Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-03T16:00:00.000Z",
+          "confirmedCount": 245,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-03T16:06:28.675Z"
+        },
+        "instrument": {
+          "symbol": "GOOGLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793802720000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "CRCLUSDT:Short:2026-11-04T12:54:41.733Z",
+      "symbol": "CRCLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793796900000,
+        "at": "2026-11-04T12:55:00.000Z",
+        "entryPrice": 73
+      },
+      "resolution": {
+        "timestamp": 1793805420000,
+        "at": "2026-11-04T15:17:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 4.40714,
+        "atrPercent": 6.06,
+        "entryToSlDistance": 4.11709999999999,
+        "entryToTp1Distance": 4.69710000000001,
+        "riskDistancePercentOfPrice": 5.63986301369862,
+        "modeledCostRAtEntry": 0.026596390663331,
+        "midpointCostR": 0.0268758693012474,
+        "bestZoneCostR": 0.022361473245596,
+        "worstZoneCostR": 0.033497019937676,
+        "signalAgeMs": 18267,
+        "analysisToOriginDelayMs": 17232,
+        "priceTimestampDelayMs": 17504,
+        "entryZoneWidth": 1.5425,
+        "entryZoneWidthPercent": 2.11184061456274,
+        "entryLocationWithinZone": 0.473711507293353,
+        "distanceTraveledBeforeActivation": 0.290000000000006,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.25
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-04T12:54:41.733Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-03T16:00:00.000Z",
+          "confirmedCount": 251,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-04T12:54:24.229Z"
+        },
+        "instrument": {
+          "symbol": "CRCLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793805420000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "MSFTUSDT:Long:2026-11-04T16:00:44.695Z",
+      "symbol": "MSFTUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793808060000,
+        "at": "2026-11-04T16:01:00.000Z",
+        "entryPrice": 552.96
+      },
+      "resolution": {
+        "timestamp": 1793893740000,
+        "at": "2026-11-05T15:49:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 92,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 14.815,
+        "atrPercent": 2.68,
+        "entryToSlDistance": 15.395,
+        "entryToTp1Distance": 14.235,
+        "riskDistancePercentOfPrice": 2.78410734953703,
+        "modeledCostRAtEntry": 0.0538772328678143,
+        "midpointCostR": 0.0603409461574672,
+        "bestZoneCostR": 0.0509797962752741,
+        "worstZoneCostR": 0.0740706944344449,
+        "signalAgeMs": 15305,
+        "analysisToOriginDelayMs": 9022,
+        "priceTimestampDelayMs": 9421,
+        "entryZoneWidth": 5.18529999999998,
+        "entryZoneWidthPercent": 0.940611826697624,
+        "entryLocationWithinZone": 0.826143135402012,
+        "distanceTraveledBeforeActivation": 0.580000000000041,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.73
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-04T16:00:44.695Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 246,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-04T16:00:35.274Z"
+        },
+        "instrument": {
+          "symbol": "MSFTUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793893740000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "BARDUSDT:Short:2026-11-05T14:36:41.049Z",
+      "symbol": "BARDUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793889420000,
+        "at": "2026-11-05T14:37:00.000Z",
+        "entryPrice": 0.1094
+      },
+      "resolution": {
+        "timestamp": 1793893860000,
+        "at": "2026-11-05T15:51:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00715,
+        "atrPercent": 6.52,
+        "entryToSlDistance": 0.00745,
+        "entryToTp1Distance": 0.00684999999999999,
+        "riskDistancePercentOfPrice": 6.80987202925046,
+        "modeledCostRAtEntry": 0.0220268456375839,
+        "midpointCostR": 0.0250026083012021,
+        "bestZoneCostR": 0.0207854418308964,
+        "worstZoneCostR": 0.0311883625512869,
+        "signalAgeMs": 18951,
+        "analysisToOriginDelayMs": 20569,
+        "priceTimestampDelayMs": 21308,
+        "entryZoneWidth": 0.00250300000000001,
+        "entryZoneWidthPercent": 2.27057281390466,
+        "entryLocationWithinZone": 0.165801038753495,
+        "distanceTraveledBeforeActivation": 0.000300000000000009,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.21
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 0
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T14:36:41.049Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T14:36:19.741Z"
+        },
+        "instrument": {
+          "symbol": "BARDUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793893860000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AAPLUSDT:Long:2026-11-04T14:48:41.637Z",
+      "symbol": "AAPLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793803740000,
+        "at": "2026-11-04T14:49:00.000Z",
+        "entryPrice": 350.9532
+      },
+      "resolution": {
+        "timestamp": 1793901780000,
+        "at": "2026-11-05T18:03:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 91,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Low",
+        "atr": 6.93214,
+        "atrPercent": 1.98,
+        "entryToSlDistance": 7.62529999999998,
+        "entryToTp1Distance": 6.2389,
+        "riskDistancePercentOfPrice": 2.17273984109562,
+        "modeledCostRAtEntry": 0.0690372575505228,
+        "midpointCostR": 0.0818143772808087,
+        "bestZoneCostR": 0.0690372575505228,
+        "worstZoneCostR": 0.100554038198919,
+        "signalAgeMs": 18363,
+        "analysisToOriginDelayMs": 11705,
+        "priceTimestampDelayMs": 12570,
+        "entryZoneWidth": 2.42619999999999,
+        "entryZoneWidthPercent": 0.69371513303736,
+        "entryLocationWithinZone": 1,
+        "distanceTraveledBeforeActivation": 0.69319999999999,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.42
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-04T14:48:41.637Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-03T16:00:00.000Z",
+          "confirmedCount": 245,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-04T14:48:29.067Z"
+        },
+        "instrument": {
+          "symbol": "AAPLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793901780000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GMXUSDT:Long:2026-11-04T13:30:44.212Z",
+      "symbol": "GMXUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793799060000,
+        "at": "2026-11-04T13:31:00.000Z",
+        "entryPrice": 8.832
+      },
+      "resolution": {
+        "timestamp": 1793936100000,
+        "at": "2026-11-06T03:35:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.613286,
+        "atrPercent": 6.94,
+        "entryToSlDistance": 0.612300000000001,
+        "entryToTp1Distance": 0.6143,
+        "riskDistancePercentOfPrice": 6.9327445652174,
+        "modeledCostRAtEntry": 0.0216364527192552,
+        "midpointCostR": 0.0232337387625595,
+        "bestZoneCostR": 0.0197768307144975,
+        "worstZoneCostR": 0.0283033695652173,
+        "signalAgeMs": 15788,
+        "analysisToOriginDelayMs": 10824,
+        "priceTimestampDelayMs": 11542,
+        "entryZoneWidth": 0.214599999999999,
+        "entryZoneWidthPercent": 2.44224422442243,
+        "entryLocationWithinZone": 0.709692451071766,
+        "distanceTraveledBeforeActivation": 0.000999999999999446,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.69
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 2
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-04T13:30:44.212Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-03T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-04T13:30:32.670Z"
+        },
+        "instrument": {
+          "symbol": "GMXUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793936100000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "KAITOUSDT:Short:2026-11-05T16:00:53.472Z",
+      "symbol": "KAITOUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793894460000,
+        "at": "2026-11-05T16:01:00.000Z",
+        "entryPrice": 0.2071
+      },
+      "resolution": {
+        "timestamp": 1793972040000,
+        "at": "2026-11-06T13:34:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0162857,
+        "atrPercent": 7.87,
+        "entryToSlDistance": 0.016186,
+        "entryToTp1Distance": 0.016386,
+        "riskDistancePercentOfPrice": 7.81554804442299,
+        "modeledCostRAtEntry": 0.0191925120474484,
+        "midpointCostR": 0.0207322602057749,
+        "bestZoneCostR": 0.0171954507396037,
+        "worstZoneCostR": 0.0259194842406877,
+        "signalAgeMs": 6528,
+        "analysisToOriginDelayMs": 33777,
+        "priceTimestampDelayMs": 34392,
+        "entryZoneWidth": 0.00570000000000001,
+        "entryZoneWidthPercent": 2.73747604708459,
+        "entryLocationWithinZone": 0.303333333333334,
+        "distanceTraveledBeforeActivation": 0.000100000000000017,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.88
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T16:00:53.472Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-05T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T16:00:19.080Z"
+        },
+        "instrument": {
+          "symbol": "KAITOUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793972040000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-05T15:54:44.458Z",
+      "symbol": "GOOGLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793894100000,
+        "at": "2026-11-05T15:55:00.000Z",
+        "entryPrice": 278.81
+      },
+      "resolution": {
+        "timestamp": 1793975820000,
+        "at": "2026-11-06T14:37:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 92,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 10.6971,
+        "atrPercent": 3.83,
+        "entryToSlDistance": 10.8571,
+        "entryToTp1Distance": 10.5371,
+        "riskDistancePercentOfPrice": 3.89408557799218,
+        "modeledCostRAtEntry": 0.0385199546840316,
+        "midpointCostR": 0.0424120194445566,
+        "bestZoneCostR": 0.0354259824251284,
+        "worstZoneCostR": 0.0526582302936629,
+        "signalAgeMs": 15542,
+        "analysisToOriginDelayMs": 17556,
+        "priceTimestampDelayMs": 17681,
+        "entryZoneWidth": 3.74399999999997,
+        "entryZoneWidthPercent": 1.33823112581194,
+        "entryLocationWithinZone": 0.242975427350426,
+        "distanceTraveledBeforeActivation": 0.160000000000025,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.6
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T15:54:44.458Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 246,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T15:54:26.777Z"
+        },
+        "instrument": {
+          "symbol": "GOOGLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793975820000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GIGGLEUSDT:Short:2026-11-05T15:12:43.924Z",
+      "symbol": "GIGGLEUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793891580000,
+        "at": "2026-11-05T15:13:00.000Z",
+        "entryPrice": 28.83
+      },
+      "resolution": {
+        "timestamp": 1794174900000,
+        "at": "2026-11-08T21:55:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 86,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 1.99714,
+        "atrPercent": 6.95,
+        "entryToSlDistance": 1.8971,
+        "entryToTp1Distance": 2.0971,
+        "riskDistancePercentOfPrice": 6.58029830038155,
+        "modeledCostRAtEntry": 0.0227953191713668,
+        "midpointCostR": 0.0234502787852541,
+        "bestZoneCostR": 0.0194808130007283,
+        "worstZoneCostR": 0.0292722326078248,
+        "signalAgeMs": 16076,
+        "analysisToOriginDelayMs": 13369,
+        "priceTimestampDelayMs": 13675,
+        "entryZoneWidth": 0.698999999999998,
+        "entryZoneWidthPercent": 2.42037687241601,
+        "entryLocationWithinZone": 0.428755364806865,
+        "distanceTraveledBeforeActivation": 0.0999999999999979,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.19
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T15:12:43.924Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T15:12:30.249Z"
+        },
+        "instrument": {
+          "symbol": "GIGGLEUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794174900000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ETCUSDT:Short:2026-11-05T16:00:53.472Z",
+      "symbol": "ETCUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793894460000,
+        "at": "2026-11-05T16:01:00.000Z",
+        "entryPrice": 6.883
+      },
+      "resolution": {
+        "timestamp": 1794174900000,
+        "at": "2026-11-08T21:55:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.362643,
+        "atrPercent": 5.26,
+        "entryToSlDistance": 0.3686,
+        "entryToTp1Distance": 0.3566,
+        "riskDistancePercentOfPrice": 5.35522301322098,
+        "modeledCostRAtEntry": 0.0280100379815518,
+        "midpointCostR": 0.0309311270125224,
+        "bestZoneCostR": 0.0257684883429431,
+        "worstZoneCostR": 0.0385051489518206,
+        "signalAgeMs": 6528,
+        "analysisToOriginDelayMs": 24177,
+        "priceTimestampDelayMs": 24900,
+        "entryZoneWidth": 0.127000000000001,
+        "entryZoneWidthPercent": 1.83626847112577,
+        "entryLocationWithinZone": 0.238582677165357,
+        "distanceTraveledBeforeActivation": 0.00600000000000023,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.58
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 2
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T16:00:53.472Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-05T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T16:00:28.572Z"
+        },
+        "instrument": {
+          "symbol": "ETCUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794174900000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AXSUSDT:Short:2026-11-05T15:12:43.924Z",
+      "symbol": "AXSUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793891580000,
+        "at": "2026-11-05T15:13:00.000Z",
+        "entryPrice": 0.8313
+      },
+      "resolution": {
+        "timestamp": 1794174900000,
+        "at": "2026-11-08T21:55:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0538929,
+        "atrPercent": 6.5,
+        "entryToSlDistance": 0.0512929999999999,
+        "entryToTp1Distance": 0.056493,
+        "riskDistancePercentOfPrice": 6.17021532539395,
+        "modeledCostRAtEntry": 0.0243103347435323,
+        "midpointCostR": 0.0250569296503581,
+        "bestZoneCostR": 0.0208320653824095,
+        "worstZoneCostR": 0.0312533275606136,
+        "signalAgeMs": 16076,
+        "analysisToOriginDelayMs": 19861,
+        "priceTimestampDelayMs": 20053,
+        "entryZoneWidth": 0.0188619999999999,
+        "entryZoneWidthPercent": 2.26504727754814,
+        "entryLocationWithinZone": 0.423549994698338,
+        "distanceTraveledBeforeActivation": 0.00260000000000005,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.32
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T15:12:43.924Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T15:12:23.871Z"
+        },
+        "instrument": {
+          "symbol": "AXSUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794174900000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "UMAUSDT:Short:2026-11-07T16:00:48.291Z",
+      "symbol": "UMAUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794067260000,
+        "at": "2026-11-07T16:01:00.000Z",
+        "entryPrice": 0.3189
+      },
+      "resolution": {
+        "timestamp": 1794174900000,
+        "at": "2026-11-08T21:55:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0196357,
+        "atrPercent": 6.16,
+        "entryToSlDistance": 0.019436,
+        "entryToTp1Distance": 0.019836,
+        "riskDistancePercentOfPrice": 6.09470053308247,
+        "modeledCostRAtEntry": 0.0246115455855114,
+        "midpointCostR": 0.0264408704269551,
+        "bestZoneCostR": 0.0219955555555555,
+        "worstZoneCostR": 0.0329607863108575,
+        "signalAgeMs": 11709,
+        "analysisToOriginDelayMs": 24603,
+        "priceTimestampDelayMs": 26060,
+        "entryZoneWidth": 0.00687299999999996,
+        "entryZoneWidthPercent": 2.1466553186173,
+        "entryLocationWithinZone": 0.314855230612543,
+        "distanceTraveledBeforeActivation": 0.000200000000000033,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.87
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-07T16:00:48.291Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-07T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-07T16:00:22.231Z"
+        },
+        "instrument": {
+          "symbol": "UMAUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794174900000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "PIEVERSEUSDT:Long:2026-11-08T16:00:51.273Z",
+      "symbol": "PIEVERSEUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794153660000,
+        "at": "2026-11-08T16:01:00.000Z",
+        "entryPrice": 1.5028
+      },
+      "resolution": {
+        "timestamp": 1794199680000,
+        "at": "2026-11-09T04:48:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.111564,
+        "atrPercent": 7.41,
+        "entryToSlDistance": 0.1091,
+        "entryToTp1Distance": 0.1141,
+        "riskDistancePercentOfPrice": 7.2597817407506,
+        "modeledCostRAtEntry": 0.0206617781851512,
+        "midpointCostR": 0.0217474576271186,
+        "bestZoneCostR": 0.0185240228013029,
+        "worstZoneCostR": 0.0264767025089605,
+        "signalAgeMs": 8727,
+        "analysisToOriginDelayMs": 27076,
+        "priceTimestampDelayMs": 27503,
+        "entryZoneWidth": 0.0390999999999999,
+        "entryZoneWidthPercent": 2.61197768796552,
+        "entryLocationWithinZone": 0.649616368286443,
+        "distanceTraveledBeforeActivation": 0.00250000000000017,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.76
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-08T16:00:51.273Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-08T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-08T16:00:23.770Z"
+        },
+        "instrument": {
+          "symbol": "PIEVERSEUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794199680000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "PIEVERSEUSDT:Long:2026-11-09T20:36:43.147Z",
+      "symbol": "PIEVERSEUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794256620000,
+        "at": "2026-11-09T20:37:00.000Z",
+        "entryPrice": 2.046
+      },
+      "resolution": {
+        "timestamp": 1794327780000,
+        "at": "2026-11-10T16:23:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.153821,
+        "atrPercent": 7.47,
+        "entryToSlDistance": 0.1418,
+        "entryToTp1Distance": 0.1658,
+        "riskDistancePercentOfPrice": 6.93059628543499,
+        "modeledCostRAtEntry": 0.0216431593794076,
+        "midpointCostR": 0.0215794376098418,
+        "bestZoneCostR": 0.0183812056737589,
+        "worstZoneCostR": 0.0262727666955768,
+        "signalAgeMs": 16853,
+        "analysisToOriginDelayMs": 33393,
+        "priceTimestampDelayMs": 34251,
+        "entryZoneWidth": 0.0539000000000001,
+        "entryZoneWidthPercent": 2.63382931417821,
+        "entryLocationWithinZone": 0.491651205936919,
+        "distanceTraveledBeforeActivation": 0.012,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.82
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-09T20:36:43.147Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-09T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-09T20:36:08.896Z"
+        },
+        "instrument": {
+          "symbol": "PIEVERSEUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794327780000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ORCLUSDT:Short:2026-11-05T01:18:41.859Z",
+      "symbol": "ORCLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793841540000,
+        "at": "2026-11-05T01:19:00.000Z",
+        "entryPrice": 122.51
+      },
+      "resolution": {
+        "timestamp": 1793893440000,
+        "at": "2026-11-05T15:44:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 88,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 6.65571,
+        "atrPercent": 5.43,
+        "entryToSlDistance": 6.7257,
+        "entryToTp1Distance": 6.5857,
+        "riskDistancePercentOfPrice": 5.48991919027018,
+        "modeledCostRAtEntry": 0.0273228065480173,
+        "midpointCostR": 0.0299873671130746,
+        "bestZoneCostR": 0.0249780230286971,
+        "worstZoneCostR": 0.0373343984133979,
+        "signalAgeMs": 18141,
+        "analysisToOriginDelayMs": 14779,
+        "priceTimestampDelayMs": 15991,
+        "entryZoneWidth": 2.3295,
+        "entryZoneWidthPercent": 1.89268450423975,
+        "entryLocationWithinZone": 0.255677183945055,
+        "distanceTraveledBeforeActivation": 0.0699999999999932,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.04
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 2,
+            "returnedLowCount": 2
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T01:18:41.859Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 239,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T01:18:25.868Z"
+        },
+        "instrument": {
+          "symbol": "ORCLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793893440000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ATOMUSDT:Short:2026-11-05T16:00:53.472Z",
+      "symbol": "ATOMUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793894460000,
+        "at": "2026-11-05T16:01:00.000Z",
+        "entryPrice": 1.419
+      },
+      "resolution": {
+        "timestamp": 1794156660000,
+        "at": "2026-11-08T16:51:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 87,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0927857,
+        "atrPercent": 6.54,
+        "entryToSlDistance": 0.0928,
+        "entryToTp1Distance": 0.0928,
+        "riskDistancePercentOfPrice": 6.53981677237491,
+        "modeledCostRAtEntry": 0.0229364224137931,
+        "midpointCostR": 0.0249146767617938,
+        "bestZoneCostR": 0.0207105778648384,
+        "worstZoneCostR": 0.0310818965517241,
+        "signalAgeMs": 6528,
+        "analysisToOriginDelayMs": 28951,
+        "priceTimestampDelayMs": 30011,
+        "entryZoneWidth": 0.0325,
+        "entryZoneWidthPercent": 2.27918229951962,
+        "entryLocationWithinZone": 0.286153846153849,
+        "distanceTraveledBeforeActivation": 0,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.42
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T16:00:53.472Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-05T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T16:00:23.461Z"
+        },
+        "instrument": {
+          "symbol": "ATOMUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794156660000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "BARDUSDT:Short:2026-11-10T03:54:41.258Z",
+      "symbol": "BARDUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794282900000,
+        "at": "2026-11-10T03:55:00.000Z",
+        "entryPrice": 0.1001
+      },
+      "resolution": {
+        "timestamp": 1794309420000,
+        "at": "2026-11-10T11:17:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 88,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0072,
+        "atrPercent": 7.21,
+        "entryToSlDistance": 0.00700000000000001,
+        "entryToTp1Distance": 0.00739999999999999,
+        "riskDistancePercentOfPrice": 6.993006993007,
+        "modeledCostRAtEntry": 0.02145,
+        "midpointCostR": 0.0226216216216216,
+        "bestZoneCostR": 0.0187840909090909,
+        "worstZoneCostR": 0.02825,
+        "signalAgeMs": 18742,
+        "analysisToOriginDelayMs": 22759,
+        "priceTimestampDelayMs": 23992,
+        "entryZoneWidth": 0.00251999999999999,
+        "entryZoneWidthPercent": 2.5089605734767,
+        "entryLocationWithinZone": 0.365079365079362,
+        "distanceTraveledBeforeActivation": 0.000199999999999992,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.29
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 0
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-10T03:54:41.258Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-09T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-10T03:54:17.266Z"
+        },
+        "instrument": {
+          "symbol": "BARDUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794309420000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SSVUSDT:Short:2026-11-05T16:00:53.472Z",
+      "symbol": "SSVUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793894460000,
+        "at": "2026-11-05T16:01:00.000Z",
+        "entryPrice": 2.131
+      },
+      "resolution": {
+        "timestamp": 1794329700000,
+        "at": "2026-11-10T16:55:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.160071,
+        "atrPercent": 7.51,
+        "entryToSlDistance": 0.1601,
+        "entryToTp1Distance": 0.1601,
+        "riskDistancePercentOfPrice": 7.51290473955891,
+        "modeledCostRAtEntry": 0.0199656464709556,
+        "midpointCostR": 0.0217049291019581,
+        "bestZoneCostR": 0.018015332197615,
+        "worstZoneCostR": 0.0271149042464612,
+        "signalAgeMs": 6528,
+        "analysisToOriginDelayMs": 18030,
+        "priceTimestampDelayMs": 18504,
+        "entryZoneWidth": 0.0559999999999996,
+        "entryZoneWidthPercent": 2.61315912272513,
+        "entryLocationWithinZone": 0.28571428571428,
+        "distanceTraveledBeforeActivation": 0,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.85
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-05T16:00:53.472Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-05T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-05T16:00:34.968Z"
+        },
+        "instrument": {
+          "symbol": "SSVUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794329700000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-06T16:00:52.006Z",
+      "symbol": "SAPIENUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793980860000,
+        "at": "2026-11-06T16:01:00.000Z",
+        "entryPrice": 0.04916
+      },
+      "resolution": {
+        "timestamp": 1794132720000,
+        "at": "2026-11-08T10:12:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 88,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00335286,
+        "atrPercent": 6.82,
+        "entryToSlDistance": 0.003333,
+        "entryToTp1Distance": 0.003373,
+        "riskDistancePercentOfPrice": 6.77990235964198,
+        "modeledCostRAtEntry": 0.0221242124212422,
+        "midpointCostR": 0.0238875544091569,
+        "bestZoneCostR": 0.0198501898047723,
+        "worstZoneCostR": 0.0298079522862824,
+        "signalAgeMs": 7994,
+        "analysisToOriginDelayMs": 25844,
+        "priceTimestampDelayMs": 26232,
+        "entryZoneWidth": 0.001173,
+        "entryZoneWidthPercent": 2.37490256420639,
+        "entryLocationWithinZone": 0.302642796248935,
+        "distanceTraveledBeforeActivation": 0.0000199999999999992,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.75
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-06T16:00:52.006Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-06T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-06T16:00:25.774Z"
+        },
+        "instrument": {
+          "symbol": "SAPIENUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794132720000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "MSFTUSDT:Long:2026-11-06T21:54:41.742Z",
+      "symbol": "MSFTUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794002100000,
+        "at": "2026-11-06T21:55:00.000Z",
+        "entryPrice": 531.65
+      },
+      "resolution": {
+        "timestamp": 1794558960000,
+        "at": "2026-11-13T08:36:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 89,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 16.8521,
+        "atrPercent": 3.17,
+        "entryToSlDistance": 16.7520999999999,
+        "entryToTp1Distance": 16.9521,
+        "riskDistancePercentOfPrice": 3.15096398006206,
+        "modeledCostRAtEntry": 0.047604479438399,
+        "midpointCostR": 0.0510468912382442,
+        "bestZoneCostR": 0.0431644737906816,
+        "worstZoneCostR": 0.0626077410575121,
+        "signalAgeMs": 18258,
+        "analysisToOriginDelayMs": 6291,
+        "priceTimestampDelayMs": 7376,
+        "entryZoneWidth": 5.89819999999997,
+        "entryZoneWidthPercent": 1.11184817095113,
+        "entryLocationWithinZone": 0.697331389237388,
+        "distanceTraveledBeforeActivation": 0.100000000000023,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Inside Range",
+          "choch": "No CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "No MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.08
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 72,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-06T21:54:41.742Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-06T16:00:00.000Z",
+          "confirmedCount": 248,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-06T21:54:34.366Z"
+        },
+        "instrument": {
+          "symbol": "MSFTUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794558960000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "NGUSDT:Long:2026-11-12T01:01:44.051Z",
+      "symbol": "NGUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794445320000,
+        "at": "2026-11-12T01:02:00.000Z",
+        "entryPrice": 3.611
+      },
+      "resolution": {
+        "timestamp": 1794518640000,
+        "at": "2026-11-12T21:24:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 0.122357,
+        "atrPercent": 3.39,
+        "entryToSlDistance": 0.1194,
+        "entryToTp1Distance": 0.1254,
+        "riskDistancePercentOfPrice": 3.30656327887012,
+        "modeledCostRAtEntry": 0.0453643216080401,
+        "midpointCostR": 0.0477667844522968,
+        "bestZoneCostR": 0.0404108469539376,
+        "worstZoneCostR": 0.0585522875816993,
+        "signalAgeMs": 15949,
+        "analysisToOriginDelayMs": 22233,
+        "priceTimestampDelayMs": 23106,
+        "entryZoneWidth": 0.0427999999999997,
+        "entryZoneWidthPercent": 1.18730581446959,
+        "entryLocationWithinZone": 0.644859813084118,
+        "distanceTraveledBeforeActivation": 0.00299999999999967,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.84
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-12T01:01:44.051Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-11T16:00:00.000Z",
+          "confirmedCount": 247,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-12T01:01:20.945Z"
+        },
+        "instrument": {
+          "symbol": "NGUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794518640000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ATOMUSDT:Short:2026-11-14T16:01:48.675Z",
+      "symbol": "ATOMUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794672120000,
+        "at": "2026-11-14T16:02:00.000Z",
+        "entryPrice": 1.318
+      },
+      "resolution": {
+        "timestamp": 1794690540000,
+        "at": "2026-11-14T21:09:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0817857,
+        "atrPercent": 6.21,
+        "entryToSlDistance": 0.0808,
+        "entryToTp1Distance": 0.0828,
+        "riskDistancePercentOfPrice": 6.13050075872534,
+        "modeledCostRAtEntry": 0.0244678217821782,
+        "midpointCostR": 0.0262173051519154,
+        "bestZoneCostR": 0.0218133333333333,
+        "worstZoneCostR": 0.032672638436482,
+        "signalAgeMs": 11325,
+        "analysisToOriginDelayMs": 23149,
+        "priceTimestampDelayMs": 23409,
+        "entryZoneWidth": 0.0286,
+        "entryZoneWidthPercent": 2.16159020482201,
+        "entryLocationWithinZone": 0.321678321678326,
+        "distanceTraveledBeforeActivation": 0.00100000000000011,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.8
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-14T16:01:48.675Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-14T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-14T16:01:25.266Z"
+        },
+        "instrument": {
+          "symbol": "ATOMUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794690540000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AVNTUSDT:Short:2026-11-14T06:30:40.076Z",
+      "symbol": "AVNTUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794637860000,
+        "at": "2026-11-14T06:31:00.000Z",
+        "entryPrice": 0.0794
+      },
+      "resolution": {
+        "timestamp": 1794672720000,
+        "at": "2026-11-14T16:12:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00634,
+        "atrPercent": 7.98,
+        "entryToSlDistance": 0.00634,
+        "entryToTp1Distance": 0.00634,
+        "riskDistancePercentOfPrice": 7.98488664987405,
+        "modeledCostRAtEntry": 0.0187854889589905,
+        "midpointCostR": 0.0204302583340438,
+        "bestZoneCostR": 0.0169413535990823,
+        "worstZoneCostR": 0.0255473186119874,
+        "signalAgeMs": 19924,
+        "analysisToOriginDelayMs": 23597,
+        "priceTimestampDelayMs": 24410,
+        "entryZoneWidth": 0.002219,
+        "entryZoneWidthPercent": 2.77807337669248,
+        "entryLocationWithinZone": 0.285714285714284,
+        "distanceTraveledBeforeActivation": 0,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.02
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-14T06:30:40.076Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-13T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-14T06:30:15.666Z"
+        },
+        "instrument": {
+          "symbol": "AVNTUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794672720000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "XAUUSDT:Short:2026-11-12T16:36:40.053Z",
+      "symbol": "XAUUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794501420000,
+        "at": "2026-11-12T16:37:00.000Z",
+        "entryPrice": 3875.4
+      },
+      "resolution": {
+        "timestamp": 1794690120000,
+        "at": "2026-11-14T21:02:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 91,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 82.7571,
+        "atrPercent": 2.14,
+        "entryToSlDistance": 82.46,
+        "entryToTp1Distance": 83.0599999999999,
+        "riskDistancePercentOfPrice": 2.12778035815658,
+        "modeledCostRAtEntry": 0.0704959980596653,
+        "midpointCostR": 0.0760493436091701,
+        "bestZoneCostR": 0.0637107864674868,
+        "worstZoneCostR": 0.094146689221846,
+        "signalAgeMs": 19947,
+        "analysisToOriginDelayMs": 13052,
+        "priceTimestampDelayMs": 13212,
+        "entryZoneWidth": 28.9699999999998,
+        "entryZoneWidthPercent": 0.746398440730625,
+        "entryLocationWithinZone": 0.296168450120814,
+        "distanceTraveledBeforeActivation": 0.300000000000182,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.85
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-12T16:36:40.053Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-12T16:36:26.841Z"
+        },
+        "instrument": {
+          "symbol": "XAUUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794690120000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "METISUSDT:Short:2026-11-14T16:01:48.675Z",
+      "symbol": "METISUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794672120000,
+        "at": "2026-11-14T16:02:00.000Z",
+        "entryPrice": 2.386
+      },
+      "resolution": {
+        "timestamp": 1794690840000,
+        "at": "2026-11-14T21:14:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 87,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.179786,
+        "atrPercent": 7.53,
+        "entryToSlDistance": 0.1828,
+        "entryToTp1Distance": 0.1768,
+        "riskDistancePercentOfPrice": 7.66135792120703,
+        "modeledCostRAtEntry": 0.0195787746170679,
+        "midpointCostR": 0.0216632100991885,
+        "bestZoneCostR": 0.0179802831142568,
+        "worstZoneCostR": 0.0270633802816901,
+        "signalAgeMs": 11325,
+        "analysisToOriginDelayMs": 16411,
+        "priceTimestampDelayMs": 17596,
+        "entryZoneWidth": 0.0629,
+        "entryZoneWidthPercent": 2.61816062769256,
+        "entryLocationWithinZone": 0.238473767885535,
+        "distanceTraveledBeforeActivation": 0.00299999999999967,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.6
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 2,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-14T16:01:48.675Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-14T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-14T16:01:31.079Z"
+        },
+        "instrument": {
+          "symbol": "METISUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794690840000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "CCUSDT:Short:2026-11-14T19:18:42.304Z",
+      "symbol": "CCUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794683940000,
+        "at": "2026-11-14T19:19:00.000Z",
+        "entryPrice": 0.07998
+      },
+      "resolution": {
+        "timestamp": 1794795600000,
+        "at": "2026-11-16T02:20:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00634929,
+        "atrPercent": 7.94,
+        "entryToSlDistance": 0.006299,
+        "entryToTp1Distance": 0.006399,
+        "riskDistancePercentOfPrice": 7.87571892973243,
+        "modeledCostRAtEntry": 0.0190458802984601,
+        "midpointCostR": 0.0205361825302231,
+        "bestZoneCostR": 0.0170307130584193,
+        "worstZoneCostR": 0.025677341453171,
+        "signalAgeMs": 17696,
+        "analysisToOriginDelayMs": 27685,
+        "priceTimestampDelayMs": 28032,
+        "entryZoneWidth": 0.002222,
+        "entryZoneWidthPercent": 2.76347536253514,
+        "entryLocationWithinZone": 0.308280828082804,
+        "distanceTraveledBeforeActivation": 0.0000499999999999945,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.68
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-14T19:18:42.304Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-14T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-14T19:18:14.272Z"
+        },
+        "instrument": {
+          "symbol": "CCUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794795600000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "NGUSDT:Long:2026-11-13T15:00:50.857Z",
+      "symbol": "NGUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794582060000,
+        "at": "2026-11-13T15:01:00.000Z",
+        "entryPrice": 3.654
+      },
+      "resolution": {
+        "timestamp": 1794809880000,
+        "at": "2026-11-16T06:18:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 88,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 0.121786,
+        "atrPercent": 3.33,
+        "entryToSlDistance": 0.1228,
+        "entryToTp1Distance": 0.1208,
+        "riskDistancePercentOfPrice": 3.36070060207991,
+        "modeledCostRAtEntry": 0.0446335504885994,
+        "midpointCostR": 0.0484991126885538,
+        "bestZoneCostR": 0.0410283582089553,
+        "worstZoneCostR": 0.0594518599562365,
+        "signalAgeMs": 9143,
+        "analysisToOriginDelayMs": 23373,
+        "priceTimestampDelayMs": 24293,
+        "entryZoneWidth": 0.0426000000000002,
+        "entryZoneWidthPercent": 1.16907708773567,
+        "entryLocationWithinZone": 0.737089201877933,
+        "distanceTraveledBeforeActivation": 0.00099999999999989,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.13
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-13T15:00:50.857Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 248,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-13T15:00:26.564Z"
+        },
+        "instrument": {
+          "symbol": "NGUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794809880000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AMZNUSDT:Long:2026-11-12T17:00:46.101Z",
+      "symbol": "AMZNUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794502860000,
+        "at": "2026-11-12T17:01:00.000Z",
+        "entryPrice": 270.38
+      },
+      "resolution": {
+        "timestamp": 1794850680000,
+        "at": "2026-11-16T17:38:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 12.2721,
+        "atrPercent": 4.54,
+        "entryToSlDistance": 12.1421,
+        "entryToTp1Distance": 12.4021,
+        "riskDistancePercentOfPrice": 4.49075375397588,
+        "modeledCostRAtEntry": 0.0334019650637041,
+        "midpointCostR": 0.0356232458574487,
+        "bestZoneCostR": 0.0301945878675192,
+        "worstZoneCostR": 0.0435852500516075,
+        "signalAgeMs": 13899,
+        "analysisToOriginDelayMs": 8431,
+        "priceTimestampDelayMs": 9134,
+        "entryZoneWidth": 4.29519999999997,
+        "entryZoneWidthPercent": 1.59323653434701,
+        "entryLocationWithinZone": 0.684019370460051,
+        "distanceTraveledBeforeActivation": 0.129999999999995,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.27
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-12T17:00:46.101Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 260,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-12T17:00:36.967Z"
+        },
+        "instrument": {
+          "symbol": "AMZNUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794850680000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "YFIUSDT:Short:2026-11-13T04:20:06.502Z",
+      "symbol": "YFIUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794543660000,
+        "at": "2026-11-13T04:21:00.000Z",
+        "entryPrice": 1805
+      },
+      "resolution": {
+        "timestamp": 1794687180000,
+        "at": "2026-11-14T20:13:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 134.714,
+        "atrPercent": 7.48,
+        "entryToSlDistance": 131.71,
+        "entryToTp1Distance": 137.71,
+        "riskDistancePercentOfPrice": 7.29695290858726,
+        "modeledCostRAtEntry": 0.0205565257004024,
+        "midpointCostR": 0.0218141928494041,
+        "bestZoneCostR": 0.0181049736806587,
+        "worstZoneCostR": 0.0272544788676631,
+        "signalAgeMs": 53498,
+        "analysisToOriginDelayMs": 1848,
+        "priceTimestampDelayMs": 2630,
+        "entryZoneWidth": 47.1500000000001,
+        "entryZoneWidthPercent": 2.60194635520569,
+        "entryLocationWithinZone": 0.349310710498409,
+        "distanceTraveledBeforeActivation": 3,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.64
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-13T04:20:06.502Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-13T04:20:03.872Z"
+        },
+        "instrument": {
+          "symbol": "YFIUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794687180000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ADAUSDT:Short:2026-11-13T17:18:40.977Z",
+      "symbol": "ADAUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794590340000,
+        "at": "2026-11-13T17:19:00.000Z",
+        "entryPrice": 0.1699
+      },
+      "resolution": {
+        "timestamp": 1794664860000,
+        "at": "2026-11-14T14:01:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 87,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0102929,
+        "atrPercent": 6.06,
+        "entryToSlDistance": 0.010293,
+        "entryToTp1Distance": 0.010293,
+        "riskDistancePercentOfPrice": 6.05826957033549,
+        "modeledCostRAtEntry": 0.0247595453220635,
+        "midpointCostR": 0.0268887721877954,
+        "bestZoneCostR": 0.0223729464758877,
+        "worstZoneCostR": 0.0335115932642487,
+        "signalAgeMs": 19023,
+        "analysisToOriginDelayMs": 34905,
+        "priceTimestampDelayMs": 36009,
+        "entryZoneWidth": 0.00360199999999999,
+        "entryZoneWidthPercent": 2.11048092247117,
+        "entryLocationWithinZone": 0.285674625208219,
+        "distanceTraveledBeforeActivation": 0,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.12
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-13T17:18:40.977Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-13T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-13T17:18:04.968Z"
+        },
+        "instrument": {
+          "symbol": "ADAUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794664860000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "PIUSDT:Short:2026-11-11T23:30:41.776Z",
+      "symbol": "PIUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794439860000,
+        "at": "2026-11-11T23:31:00.000Z",
+        "entryPrice": 0.06994
+      },
+      "resolution": {
+        "timestamp": 1794669660000,
+        "at": "2026-11-14T15:21:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00445714,
+        "atrPercent": 6.37,
+        "entryToSlDistance": 0.004457,
+        "entryToTp1Distance": 0.004457,
+        "riskDistancePercentOfPrice": 6.37260509007721,
+        "modeledCostRAtEntry": 0.0235382544312318,
+        "midpointCostR": 0.0255665777346592,
+        "bestZoneCostR": 0.0212606567407709,
+        "worstZoneCostR": 0.0318818426562968,
+        "signalAgeMs": 18224,
+        "analysisToOriginDelayMs": 32129,
+        "priceTimestampDelayMs": 32541,
+        "entryZoneWidth": 0.00156000000000001,
+        "entryZoneWidthPercent": 2.21988217548454,
+        "entryLocationWithinZone": 0.285897435897436,
+        "distanceTraveledBeforeActivation": 0,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.37
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 2
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-11T23:30:41.776Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-11T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-11T23:30:09.235Z"
+        },
+        "instrument": {
+          "symbol": "PIUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794669660000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "LLYUSDT:Long:2026-11-12T16:00:45.665Z",
+      "symbol": "LLYUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794499260000,
+        "at": "2026-11-12T16:01:00.000Z",
+        "entryPrice": 1447.9
+      },
+      "resolution": {
+        "timestamp": 1794957960000,
+        "at": "2026-11-17T23:26:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 87,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 45.8143,
+        "atrPercent": 3.17,
+        "entryToSlDistance": 46.3100000000002,
+        "entryToTp1Distance": 45.3099999999999,
+        "riskDistancePercentOfPrice": 3.19842530561504,
+        "modeledCostRAtEntry": 0.0468980781688618,
+        "midpointCostR": 0.0511138053097342,
+        "bestZoneCostR": 0.043222266322683,
+        "worstZoneCostR": 0.0626869906868449,
+        "signalAgeMs": 14335,
+        "analysisToOriginDelayMs": 3961,
+        "priceTimestampDelayMs": 5394,
+        "entryZoneWidth": 16.03,
+        "entryZoneWidthPercent": 1.1101377110941,
+        "entryLocationWithinZone": 0.745477230193392,
+        "distanceTraveledBeforeActivation": 0.5,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.38
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-12T16:00:45.665Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 200,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-12T16:00:40.271Z"
+        },
+        "instrument": {
+          "symbol": "LLYUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794957960000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "ZBTUSDT:Short:2026-11-14T21:18:40.747Z",
+      "symbol": "ZBTUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794691140000,
+        "at": "2026-11-14T21:19:00.000Z",
+        "entryPrice": 0.0503
+      },
+      "resolution": {
+        "timestamp": 1794989040000,
+        "at": "2026-11-18T08:04:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 86,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00380643,
+        "atrPercent": 7.66,
+        "entryToSlDistance": 0.003186,
+        "entryToTp1Distance": 0.004426,
+        "riskDistancePercentOfPrice": 6.33399602385686,
+        "modeledCostRAtEntry": 0.0236817325800377,
+        "midpointCostR": 0.0212890924584576,
+        "bestZoneCostR": 0.0176614521136852,
+        "worstZoneCostR": 0.0266110721793974,
+        "signalAgeMs": 19253,
+        "analysisToOriginDelayMs": 23749,
+        "priceTimestampDelayMs": 24212,
+        "entryZoneWidth": 0.001333,
+        "entryZoneWidthPercent": 2.66784081015901,
+        "entryLocationWithinZone": 0.750937734433604,
+        "distanceTraveledBeforeActivation": 0.000619999999999996,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.7
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 2
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-14T21:18:40.747Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-14T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-14T21:18:16.535Z"
+        },
+        "instrument": {
+          "symbol": "ZBTUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794989040000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "COSTUSDT:Long:2026-11-12T16:00:45.665Z",
+      "symbol": "COSTUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794499260000,
+        "at": "2026-11-12T16:01:00.000Z",
+        "entryPrice": 1097.24
+      },
+      "resolution": {
+        "timestamp": 1794926160000,
+        "at": "2026-11-17T14:36:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 93,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 25.3064,
+        "atrPercent": 2.31,
+        "entryToSlDistance": 26.1500000000001,
+        "entryToTp1Distance": 24.47,
+        "riskDistancePercentOfPrice": 2.38325252451607,
+        "modeledCostRAtEntry": 0.0629391969407264,
+        "midpointCostR": 0.0701302862024773,
+        "bestZoneCostR": 0.0592095905172411,
+        "worstZoneCostR": 0.0861488408851422,
+        "signalAgeMs": 14335,
+        "analysisToOriginDelayMs": 1554,
+        "priceTimestampDelayMs": 2109,
+        "entryZoneWidth": 8.86000000000013,
+        "entryZoneWidthPercent": 0.809502055733223,
+        "entryLocationWithinZone": 0.809255079006769,
+        "distanceTraveledBeforeActivation": 0.839999999999918,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.7
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 2,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-12T16:00:45.665Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-12T16:00:00.000Z",
+          "confirmedCount": 200,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-12T16:00:43.556Z"
+        },
+        "instrument": {
+          "symbol": "COSTUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794926160000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SNXUSDT:Short:2026-11-04T17:18:43.450Z",
+      "symbol": "SNXUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1793812740000,
+        "at": "2026-11-04T17:19:00.000Z",
+        "entryPrice": 0.1799
+      },
+      "resolution": {
+        "timestamp": 1793891160000,
+        "at": "2026-11-05T15:06:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 87,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0120929,
+        "atrPercent": 6.73,
+        "entryToSlDistance": 0.011793,
+        "entryToTp1Distance": 0.012393,
+        "riskDistancePercentOfPrice": 6.55530850472485,
+        "modeledCostRAtEntry": 0.0228822182650725,
+        "midpointCostR": 0.0242053012694439,
+        "bestZoneCostR": 0.0201162607126748,
+        "worstZoneCostR": 0.0302022601984565,
+        "signalAgeMs": 16550,
+        "analysisToOriginDelayMs": 21424,
+        "priceTimestampDelayMs": 22280,
+        "entryZoneWidth": 0.00423200000000001,
+        "entryZoneWidthPercent": 2.3445074152249,
+        "entryLocationWithinZone": 0.356568998109642,
+        "distanceTraveledBeforeActivation": 0.000299999999999995,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.31
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 40,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-04T17:18:43.450Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-04T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-04T17:18:21.170Z"
+        },
+        "instrument": {
+          "symbol": "SNXUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1793891160000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "QTUMUSDT:Short:2026-11-10T16:00:57.963Z",
+      "symbol": "QTUMUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794326460000,
+        "at": "2026-11-10T16:01:00.000Z",
+        "entryPrice": 0.6888
+      },
+      "resolution": {
+        "timestamp": 1794623280000,
+        "at": "2026-11-14T02:28:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 86,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0400214,
+        "atrPercent": 5.8,
+        "entryToSlDistance": 0.040721,
+        "entryToTp1Distance": 0.0393209999999999,
+        "riskDistancePercentOfPrice": 5.91187572590012,
+        "modeledCostRAtEntry": 0.0253726578423909,
+        "midpointCostR": 0.028059596969165,
+        "bestZoneCostR": 0.0233570406378484,
+        "worstZoneCostR": 0.0349566064765459,
+        "signalAgeMs": 2037,
+        "analysisToOriginDelayMs": 29051,
+        "priceTimestampDelayMs": 29489,
+        "entryZoneWidth": 0.014007,
+        "entryZoneWidthPercent": 2.02266709891603,
+        "entryLocationWithinZone": 0.235739273220527,
+        "distanceTraveledBeforeActivation": 0.000700000000000034,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.69
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-10T16:00:57.963Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-10T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-10T16:00:28.474Z"
+        },
+        "instrument": {
+          "symbol": "QTUMUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1794623280000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-17T20:54:44.867Z",
+      "symbol": "GOOGLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794948900000,
+        "at": "2026-11-17T20:55:00.000Z",
+        "entryPrice": 280.25
+      },
+      "resolution": {
+        "timestamp": 1795076220000,
+        "at": "2026-11-19T08:17:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 10.7057,
+        "atrPercent": 3.82,
+        "entryToSlDistance": 10.3557,
+        "entryToTp1Distance": 11.0557,
+        "riskDistancePercentOfPrice": 3.69516503122213,
+        "modeledCostRAtEntry": 0.0405935861409658,
+        "midpointCostR": 0.0425187169285454,
+        "bestZoneCostR": 0.0355157477306115,
+        "worstZoneCostR": 0.0527897326043364,
+        "signalAgeMs": 15133,
+        "analysisToOriginDelayMs": 16240,
+        "priceTimestampDelayMs": 16500,
+        "entryZoneWidth": 3.74699999999996,
+        "entryZoneWidthPercent": 1.33486330208913,
+        "entryLocationWithinZone": 0.37912997064318,
+        "distanceTraveledBeforeActivation": 0.350000000000023,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.72
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 2,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-17T20:54:44.867Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-17T16:00:00.000Z",
+          "confirmedCount": 259,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-17T20:54:28.367Z"
+        },
+        "instrument": {
+          "symbol": "GOOGLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795076220000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AMZNUSDT:Long:2026-11-19T00:06:44.067Z",
+      "symbol": "AMZNUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795046820000,
+        "at": "2026-11-19T00:07:00.000Z",
+        "entryPrice": 270.45
+      },
+      "resolution": {
+        "timestamp": 1795111620000,
+        "at": "2026-11-19T18:07:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 8.845,
+        "atrPercent": 3.27,
+        "entryToSlDistance": 8.86500000000001,
+        "entryToTp1Distance": 8.82499999999999,
+        "riskDistancePercentOfPrice": 3.27787021630616,
+        "modeledCostRAtEntry": 0.0457614213197969,
+        "midpointCostR": 0.0494582358081802,
+        "bestZoneCostR": 0.0418286397039929,
+        "worstZoneCostR": 0.060648225752962,
+        "signalAgeMs": 15933,
+        "analysisToOriginDelayMs": 10965,
+        "priceTimestampDelayMs": 11990,
+        "entryZoneWidth": 3.09570000000002,
+        "entryZoneWidthPercent": 1.14754733396438,
+        "entryLocationWithinZone": 0.720741673934808,
+        "distanceTraveledBeforeActivation": 0.0199999999999818,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.75
+          },
+          "fvgSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-19T00:06:44.067Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-18T16:00:00.000Z",
+          "confirmedCount": 266,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-19T00:06:32.077Z"
+        },
+        "instrument": {
+          "symbol": "AMZNUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795111620000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-19T16:12:44.933Z",
+      "symbol": "SAPIENUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795104780000,
+        "at": "2026-11-19T16:13:00.000Z",
+        "entryPrice": 0.0394
+      },
+      "resolution": {
+        "timestamp": 1795113120000,
+        "at": "2026-11-19T18:32:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.003035,
+        "atrPercent": 7.69,
+        "entryToSlDistance": 0.003095,
+        "entryToTp1Distance": 0.002975,
+        "riskDistancePercentOfPrice": 7.85532994923858,
+        "modeledCostRAtEntry": 0.0190953150242326,
+        "midpointCostR": 0.0212084075525472,
+        "bestZoneCostR": 0.0175960155781905,
+        "worstZoneCostR": 0.0265063708260105,
+        "signalAgeMs": 15067,
+        "analysisToOriginDelayMs": 22261,
+        "priceTimestampDelayMs": 22843,
+        "entryZoneWidth": 0.001062,
+        "entryZoneWidthPercent": 2.67587180004032,
+        "entryLocationWithinZone": 0.228813559322034,
+        "distanceTraveledBeforeActivation": 0.0000600000000000045,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.28
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-19T16:12:44.933Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-19T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-19T16:12:22.090Z"
+        },
+        "instrument": {
+          "symbol": "SAPIENUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795113120000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-19T19:42:41.180Z",
+      "symbol": "SAPIENUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795117380000,
+        "at": "2026-11-19T19:43:00.000Z",
+        "entryPrice": 0.03987
+      },
+      "resolution": {
+        "timestamp": 1795142700000,
+        "at": "2026-11-20T02:45:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 86,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.003035,
+        "atrPercent": 7.6,
+        "entryToSlDistance": 0.003115,
+        "entryToTp1Distance": 0.002955,
+        "riskDistancePercentOfPrice": 7.81289189867068,
+        "modeledCostRAtEntry": 0.019199036918138,
+        "midpointCostR": 0.0214702529390809,
+        "bestZoneCostR": 0.0178162073097663,
+        "worstZoneCostR": 0.0268293057996485,
+        "signalAgeMs": 18820,
+        "analysisToOriginDelayMs": 21507,
+        "priceTimestampDelayMs": 22610,
+        "entryZoneWidth": 0.001062,
+        "entryZoneWidthPercent": 2.64323759271243,
+        "entryLocationWithinZone": 0.209981167608287,
+        "distanceTraveledBeforeActivation": 0.0000799999999999967,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.28
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-19T19:42:41.180Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-19T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-19T19:42:18.570Z"
+        },
+        "instrument": {
+          "symbol": "SAPIENUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795142700000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-19T18:54:40.415Z",
+      "symbol": "GOOGLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795114500000,
+        "at": "2026-11-19T18:55:00.000Z",
+        "entryPrice": 279.47
+      },
+      "resolution": {
+        "timestamp": 1795151040000,
+        "at": "2026-11-20T05:04:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 9.275,
+        "atrPercent": 3.31,
+        "entryToSlDistance": 9.64499999999998,
+        "entryToTp1Distance": 8.90500000000003,
+        "riskDistancePercentOfPrice": 3.45117543922424,
+        "modeledCostRAtEntry": 0.0434634525660965,
+        "midpointCostR": 0.0490481152528151,
+        "bestZoneCostR": 0.0410064935064936,
+        "worstZoneCostR": 0.0608424090392881,
+        "signalAgeMs": 19585,
+        "analysisToOriginDelayMs": 12999,
+        "priceTimestampDelayMs": 13338,
+        "entryZoneWidth": 3.24619999999999,
+        "entryZoneWidthPercent": 1.15714369228005,
+        "entryLocationWithinZone": 0.171739264370651,
+        "distanceTraveledBeforeActivation": 0.369999999999948,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.45
+          },
+          "fvgSummary": {
+            "bullish": 1,
+            "bearish": 2
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 50,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-19T18:54:40.415Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-19T16:00:00.000Z",
+          "confirmedCount": 261,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-19T18:54:27.077Z"
+        },
+        "instrument": {
+          "symbol": "GOOGLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795151040000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "AAPLUSDT:Long:2026-11-11T16:24:40.293Z",
+      "symbol": "AAPLUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1794414300000,
+        "at": "2026-11-11T16:25:00.000Z",
+        "entryPrice": 354.3
+      },
+      "resolution": {
+        "timestamp": 1795202760000,
+        "at": "2026-11-20T19:26:00.000Z"
+      },
+      "evidence": {
+        "direction": "Long",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "Normal",
+        "atr": 9.97286,
+        "atrPercent": 2.82,
+        "entryToSlDistance": 10.0029,
+        "entryToTp1Distance": 9.94290000000001,
+        "riskDistancePercentOfPrice": 2.82328535139712,
+        "modeledCostRAtEntry": 0.0531295924181987,
+        "midpointCostR": 0.0574835717266762,
+        "bestZoneCostR": 0.0485771407996209,
+        "worstZoneCostR": 0.0705463053331018,
+        "signalAgeMs": 19707,
+        "analysisToOriginDelayMs": 11648,
+        "priceTimestampDelayMs": 12021,
+        "entryZoneWidth": 3.4905,
+        "entryZoneWidthPercent": 0.987350011123775,
+        "entryLocationWithinZone": 0.72287637874231,
+        "distanceTraveledBeforeActivation": 0.0300000000000296,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bullish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bullish BOS",
+          "choch": "Bullish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bullish MSS",
+          "premiumDiscount": {
+            "zone": "Premium"
+          },
+          "imbalance": {
+            "type": "Bullish Imbalance",
+            "bodyRatio": 0.72
+          },
+          "fvgSummary": {
+            "bullish": 3,
+            "bearish": 0
+          },
+          "orderBlockSummary": {
+            "bullish": 2,
+            "bearish": 1
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 60,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-11T16:24:40.293Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-11T16:00:00.000Z",
+          "confirmedCount": 253,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-11T16:24:28.272Z"
+        },
+        "instrument": {
+          "symbol": "AAPLUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795202760000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-20T04:00:44.793Z",
+      "symbol": "SAPIENUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795147260000,
+        "at": "2026-11-20T04:01:00.000Z",
+        "entryPrice": 0.03986
+      },
+      "resolution": {
+        "timestamp": 1795227840000,
+        "at": "2026-11-21T02:24:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 85,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.003035,
+        "atrPercent": 7.62,
+        "entryToSlDistance": 0.002995,
+        "entryToTp1Distance": 0.003075,
+        "riskDistancePercentOfPrice": 7.5137982940291,
+        "modeledCostRAtEntry": 0.0199632721202004,
+        "midpointCostR": 0.0214007837548985,
+        "bestZoneCostR": 0.0177577890952666,
+        "worstZoneCostR": 0.0267436291739894,
+        "signalAgeMs": 15207,
+        "analysisToOriginDelayMs": 28286,
+        "priceTimestampDelayMs": 28823,
+        "entryZoneWidth": 0.001062,
+        "entryZoneWidthPercent": 2.65181781861766,
+        "entryLocationWithinZone": 0.322975517890775,
+        "distanceTraveledBeforeActivation": 0.0000399999999999984,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "No Imbalance",
+            "bodyRatio": 0.28
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 1,
+            "returnedLowCount": 1
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-20T04:00:44.793Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-19T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-20T04:00:15.970Z"
+        },
+        "instrument": {
+          "symbol": "SAPIENUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795227840000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "LTCUSDT:Short:2026-11-20T16:48:43.224Z",
+      "symbol": "LTCUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795193340000,
+        "at": "2026-11-20T16:49:00.000Z",
+        "entryPrice": 39.94
+      },
+      "resolution": {
+        "timestamp": 1795241820000,
+        "at": "2026-11-21T06:17:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 2.51286,
+        "atrPercent": 6.3,
+        "entryToSlDistance": 2.4529,
+        "entryToTp1Distance": 2.5729,
+        "riskDistancePercentOfPrice": 6.14146219328993,
+        "modeledCostRAtEntry": 0.0244241510049329,
+        "midpointCostR": 0.0258567295489256,
+        "bestZoneCostR": 0.0215046125461255,
+        "worstZoneCostR": 0.0322397729081552,
+        "signalAgeMs": 16776,
+        "analysisToOriginDelayMs": 15744,
+        "priceTimestampDelayMs": 16885,
+        "entryZoneWidth": 0.8795,
+        "entryZoneWidthPercent": 2.19499381683095,
+        "entryLocationWithinZone": 0.353951108584418,
+        "distanceTraveledBeforeActivation": 0.0599999999999952,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.9
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-20T16:48:43.224Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-20T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-20T16:48:26.339Z"
+        },
+        "instrument": {
+          "symbol": "LTCUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795241820000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "SUIUSDT:Short:2026-11-20T17:06:41.169Z",
+      "symbol": "SUIUSDT",
+      "mode": "v1-parity",
+      "replayResult": "TP1_BEFORE_SL",
+      "tp1ReachedBeforeSl": "YES",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795194420000,
+        "at": "2026-11-20T17:07:00.000Z",
+        "entryPrice": 0.6492
+      },
+      "resolution": {
+        "timestamp": 1795234020000,
+        "at": "2026-11-21T04:07:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 90,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.0513929,
+        "atrPercent": 7.92,
+        "entryToSlDistance": 0.0510930000000001,
+        "entryToTp1Distance": 0.051693,
+        "riskDistancePercentOfPrice": 7.87014787430685,
+        "modeledCostRAtEntry": 0.0190593623392637,
+        "midpointCostR": 0.0205966059088949,
+        "bestZoneCostR": 0.0170813256208873,
+        "worstZoneCostR": 0.0257522895317161,
+        "signalAgeMs": 18831,
+        "analysisToOriginDelayMs": 31655,
+        "priceTimestampDelayMs": 32604,
+        "entryZoneWidth": 0.017987,
+        "entryZoneWidthPercent": 2.75555358101706,
+        "entryLocationWithinZone": 0.302385055873685,
+        "distanceTraveledBeforeActivation": 0.000299999999999967,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.83
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-20T17:06:41.169Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-20T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-20T17:06:08.565Z"
+        },
+        "instrument": {
+          "symbol": "SUIUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795234020000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    },
+    {
+      "tradeId": "BANDUSDT:Short:2026-11-21T04:06:39.993Z",
+      "symbol": "BANDUSDT",
+      "mode": "v1-parity",
+      "replayResult": "SL_BEFORE_TP1",
+      "tp1ReachedBeforeSl": "NO",
+      "reasonCodes": [],
+      "inputWasOutOfOrder": false,
+      "activation": {
+        "timestamp": 1795234020000,
+        "at": "2026-11-21T04:07:00.000Z",
+        "entryPrice": 0.1301
+      },
+      "resolution": {
+        "timestamp": 1795271880000,
+        "at": "2026-11-21T14:38:00.000Z"
+      },
+      "evidence": {
+        "direction": "Short",
+        "opportunityScore": 86,
+        "opportunityGrade": "A+",
+        "volatilityLabel": "High",
+        "atr": 0.00916429,
+        "atrPercent": 7.05,
+        "entryToSlDistance": 0.008964,
+        "entryToTp1Distance": 0.009364,
+        "riskDistancePercentOfPrice": 6.89008455034589,
+        "modeledCostRAtEntry": 0.0217704149933066,
+        "midpointCostR": 0.0231087418156079,
+        "bestZoneCostR": 0.0191940476190476,
+        "worstZoneCostR": 0.0288500654735924,
+        "signalAgeMs": 20007,
+        "analysisToOriginDelayMs": 17589,
+        "priceTimestampDelayMs": 17919,
+        "entryZoneWidth": 0.00320700000000002,
+        "entryZoneWidthPercent": 2.45582463865226,
+        "entryLocationWithinZone": 0.34798877455566,
+        "distanceTraveledBeforeActivation": 0.000200000000000006,
+        "activationDelayMs": 0,
+        "archivedActivationDeltaMs": 0,
+        "trendLabel": "Strong Bearish",
+        "regimeLabel": null,
+        "structure": {
+          "bos": "Bearish BOS",
+          "choch": "Bearish CHOCH",
+          "liquiditySweep": "No Sweep",
+          "mss": "Bearish MSS",
+          "premiumDiscount": {
+            "zone": "Discount"
+          },
+          "imbalance": {
+            "type": "Bearish Imbalance",
+            "bodyRatio": 0.86
+          },
+          "fvgSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "orderBlockSummary": {
+            "bullish": 0,
+            "bearish": 3
+          },
+          "equalHighLowSummary": {
+            "returnedHighCount": 3,
+            "returnedLowCount": 3
+          },
+          "smartMoneyScore": 30,
+          "smartMoneyRating": "Neutral"
+        },
+        "freshness": {
+          "telemetryStatus": "captured",
+          "capturedAt": "2026-11-21T04:06:39.993Z",
+          "dailySource": "OKX",
+          "dailyBar": "1D",
+          "dailyConfirmedOnly": true,
+          "dailyLastConfirmedAt": "2026-11-20T16:00:00.000Z",
+          "confirmedCount": 299,
+          "priceSource": "OKX",
+          "priceTimestamp": "2026-11-21T04:06:22.074Z"
+        },
+        "instrument": {
+          "symbol": "BANDUSDT",
+          "instrumentType": "SWAP"
+        },
+        "resolvedCandleTimestamp": 1795271880000
+      },
+      "parity": "MATCH",
+      "mismatchCause": null
+    }
+  ],
+  "strategyRecommendation": null
+}
