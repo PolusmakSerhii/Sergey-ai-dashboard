@@ -3,6 +3,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { buildReplayArtifact, RESULT } from './replay.mjs';
+import { observedRemainderFromOutcome } from './d01.mjs';
 
 const MINUTE_MS = 60_000;
 const CUTOFF = '2026-11-01T22:00:00.000Z';
@@ -158,6 +159,9 @@ async function main() {
       strategyVersion: record.initialPlan.strategyVersion ?? record.researchSnapshot?.strategyVersion ?? null,
       exitPolicyVersion: record.initialPlan.exitStrategy.version,
       activationAt: record.outcome.activatedAt, archivedResult: archivedReachability(record), replayEndAt: endAt,
+      headlineRiskReward: record.origin.riskReward,
+      observedRemainderR: observedRemainderFromOutcome(record.outcome),
+      observedFinalGrossR: record.outcome.resultR,
       instrument: record.researchSnapshot?.instrument ?? null, diagnostics: diagnostics(record), candles: fetched.candles
     });
     process.stderr.write(`replay-input ${index + 1}/${cohort.records.length} candles=${fetched.candles.length} requests=${fetched.requests}\n`);

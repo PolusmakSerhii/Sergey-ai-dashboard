@@ -20,6 +20,12 @@ Activation uses the frozen v1 rule: the first complete candle touching the froze
 
 Cost diagnostics use `0.0015 * entryPrice / abs(entryPrice - initialStopLoss)`. Midpoint, best-zone, and worst-zone values are diagnostics only and never gates.
 
+## D01 lifecycle-aligned economics
+
+`d01.mjs` adds research-only pre-entry geometry using the frozen planned entry reference. It reports the modeled activation entry separately and never substitutes it into planned geometry. The 50% TP1 leg, fixed cost-in-R, direction-aware zone range, and parametric post-TP1 scenario vector are observability fields only. Archived remainder and final modeled net R are explicitly post-outcome observations. No probability, expected-value field, eligibility gate, score component, or strategy recommendation is created.
+
+`build-d01-artifact.mjs` enriches the already proven parity artifact with the frozen archive records and writes a new artifact in exclusive mode. The earlier artifact is never overwritten.
+
 ## CLI
 
 ```sh

@@ -3,6 +3,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { calculateLifecycleAlignedEconomics, summarizeD01 } from './d01.mjs';
 
 export const REPLAY_VERSION = 'entry-tp1-replay-v1';
 export const REPLAY_MODE = 'v1-parity';
@@ -36,7 +37,10 @@ export const REPLAY_INPUT_SCHEMA = Object.freeze({
     activationAt: 'archived activation ISO timestamp',
     archivedResult: 'TP1_BEFORE_SL | SL_BEFORE_TP1 | AMBIGUOUS_SAME_CANDLE | UNRESOLVED',
     instrument: 'tick/precision metadata',
-    diagnostics: 'saved ATR, volatility, score, provenance, trend and structure evidence'
+    diagnostics: 'saved ATR, volatility, score, provenance, trend and structure evidence',
+    headlineRiskReward: 'saved v1 headline R:R for D01 comparison',
+    observedRemainderR: 'archived post-TP1 remainder R, observation only',
+    observedFinalGrossR: 'archived final gross R, observation only'
   },
   candle: '{ timestamp: epoch milliseconds, open, high, low, close: finite positive numbers, confirmed: true }'
 });
@@ -187,6 +191,17 @@ export function replayV1Parity(input) {
   }
 
   const candles = input.candles.map(candle => ({ ...candle })).sort((a, b) => a.timestamp - b.timestamp);
+  const lifecycleAlignedEconomics = calculateLifecycleAlignedEconomics({
+    direction: input.direction,
+    plannedEntryReference: input.plannedEntry,
+    activationEntryReference: null,
+    initialStopLoss: input.initialStopLoss,
+    takeProfit1: input.takeProfit1,
+    entryZone: input.entryZone,
+    currentHeadlineRR: input.headlineRiskReward,
+    observedRemainderR: input.observedRemainderR,
+    observedFinalGrossR: input.observedFinalGrossR
+  });
   const planned = Date.parse(input.plannedAt);
   const expiry = Date.parse(input.expiresAt);
   const replayEnd = Date.parse(input.replayEndAt);
@@ -231,6 +246,13 @@ export function replayV1Parity(input) {
       resolution: { timestamp: candle.timestamp, at: new Date(candle.timestamp).toISOString() },
       evidence: evidence(input, activation, resolved, costs)
     };
+    result.lifecycleAlignedEconomics = calculateLifecycleAlignedEconomics({
+      direction: input.direction, plannedEntryReference: input.plannedEntry,
+      activationEntryReference: activation.entryPrice, initialStopLoss: input.initialStopLoss,
+      takeProfit1: input.takeProfit1, entryZone: input.entryZone,
+      currentHeadlineRR: input.headlineRiskReward, observedRemainderR: input.observedRemainderR,
+      observedFinalGrossR: input.observedFinalGrossR
+    });
     return { ...result, ...archivedParity(input, replayResult) };
   }
 
@@ -253,6 +275,13 @@ export function replayV1Parity(input) {
     activation: activation ? { timestamp: activation.timestamp, at: new Date(activation.timestamp).toISOString(), entryPrice: activation.entryPrice } : null,
     evidence: evidence(input, activation, null, costs)
   };
+  result.lifecycleAlignedEconomics = activation ? calculateLifecycleAlignedEconomics({
+    direction: input.direction, plannedEntryReference: input.plannedEntry,
+    activationEntryReference: activation.entryPrice, initialStopLoss: input.initialStopLoss,
+    takeProfit1: input.takeProfit1, entryZone: input.entryZone,
+    currentHeadlineRR: input.headlineRiskReward, observedRemainderR: input.observedRemainderR,
+    observedFinalGrossR: input.observedFinalGrossR
+  }) : lifecycleAlignedEconomics;
   return { ...result, ...archivedParity(input, result.replayResult) };
 }
 
@@ -275,6 +304,7 @@ export function buildReplayArtifact(inputs, metadata = {}) {
       parityNotAvailable: trades.filter(trade => trade.parity === 'NOT_AVAILABLE').length,
       ambiguous: count(RESULT.AMBIGUOUS), unresolved: count(RESULT.UNRESOLVED), invalid: count(RESULT.INVALID)
     },
+    d01Comparison: summarizeD01(trades),
     trades,
     strategyRecommendation: null
   };
