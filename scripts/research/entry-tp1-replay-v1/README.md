@@ -26,6 +26,12 @@ Cost diagnostics use `0.0015 * entryPrice / abs(entryPrice - initialStopLoss)`. 
 
 `build-d01-artifact.mjs` enriches the already proven parity artifact with the frozen archive records and writes a new artifact in exclusive mode. The earlier artifact is never overwritten.
 
+## D03 OI/price semantic shadow
+
+`d03-shadow.mjs` defines a typed, research-only contract that keeps `openInterestChange24h` and same-analysis ticker `priceChange24h` separate. Missing/non-finite metrics or unproven provenance return `UNAVAILABLE`; values are never substituted, reused, coerced to zero, or inferred. Zero OI, zero price, and both-flat cases are explicit.
+
+`evaluateV1SemanticShadow` models the proven v1 substitution only for comparison. Nothing under this research directory is imported by production scoring, eligibility, plan creation, candidate freezing, or registration. `build-d03-shadow-artifact.mjs` refuses to reconstruct fields omitted by historical snapshots and records those rows as `NOT_PROVEN`.
+
 ## CLI
 
 ```sh

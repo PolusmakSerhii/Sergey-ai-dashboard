@@ -1,0 +1,2875 @@
+{
+  "version": "core-v2-d03-shadow-artifact-v1",
+  "contractVersion": "d03-oi-price-semantics-shadow-v1",
+  "generatedAt": "2026-11-24T12:05:08.000Z",
+  "sourceCohortIdentifier": "post-cutoff-confirmatory-v1:2026-11-01T22:00:00.000Z",
+  "sourceProvenance": {
+    "cutoff": "2026-11-01T22:00:00.000Z",
+    "exitPolicyVersion": "tp1-50-reanalyse-v1",
+    "rulesRevision": "canonical-trade-archive-v1",
+    "fixedCohortCount": 48,
+    "sourceSnapshotRecords": 49,
+    "limitation": "Frozen research snapshots omit D03 OI/price inputs; no historical reconstruction or semantic substitution was performed"
+  },
+  "summary": {
+    "contractVersion": "d03-oi-price-semantics-shadow-v1",
+    "countAnalyzed": 48,
+    "comparableCount": 0,
+    "classificationSame": 0,
+    "classificationDifferent": 0,
+    "v2UnavailableCount": 48,
+    "notProvenCount": 48,
+    "unavailableReasons": {
+      "MISSING_OPEN_INTEREST_CHANGE_24H": 48,
+      "MISSING_PRICE_CHANGE_24H": 48,
+      "MISSING_OPEN_INTEREST_SOURCE": 48,
+      "MISSING_OR_INVALID_OBSERVED_AT": 48
+    },
+    "downstreamDeltas": {
+      "status": "NOT_PROVEN",
+      "recordsProven": 0,
+      "recordsNotProven": 48,
+      "probabilityDelta": null,
+      "confidenceDelta": null,
+      "readinessDelta": null,
+      "opportunityScoreDelta": null,
+      "aPlusEligibilityDelta": null
+    },
+    "strategyRecommendation": null
+  },
+  "records": [
+    {
+      "tradeId": "ORCLUSDT:Short:2026-11-02T16:24:41.465Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "CRCLUSDT:Short:2026-11-02T19:36:42.674Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-03T16:06:44.829Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "CRCLUSDT:Short:2026-11-04T12:54:41.733Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "MSFTUSDT:Long:2026-11-04T16:00:44.695Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "BARDUSDT:Short:2026-11-05T14:36:41.049Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AAPLUSDT:Long:2026-11-04T14:48:41.637Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GMXUSDT:Long:2026-11-04T13:30:44.212Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "KAITOUSDT:Short:2026-11-05T16:00:53.472Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-05T15:54:44.458Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GIGGLEUSDT:Short:2026-11-05T15:12:43.924Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ETCUSDT:Short:2026-11-05T16:00:53.472Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AXSUSDT:Short:2026-11-05T15:12:43.924Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "UMAUSDT:Short:2026-11-07T16:00:48.291Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "PIEVERSEUSDT:Long:2026-11-08T16:00:51.273Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "PIEVERSEUSDT:Long:2026-11-09T20:36:43.147Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ORCLUSDT:Short:2026-11-05T01:18:41.859Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ATOMUSDT:Short:2026-11-05T16:00:53.472Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "BARDUSDT:Short:2026-11-10T03:54:41.258Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SSVUSDT:Short:2026-11-05T16:00:53.472Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-06T16:00:52.006Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "MSFTUSDT:Long:2026-11-06T21:54:41.742Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "NGUSDT:Long:2026-11-12T01:01:44.051Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ATOMUSDT:Short:2026-11-14T16:01:48.675Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AVNTUSDT:Short:2026-11-14T06:30:40.076Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "XAUUSDT:Short:2026-11-12T16:36:40.053Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "METISUSDT:Short:2026-11-14T16:01:48.675Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "CCUSDT:Short:2026-11-14T19:18:42.304Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "NGUSDT:Long:2026-11-13T15:00:50.857Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AMZNUSDT:Long:2026-11-12T17:00:46.101Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "YFIUSDT:Short:2026-11-13T04:20:06.502Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ADAUSDT:Short:2026-11-13T17:18:40.977Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "PIUSDT:Short:2026-11-11T23:30:41.776Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "LLYUSDT:Long:2026-11-12T16:00:45.665Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "ZBTUSDT:Short:2026-11-14T21:18:40.747Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "COSTUSDT:Long:2026-11-12T16:00:45.665Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SNXUSDT:Short:2026-11-04T17:18:43.450Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "QTUMUSDT:Short:2026-11-10T16:00:57.963Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-17T20:54:44.867Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AMZNUSDT:Long:2026-11-19T00:06:44.067Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-19T16:12:44.933Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-19T19:42:41.180Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "GOOGLUSDT:Short:2026-11-19T18:54:40.415Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "AAPLUSDT:Long:2026-11-11T16:24:40.293Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SAPIENUSDT:Short:2026-11-20T04:00:44.793Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "LTCUSDT:Short:2026-11-20T16:48:43.224Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "SUIUSDT:Short:2026-11-20T17:06:41.169Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    },
+    {
+      "tradeId": "BANDUSDT:Short:2026-11-21T04:06:39.993Z",
+      "inputAvailability": {
+        "openInterestChange24h": false,
+        "priceChange24h": false,
+        "providerObservedAt": false
+      },
+      "comparison": {
+        "version": "d03-oi-price-semantics-shadow-v1",
+        "comparable": false,
+        "comparison": "NOT_PROVEN",
+        "v1": {
+          "version": "d03-v1-substitution-shadow-model",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          },
+          "semanticModel": "priceChange24h receives openInterestChange24h"
+        },
+        "v2": {
+          "version": "d03-oi-price-semantics-shadow-v1",
+          "available": false,
+          "classification": "UNAVAILABLE",
+          "reasonCodes": [
+            "MISSING_OPEN_INTEREST_CHANGE_24H",
+            "MISSING_PRICE_CHANGE_24H",
+            "MISSING_OPEN_INTEREST_SOURCE",
+            "MISSING_OR_INVALID_OBSERVED_AT"
+          ],
+          "input": {
+            "openInterestChange24h": null,
+            "priceChange24h": null,
+            "openInterestSource": null,
+            "priceSource": "OKX",
+            "observedAt": null
+          }
+        },
+        "downstreamCounterfactual": {
+          "status": "NOT_PROVEN",
+          "probabilityDelta": null,
+          "confidenceDelta": null,
+          "readinessDelta": null,
+          "opportunityScoreDelta": null,
+          "aPlusEligibilityDelta": null,
+          "reason": "Full same-snapshot scoring inputs are not part of this typed D03 contract"
+        }
+      }
+    }
+  ],
+  "strategyRecommendation": null
+}
