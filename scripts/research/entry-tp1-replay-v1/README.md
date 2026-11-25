@@ -38,6 +38,12 @@ Cost diagnostics use `0.0015 * entryPrice / abs(entryPrice - initialStopLoss)`. 
 
 The contract only returns `READY` or `BLOCKED` for complete live-shaped inputs. Historical evaluation is separate: if any mandatory condition cannot be proved from the saved snapshot, the record is `NOT_EVALUABLE`, never inferred safe or counted as blocked. The fixed archive omits `instId`, an authoritative instrument record, and raw daily OHLC history, so `build-d05-shadow-artifact.mjs` preserves those limitations explicitly. D05 is not imported by production plan creation, opportunity/A+ scoring, candidate freezing, registration, probability, confidence, readiness, or score paths.
 
+## D04 tick-size and price-precision shadow
+
+`d04-shadow.mjs` preserves raw analytical values and uses BigInt decimal tick units only when executable geometry is required. Tick size is accepted only from an exact, timestamped `OKX public instruments` contract; it is never inferred from price magnitude, displayed decimals, or existing `toFixed` output. Entry-zone boundaries quantize inward, stops and targets follow the frozen direction-aware rules, and invalid or collapsed geometry is reported without repair.
+
+`build-d04-shadow-artifact.mjs` compares saved v1 geometry with D04 shadow geometry, recomputes D01 metrics where valid, and includes deterministic fixtures that expose `toFixed(2)` zero-collapse and level merging. Its metadata timestamp describes when the authoritative instrument record was observed; it does not claim the current tick was historically unchanged at trade birth. D04 remains disconnected from every production analysis, scoring, eligibility, plan, scanner, candidate, registration, and lifecycle path.
+
 ## CLI
 
 ```sh
