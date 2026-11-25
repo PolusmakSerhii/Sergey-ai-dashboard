@@ -44,6 +44,12 @@ The contract only returns `READY` or `BLOCKED` for complete live-shaped inputs. 
 
 `build-d04-shadow-artifact.mjs` compares saved v1 geometry with D04 shadow geometry, recomputes D01 metrics where valid, and includes deterministic fixtures that expose `toFixed(2)` zero-collapse and level merging. Its metadata timestamp describes when the authoritative instrument record was observed; it does not claim the current tick was historically unchanged at trade birth. D04 remains disconnected from every production analysis, scoring, eligibility, plan, scanner, candidate, registration, and lifecycle path.
 
+## D06 True Range ATR shadow
+
+`d06-shadow.mjs` isolates the ATR formula change: v1 shadow uses the arithmetic mean of 14 high-low ranges, while v2 uses the arithmetic mean of 14 True Range observations with an explicit previous close. Both preserve the existing six-significant-digit ATR output and the frozen volatility bands. The contract requires 15 positive, confirmed, ordered, unique, contiguous 1D candles and never falls back to high-low when previous-close evidence is unavailable.
+
+`build-d06-shadow-artifact.mjs` accepts only separately retrieved OKX historical candles whose newest close time (`openTime + 24h`) exactly matches the snapshot's saved `dailyLastConfirmedAt` and is not later than analysis time. It recomputes only ATR-dependent plan geometry from the frozen planned entry reference, applies the existing D04 executable tick contract, and reports D01 deltas without expected value or strategy recommendation. D06 is not imported by production ATR, environment, scoring, eligibility, planning, registration, or lifecycle paths.
+
 ## CLI
 
 ```sh
