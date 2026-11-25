@@ -32,6 +32,12 @@ Cost diagnostics use `0.0015 * entryPrice / abs(entryPrice - initialStopLoss)`. 
 
 `evaluateV1SemanticShadow` models the proven v1 substitution only for comparison. Nothing under this research directory is imported by production scoring, eligibility, plan creation, candidate freezing, or registration. `build-d03-shadow-artifact.mjs` refuses to reconstruct fields omitted by historical snapshots and records those rows as `NOT_PROVEN`.
 
+## D05 mandatory birth-safety shadow
+
+`d05-shadow.mjs` defines a research-only, fail-closed birth-safety contract for exact instrument identity, fresh positive ticker data, at least 200 confirmed contiguous 1D candles with valid OHLC, and explicit required/optional source availability. The existing 60-second ticker limit and 24-hour-plus-5-minute latest-candle limit are frozen in the contract. Required sources block when unavailable; an absent optional source is recorded as unavailable but is never substituted and does not block by itself.
+
+The contract only returns `READY` or `BLOCKED` for complete live-shaped inputs. Historical evaluation is separate: if any mandatory condition cannot be proved from the saved snapshot, the record is `NOT_EVALUABLE`, never inferred safe or counted as blocked. The fixed archive omits `instId`, an authoritative instrument record, and raw daily OHLC history, so `build-d05-shadow-artifact.mjs` preserves those limitations explicitly. D05 is not imported by production plan creation, opportunity/A+ scoring, candidate freezing, registration, probability, confidence, readiness, or score paths.
+
 ## CLI
 
 ```sh
